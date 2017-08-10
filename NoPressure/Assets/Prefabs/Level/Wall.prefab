@@ -24,7 +24,7 @@ GameObject:
   - component: {fileID: 23792713951275304}
   - component: {fileID: 208124168224620296}
   - component: {fileID: 114547780389400062}
-  m_Layer: 10
+  m_Layer: 9
   m_Name: Wall
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -107,6 +107,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   pMaxHealth: 50
+  pIsMechanical: 0
   deathEffect: {fileID: 198029852910399108, guid: f79e3a3883f0d2b418f040328efa859b,
     type: 2}
   deathItems: []

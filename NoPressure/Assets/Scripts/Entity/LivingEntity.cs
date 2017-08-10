@@ -104,7 +104,8 @@ public class LivingEntity : MonoBehaviour, IDamageable {
     public virtual void Die()
     {
         mDead = true;
-        mOnDeathHandler.Invoke();
+        if (mOnDeathHandler != null)
+            mOnDeathHandler.Invoke();
         gameObject.SetActive(false);
         //Destroy(gameObject);
     }

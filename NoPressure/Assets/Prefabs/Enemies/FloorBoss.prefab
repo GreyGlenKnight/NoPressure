@@ -19,7 +19,7 @@ GameObject:
   serializedVersion: 5
   m_Component:
   - component: {fileID: 4495532305717580}
-  m_Layer: 8
+  m_Layer: 10
   m_Name: AttackSpawn
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -40,7 +40,7 @@ GameObject:
   - component: {fileID: 114751161884411162}
   - component: {fileID: 195378015571010466}
   - component: {fileID: 114487360364067024}
-  m_Layer: 8
+  m_Layer: 10
   m_Name: FloorBoss
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -83,7 +83,6 @@ MeshRenderer:
   m_Enabled: 1
   m_CastShadows: 1
   m_ReceiveShadows: 1
-  m_DynamicOccludee: 1
   m_MotionVectors: 1
   m_LightProbeUsage: 1
   m_ReflectionProbeUsage: 1
@@ -99,7 +98,6 @@ MeshRenderer:
   m_PreserveUVs: 1
   m_IgnoreNormalsForChartDetection: 0
   m_ImportantGI: 0
-  m_StitchSeams: 0
   m_SelectedEditorRenderState: 3
   m_MinimumChartSize: 4
   m_AutoUVMaxDistance: 0.5
@@ -138,7 +136,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b3bdc90e6eb419745b36e02a63acd72f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  startingHealth: 5
+  pMaxHealth: 1
+  pIsMechanical: 0
   rangeOfSight: 10
   rangeOfAttack: 2
   viewMask:

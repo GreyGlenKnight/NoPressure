@@ -24,7 +24,7 @@ GameObject:
   - component: {fileID: 23431580846774144}
   - component: {fileID: 208467701723846988}
   - component: {fileID: 114672720063601870}
-  m_Layer: 10
+  m_Layer: 9
   m_Name: DestructibleObstacle
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -107,6 +107,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   pMaxHealth: 0
+  pIsMechanical: 0
   deathEffect: {fileID: 198029852910399108, guid: f79e3a3883f0d2b418f040328efa859b,
     type: 2}
   deathItems:

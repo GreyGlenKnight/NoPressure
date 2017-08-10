@@ -19,7 +19,7 @@ GameObject:
   serializedVersion: 5
   m_Component:
   - component: {fileID: 4022545795546650}
-  m_Layer: 8
+  m_Layer: 10
   m_Name: AttackSpawn
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -39,7 +39,7 @@ GameObject:
   - component: {fileID: 23507499294675456}
   - component: {fileID: 114474524906049106}
   - component: {fileID: 195887276533794360}
-  m_Layer: 8
+  m_Layer: 10
   m_Name: Enemy01
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -124,11 +124,12 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   pMaxHealth: 20
+  pIsMechanical: 0
   rangeOfSight: 10
   rangeOfAttack: 6
   viewMask:
     serializedVersion: 2
-    m_Bits: 1024
+    m_Bits: 512
   attackSpawn: {fileID: 4022545795546650}
   attackType: {fileID: 114924386325612738, guid: 6a26b8185e8e9084eb74aff83bd3477a,
     type: 2}
