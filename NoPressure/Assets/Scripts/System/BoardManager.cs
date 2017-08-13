@@ -95,7 +95,7 @@ public class BoardManager : MonoBehaviour {
     List<Room> rooms;
     List<Corridor> corridors;
     private Color enemyColor = Color.green;
-    private List<Transform> NoSpawnTilesList;
+    
     
     public void SetupLevel(LevelPerams levelParams)
     {
@@ -615,7 +615,7 @@ public class BoardManager : MonoBehaviour {
 
     private void Awake()
     {
-        NoSpawnTilesList = new List<Transform>();
+        //NoSpawnTilesList = new List<Transform>();
 
 
     }

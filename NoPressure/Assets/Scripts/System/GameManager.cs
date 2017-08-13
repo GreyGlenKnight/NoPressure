@@ -41,8 +41,8 @@ public class GameManager : MonoBehaviour
 
     private void Start()
     {
-        Debug.Log("Game Start");
-        boardScript.SetUpLevel(BoardManager.LevelType.FromFileMap, new Coord(45, 85));
+        Debug.Log("Game Start 3");
+        boardScript.SetUpLevel(BoardManager.LevelType.FromFileMap, new Coord(53, 103));
     }
 
     void OnLevelFinishedLoading(Scene scene, LoadSceneMode mode)

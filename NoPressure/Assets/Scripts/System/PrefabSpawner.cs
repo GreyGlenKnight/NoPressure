@@ -10,7 +10,7 @@ public class PrefabSpawner : MonoBehaviour {
     private static PrefabSpawner instance;
 
     public Transform boardHolder;
-    private List<Transform> NoSpawnTilesList;
+    private List<Transform> NoSpawnTilesList; //TODO add in sector logic
 
     private Transform groundPlane;
     private NavMeshSurface groundSurface;
@@ -468,16 +468,16 @@ public class PrefabSpawner : MonoBehaviour {
         //TileInfo enemyTileInfo = roomSlots.Dequeue();
         //enemyTileInfo.prefabType = PrefabType.Enemy;
         Transform enemyPrefab = enemies[UnityEngine.Random.Range(0, enemies.Length - 1)];
-        //Transform enemy = Instantiate(enemyPrefab, new Vector3(x, 1, z), Quaternion.identity);
+        Transform enemy = Instantiate(enemyPrefab, new Vector3(x, 1, z), Quaternion.identity);
 
         int enemyHealth = 5;
         int enemyDamage = 1;
 
         Color enemyColor = Color.red;
 
-        //enemy.GetComponent<Enemy>().SetUpEnemy(enemyHealth, enemyDamage, enemyColor, 1, 2);
+        enemy.GetComponent<Enemy>().SetUpEnemy(enemyHealth, enemyDamage, enemyColor, 1, 2);
          
-        return null;// enemy.GetComponent<Enemy>();
+        return enemy.GetComponent<Enemy>();
     }
 
     public void DespawnObject(GameObject despawn)

@@ -278,7 +278,7 @@ public class MapNode
 
     private bool loadMapDataFromFile(Coord lRoomLocation, string lMapName)
     {
-        int[] DilimLine;
+        //int[] DilimLine;
         FileLoader fileLoader = new FileLoader();
 
         // example Demo23.csv 
@@ -287,7 +287,7 @@ public class MapNode
 
         if (fileLoader.load(fileName) == false)
         {
-            Debug.Log("Failed to load file: " + fileName);
+            //Debug.Log("Failed to load file: " + fileName);
             return false;
         }
 

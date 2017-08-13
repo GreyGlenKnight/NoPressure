@@ -22,8 +22,29 @@ public class MapController : MonoBehaviour
 
     //MapSector[,] LoadedSectors = new MapSector[LoadRadius, LoadRadius]; 
 
+
+    private void Awake()
+    {
+        if (instance == null)
+        {
+            instance = this;
+        }
+
+    }
+
+    public static MapController GetMapController()
+    {
+        if (instance == null)
+        {
+            Debug.Log("Trying to acces MapController befor it has spawned");
+        }
+        return instance;
+    }
+
     private void Start()
     {
+
+        spawner = PrefabSpawner.GetPrefabSpawner();
         Debug.Log("LoadRadius: " + LoadRadius);
         if (CameraFocus == null)
         {
@@ -54,7 +75,6 @@ public class MapController : MonoBehaviour
                 DespawnSectors(focusSector);
                 CurrentSector = focusSector;
                 LoadSectorIntoMemory(WorldSpaceUnit.Sector, CurrentSector);
-
             }
         }
     }
@@ -91,45 +111,41 @@ public class MapController : MonoBehaviour
 
     public void DespawnSectors(Coord focusSector)
     {
+        int xChange = focusSector.x - CurrentSector.x;
 
+        int yChange = focusSector.y - CurrentSector.y;
 
-            int xChange = focusSector.x - CurrentSector.x;
-
-            int yChange = focusSector.y - CurrentSector.y;
-
-            if(xChange > 0)
+        if (xChange > 0)
+        {
+            for (int i = 0; i < xChange; i++)
             {
-                for (int i =0; i<xChange; i++)
-                {
-                    DespawnRow(CurrentSector.x - i - LoadRadius);
-                }
+                DespawnRow(CurrentSector.x - i - LoadRadius);
             }
+        }
 
-            if (xChange < 0)
+        if (xChange < 0)
+        {
+            for (int i = 0; i < -xChange; i++)
             {
-                for (int i = 0; i < -xChange ; i++)
-                {
-                    DespawnRow(CurrentSector.x + i + LoadRadius);
-                }
+                DespawnRow(CurrentSector.x + i + LoadRadius);
             }
+        }
 
-            if (yChange > 0)
+        if (yChange > 0)
+        {
+            for (int i = 0; i < yChange; i++)
             {
-                for (int i = 0; i < yChange; i++)
-                {
-                    DespawnCol(CurrentSector.y - i - LoadRadius);
-                }
+                DespawnCol(CurrentSector.y - i - LoadRadius);
             }
+        }
 
-            if (yChange < 0)
+        if (yChange < 0)
+        {
+            for (int i = 0; i < -yChange; i++)
             {
-                for (int i = 0; i < -yChange; i++)
-                {
-                    DespawnCol(CurrentSector.y + i + LoadRadius);
-                }
+                DespawnCol(CurrentSector.y + i + LoadRadius);
             }
-            
-
+        }
     }
 
     public Coord ConvertToSectorSpace(WorldSpaceUnit unit, Coord location)
@@ -236,21 +252,6 @@ public class MapController : MonoBehaviour
 
     }
 
-
-    public static MapController GetMapController()
-    {
-        if (instance == null)
-        {
-            instance = new MapController();
-        }
-
-        return instance;
-    }
-
-    private MapController()
-    {
-        spawner = PrefabSpawner.GetPrefabSpawner();
-    }
 
 
     private void LoadLine(int[] csvLine, int height, int room)
