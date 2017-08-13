@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using UnityEngine;
 
-public class DestructibleObstacle : LivingEntity, IItemCase
+public class DestructibleObstacle : PersistentEntity, IItemCase
 {
     public ParticleSystem deathEffect;
     // List of items that may be spawned when the obstacle is destroyed dies

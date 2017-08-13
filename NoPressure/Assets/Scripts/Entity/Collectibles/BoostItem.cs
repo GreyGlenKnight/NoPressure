@@ -91,4 +91,9 @@ public class BoostItem: IInventoryItem {
     }
 
     public void AbortReload() {}
+
+    public List<ISkill> GetSkillsFromItem()
+    {
+        return null;
+    }
 }

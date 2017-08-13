@@ -5,39 +5,14 @@ using UnityEngine.AI;
 using Random = UnityEngine.Random;
 using System;
 
-public enum SpawnType
+public enum TilePosition { Wall, Room, Corridor };
+
+public enum PrefabType
 {
-    None = 0,
-    Wall = 1,
-    Player = 2,
-    Enemy = 3,
-    Obstacle = 4,
-
-    Pistol = 20,
-    Rifle = 21,
-    Carbine = 22,
-
-    Mine = 30,
-
-    Shield = 40,
-
-    MecanicalTools = 50,
-    ElectricalTools = 51,
-
-    PressureStation = 97,
-    BrokenPressureStation = 98,
-    ElectricTrap = 99,
-
-
+    Wall, None, Obstacle, Enemy, Player, Exit, Boss
 };
 
 public class BoardManager : MonoBehaviour {
-
-    public enum TilePosition { Wall, Room, Corridor };
-    public enum PrefabType
-    {
-        Wall, None, Obstacle, Enemy, Player, Exit, Boss
-    };
 
     public enum Direction
     {
@@ -49,6 +24,7 @@ public class BoardManager : MonoBehaviour {
         DebugOpenArea,
         RandomSmallRooms,
         FromFile,
+        FromFileMap,
     };
 
     public struct LevelPerams
@@ -100,6 +76,7 @@ public class BoardManager : MonoBehaviour {
     public Transform[] obstacleTiles;
     public Transform[] enemies;
     public Transform floorBoss;
+
     // GameObject that acts as a container for all other tiles.
     public static Transform boardHolder;
 
@@ -119,7 +96,7 @@ public class BoardManager : MonoBehaviour {
     List<Corridor> corridors;
     private Color enemyColor = Color.green;
     private List<Transform> NoSpawnTilesList;
-
+    
     public void SetupLevel(LevelPerams levelParams)
     {
         player = GameObject.FindGameObjectWithTag("Player");
@@ -140,7 +117,6 @@ public class BoardManager : MonoBehaviour {
         SetPlayerPosition();
         LayoutRoomObjects(levelParams);
         SetFloorBoss(levelParams.difficulty);
-
 
         // TODO: this should be moved to a method.
         // In that method, the GameManager also removes the loading screen set in
@@ -164,17 +140,63 @@ public class BoardManager : MonoBehaviour {
                 break;
             case LevelType.FromFile:
 
+
+            case LevelType.FromFileMap:
+
             default:
                 Debug.LogError("Leveltype not defined");
                 break;
         }
     }
 
+    public void SetUpLevel(LevelType lLeveltype, Coord levelNo)
+    {
+        //Debug.Log(lLeveltype);
+
+        leveltype = lLeveltype;
+
+        switch (leveltype)
+        {
+            case LevelType.DebugOpenArea:
+                SetupLevel(DebugOpenAreaParams);
+                break;
+
+            case LevelType.RandomSmallRooms:
+                SetupLevel(RandomSmallRoomsParams);
+                break;
+
+            case LevelType.FromFile:
+                loadLevelFromFile(levelNo.x * 10 + levelNo.y);
+                break;
+
+            case LevelType.FromFileMap:
+                loadLevelFromFileMap(new Coord(levelNo.x, levelNo.y ));
+                break;
+
+            default:
+                Debug.LogError("Leveltype not defined");
+                break;
+        }
+        GameManager.instance.loading = false;
+
+    }
+
+    // StartLocation is in unity units tile space
+    public void loadLevelFromFileMap(Coord startLocation)
+    {
+        MapController mapContoller = MapController.GetMapController();
+
+        mapContoller.LoadSectorIntoMemory(WorldSpaceUnit.Tile, startLocation);
+
+        PrefabSpawner.GetPrefabSpawner().MovePlayer(startLocation.x, startLocation.y);
+
+    }
+
     public void loadLevelFromFile(int levelNo)
     {
         int[] DilimLine;
         FileLoader fileLoader = new FileLoader();
-        string fileName = "Assets\\Levels\\" + levelNo.ToString() + ".csv";
+        string fileName = "Assets\\Levels\\Demo" + levelNo.ToString() + ".csv";
 
         if (fileLoader.load(fileName) == false)
         {
@@ -223,334 +245,311 @@ public class BoardManager : MonoBehaviour {
                 Debug.Log("currentLine: "+ currentLine+" exceeds Height: " + Height);
             else
             {
-                LoadLine(DilimLine, currentLine, levelNo);
+                Debug.Log("TODO reminder"); 
+                //TODO LoadLine(DilimLine, currentLine, levelNo);
             }
             DilimLine = fileLoader.getIntLineCommaDelim();//nth line of the file
         }
     }
 
-    private void LoadLine(int[] csvLine,int height, int room)
-    {
-        for (int i = 0; i < csvLine.Length; i++)
-        {
-            tileMap[i, height] = new TileInfo(new Coord(i, height), TilePosition.Room, PrefabType.None, room.ToString());
+    //private void LoadLine(int[] csvLine,int height, int room)
+    //{
+    //    for (int i = 0; i < csvLine.Length; i++)
+    //    {
+    //        tileMap[i, height] = new TileInfo(new Coord(i, height), TilePosition.Room, PrefabType.None, room.ToString());
 
+    //        switch ((SpawnType)csvLine[i])
+    //        {
+    //            case SpawnType.None:
+    //                CreateFloor(i, height);
+    //                break;
+    //            case SpawnType.Wall:
+    //                CreateWall(i, height);
+    //                break;
+    //            case SpawnType.Player:
+    //                MovePlayer(i, height);
+    //                break;
+    //            case SpawnType.Enemy:
+    //                CreateEnemy(i, height);
+    //                break;
+    //            case SpawnType.Obstacle:
+    //                CreateObstacle(i, height);
+    //                break;
+    //            case SpawnType.Pistol:
+    //                CreateCrate(i, height, SpawnType.Pistol);
+    //                break;
+    //            case SpawnType.Rifle:
+    //                CreateCrate(i, height, SpawnType.Rifle);
+    //                break;
+    //            case SpawnType.Carbine:
+    //                CreateCrate(i, height, SpawnType.Carbine);
+    //                break;
+    //            case SpawnType.Shield:
+    //                CreateCrate(i, height, SpawnType.Shield);
+    //                break;
+    //            case SpawnType.Mine:
+    //                CreateCrate(i, height, SpawnType.Mine);
+    //                break;
+    //            case SpawnType.MecanicalTools:
+    //                CreateCrate(i, height, SpawnType.MecanicalTools);
+    //                break;
+    //            case SpawnType.ElectricalTools:
+    //                CreateCrate(i, height, SpawnType.ElectricalTools);
+    //                break;
+    //            case SpawnType.PressureStation:
+    //                CreatePressureTile(i, height);
+    //                break;
+    //            case SpawnType.BrokenPressureStation:
+    //                CreateBrokenPressureStationTile(i, height);
+    //                break;
+    //            case SpawnType.ElectricTrap:
+    //                CreateElectricTrapTile(i, height);
+    //                break;
+    //            default:
+    //                Debug.Log("Invalid item spawn number: " + csvLine[i]);
+    //                break;
+    //        }
+    //    }
+    //}
 
-            switch ((SpawnType)csvLine[i])
-            {
-                case SpawnType.None:
-                    CreateFloor(i, height);
-                    break;
-                case SpawnType.Wall:
-                    CreateWall(i, height);
-                    break;
-                case SpawnType.Player:
-                    MovePlayer(i, height);
-                    break;
-                case SpawnType.Enemy:
-                    CreateEnemy(i, height);
-                    break;
-                case SpawnType.Obstacle:
-                    CreateObstacle(i, height);
-                    break;
-                case SpawnType.Pistol:
-                    CreateCrate(i, height, SpawnType.Pistol);
-                    break;
-                case SpawnType.Rifle:
-                    CreateCrate(i, height, SpawnType.Rifle);
-                    break;
-                case SpawnType.Carbine:
-                    CreateCrate(i, height, SpawnType.Carbine);
-                    break;
-                case SpawnType.Shield:
-                    CreateCrate(i, height, SpawnType.Shield);
-                    break;
-                case SpawnType.Mine:
-                    CreateCrate(i, height, SpawnType.Mine);
-                    break;
-                case SpawnType.MecanicalTools:
-                    CreateCrate(i, height, SpawnType.MecanicalTools);
-                    break;
-                case SpawnType.ElectricalTools:
-                    CreateCrate(i, height, SpawnType.ElectricalTools);
-                    break;
-                case SpawnType.PressureStation:
-                    CreatePressureTile(i, height);
-                    break;
-                case SpawnType.BrokenPressureStation:
-                    CreateBrokenPressureStationTile(i, height);
-                    break;
-                case SpawnType.ElectricTrap:
-                    CreateElectricTrapTile(i, height);
-                    break;
-                default:
-                    Debug.Log("Invalid item spawn number: " + csvLine[i]);
-                    break;
-            }
-        }
-    }
+    //public void RemoveCrateFromList(Transform CrateToRemove)
+    //{
+    //    NoSpawnTilesList.Remove(CrateToRemove);
+    //}
 
-    public void RemoveCrateFromList(Transform CrateToRemove)
-    {
-        NoSpawnTilesList.Remove(CrateToRemove);
-    }
+    //public void CreatePressureTile(int x, int z)
+    //{
+    //    if (PTSDTile == null)
+    //    {
+    //        PTSDTile = GameObject.Find("PressureStation").transform;
+    //        if (PTSDTile == null)
+    //        {
+    //            Debug.Log("Failed loading PTSDTile 2");
+    //            return;
+    //        }
+    //    }
 
-    public void CreatePressureTile(int x, int z)
-    {
-        if (PTSDTile == null)
-        {
-            PTSDTile = GameObject.Find("PressureStation").transform;
-            if (PTSDTile == null)
-            {
-                Debug.Log("Failed loading PTSDTile 2");
-                return;
-            }
-        }
-
-        Transform crateObject = Instantiate(PTSDTile, new Vector3(x, 0.2f, z), Quaternion.identity);
-        NoSpawnTilesList.Add(crateObject);
+    //    Transform crateObject = Instantiate(PTSDTile, new Vector3(x, 0.2f, z), Quaternion.identity);
+    //    NoSpawnTilesList.Add(crateObject);
         
-    }
+    //}
 
-    public void CreateBrokenPressureStationTile(int x, int z)
-    {
-        if (BrokenPressureStationTile == null)
-        {
-            BrokenPressureStationTile = GameObject.Find("BrokenPressureStation").transform;
-            if (BrokenPressureStationTile == null)
-            {
-                Debug.Log("Failed loading broken pressure stations 2");
-                return;
-            }
-        }
-        Transform crateObject = Instantiate(BrokenPressureStationTile, new Vector3(x, 0.2f, z), Quaternion.identity);
-        NoSpawnTilesList.Add(crateObject);
-    }
+    //public void CreateBrokenPressureStationTile(int x, int z)
+    //{
+    //    if (BrokenPressureStationTile == null)
+    //    {
+    //        BrokenPressureStationTile = GameObject.Find("BrokenPressureStation").transform;
+    //        if (BrokenPressureStationTile == null)
+    //        {
+    //            Debug.Log("Failed loading broken pressure stations 2");
+    //            return;
+    //        }
+    //    }
+    //    Transform crateObject = Instantiate(BrokenPressureStationTile, new Vector3(x, 0.2f, z), Quaternion.identity);
+    //    NoSpawnTilesList.Add(crateObject);
+    //}
 
-    public void CreateElectricTrapTile(int x, int z)
-    {
-        if (ElectricTrapTile == null)
-        {
-            ElectricTrapTile = GameObject.Find("ElectricTrap").transform;
-            if (ElectricTrapTile == null)
-            {
-                Debug.Log("Failed loading electric traps");
-                return;
-            }
-        }
-        Transform crateObject = Instantiate(ElectricTrapTile, new Vector3(x, 0.2f, z), Quaternion.identity);
-        NoSpawnTilesList.Add(crateObject);
-    }
+    //public void CreateElectricTrapTile(int x, int z)
+    //{
+    //    if (ElectricTrapTile == null)
+    //    {
+    //        ElectricTrapTile = GameObject.Find("ElectricTrap").transform;
+    //        if (ElectricTrapTile == null)
+    //        {
+    //            Debug.Log("Failed loading electric traps");
+    //            return;
+    //        }
+    //    }
+    //    Transform crateObject = Instantiate(ElectricTrapTile, new Vector3(x, 0.2f, z), Quaternion.identity);
+    //    NoSpawnTilesList.Add(crateObject);
+    //}
 
-    public bool CreateCrate(int x, int z, IInventoryItem contents)
-    {
-        if (CratePrefab == null)
-        {
-            CratePrefab = GameObject.Find("Crate").transform;
-            if (CratePrefab == null)
-            {
-                Debug.Log("Crate Prefab is null, assign in editor");
-                return false;
-            }
-        }
-        Vector2 SpawnLocation;
-        if (FindNearestEmptyTile(x, z, out SpawnLocation) == false)
-            return false;
+    //public bool CreateCrate(int x, int z, IInventoryItem contents)
+    //{
+    //    if (CratePrefab == null)
+    //    {
+    //        CratePrefab = GameObject.Find("Crate").transform;
+    //        if (CratePrefab == null)
+    //        {
+    //            Debug.Log("Crate Prefab is null, assign in editor");
+    //            return false;
+    //        }
+    //    }
+    //    Vector2 SpawnLocation;
+    //    if (FindNearestEmptyTile(x, z, out SpawnLocation) == false)
+    //        return false;
 
-        Transform crateObject = Instantiate(CratePrefab, new Vector3(SpawnLocation.x, 1, SpawnLocation.y), Quaternion.identity);
-        Crate newCrate = crateObject.GetComponent<Crate>();
-        if (newCrate == null)
-            Debug.LogError("new create item does not have crate component");
+    //    Transform crateObject = Instantiate(CratePrefab, new Vector3(SpawnLocation.x, 1, SpawnLocation.y), Quaternion.identity);
+    //    Crate newCrate = crateObject.GetComponent<Crate>();
+    //    if (newCrate == null)
+    //        Debug.LogError("new create item does not have crate component");
 
-        newCrate.SetCrateItem(contents);
+    //    newCrate.SetCrateItem(contents);
 
-        NoSpawnTilesList.Add(crateObject);
-        return true;
-    }
+    //    NoSpawnTilesList.Add(crateObject);
+    //    return true;
+    //}
 
-    public bool CreateCrate(int x, int z,SpawnType contents)
-    {
-        IInventoryItem itemToSpawn = ItemManager.SpawnItem(contents);
+    //public bool CreateCrate(int x, int z,SpawnType contents)
+    //{
+    //    IInventoryItem itemToSpawn = ItemManager.SpawnItem(contents);
 
-        if (itemToSpawn == null)
-        {
-            Debug.Log("can not find item type: " + contents);
-            return false;
-        }
-        return CreateCrate(x, z, ItemManager.SpawnItem(contents));
-    }
+    //    if (itemToSpawn == null)
+    //    {
+    //        Debug.Log("can not find item type: " + contents);
+    //        return false;
+    //    }
+    //    return CreateCrate(x, z, ItemManager.SpawnItem(contents));
+    //}
 
-    private bool FindNearestEmptyTile(int x, int z, out Vector2 emptyTile)
-    {
+    //private bool FindNearestEmptyTile(int x, int z, out Vector2 emptyTile)
+    //{
 
-        int xBoundHigh = x + 1;
-        int xBoundLow = x - 1;
-        int zBoundHigh = z + 1;
-        int zBoundLow = z - 1;
+    //    int xBoundHigh = x + 1;
+    //    int xBoundLow = x - 1;
+    //    int zBoundHigh = z + 1;
+    //    int zBoundLow = z - 1;
 
-        List<Vector2> closeNonEmptyTiles = new List<Vector2>();
+    //    List<Vector2> closeNonEmptyTiles = new List<Vector2>();
 
-        for (int i = 0; i < NoSpawnTilesList.Count; i++)
-        {
-            if (NoSpawnTilesList[i] == null)
-                NoSpawnTilesList.RemoveAt(i);
-            else
-            {
-                int tileX = (int)Math.Round(NoSpawnTilesList[i].position.x, 0);
-                int tileZ = (int)Math.Round(NoSpawnTilesList[i].position.z, 0);
-                if (tileX <= xBoundHigh && tileX >= xBoundLow)
-                {
-                    if (tileZ <= zBoundHigh && tileZ >= zBoundLow)
-                    {
-                        //Debug.Log(tileX + "," + tileZ);
-                        closeNonEmptyTiles.Add(new Vector2(tileX, tileZ));
-                    }
-                }
-            }
-        }
+    //    for (int i = 0; i < NoSpawnTilesList.Count; i++)
+    //    {
+    //        if (NoSpawnTilesList[i] == null)
+    //            NoSpawnTilesList.RemoveAt(i);
+    //        else
+    //        {
+    //            int tileX = (int)Math.Round(NoSpawnTilesList[i].position.x, 0);
+    //            int tileZ = (int)Math.Round(NoSpawnTilesList[i].position.z, 0);
+    //            if (tileX <= xBoundHigh && tileX >= xBoundLow)
+    //            {
+    //                if (tileZ <= zBoundHigh && tileZ >= zBoundLow)
+    //                {
+    //                    //Debug.Log(tileX + "," + tileZ);
+    //                    closeNonEmptyTiles.Add(new Vector2(tileX, tileZ));
+    //                }
+    //            }
+    //        }
+    //    }
 
-        if (!closeNonEmptyTiles.Contains(new Vector2(x, z)))
-        {
-            //Debug.Log("return "+x + "," + z);
-            emptyTile = new Vector2(x, z);
-            return true;
-        }
-        if (!closeNonEmptyTiles.Contains(new Vector2(x + 1, z)))
-        {
-            emptyTile = new Vector2(x + 1, z);
-            return true;
-        }
-        if (!closeNonEmptyTiles.Contains(new Vector2(x - 1, z)))
-        { 
-            emptyTile = new Vector2(x - 1, z);
-            return true;
-        }
-        if (!closeNonEmptyTiles.Contains(new Vector2(x, z+1)))
-        {
-            emptyTile = new Vector2(x, z + 1);
-            return true;
-        }
-        if (!closeNonEmptyTiles.Contains(new Vector2(x, z -1)))
-        { 
-            emptyTile = new Vector2(x, z - 1);
-            return true;
-        }
-        if (!closeNonEmptyTiles.Contains(new Vector2(x + 1, z + 1)))
-        {
-            emptyTile = new Vector2(x + 1, z + 1);
-            return true;
-        }
-        if (!closeNonEmptyTiles.Contains(new Vector2(x + 1, z - 1)))
-        {
-            emptyTile = new Vector2(x + 1, z - 1);
-            return true;
-        }
-        if (!closeNonEmptyTiles.Contains(new Vector2(x - 1, z + 1)))
-        {
-            emptyTile = new Vector2(x - 1, z + 1);
-            return true;
-        }
+    //    if (!closeNonEmptyTiles.Contains(new Vector2(x, z)))
+    //    {
+    //        //Debug.Log("return "+x + "," + z);
+    //        emptyTile = new Vector2(x, z);
+    //        return true;
+    //    }
+    //    if (!closeNonEmptyTiles.Contains(new Vector2(x + 1, z)))
+    //    {
+    //        emptyTile = new Vector2(x + 1, z);
+    //        return true;
+    //    }
+    //    if (!closeNonEmptyTiles.Contains(new Vector2(x - 1, z)))
+    //    { 
+    //        emptyTile = new Vector2(x - 1, z);
+    //        return true;
+    //    }
+    //    if (!closeNonEmptyTiles.Contains(new Vector2(x, z+1)))
+    //    {
+    //        emptyTile = new Vector2(x, z + 1);
+    //        return true;
+    //    }
+    //    if (!closeNonEmptyTiles.Contains(new Vector2(x, z -1)))
+    //    { 
+    //        emptyTile = new Vector2(x, z - 1);
+    //        return true;
+    //    }
+    //    if (!closeNonEmptyTiles.Contains(new Vector2(x + 1, z + 1)))
+    //    {
+    //        emptyTile = new Vector2(x + 1, z + 1);
+    //        return true;
+    //    }
+    //    if (!closeNonEmptyTiles.Contains(new Vector2(x + 1, z - 1)))
+    //    {
+    //        emptyTile = new Vector2(x + 1, z - 1);
+    //        return true;
+    //    }
+    //    if (!closeNonEmptyTiles.Contains(new Vector2(x - 1, z + 1)))
+    //    {
+    //        emptyTile = new Vector2(x - 1, z + 1);
+    //        return true;
+    //    }
 
-        if (!closeNonEmptyTiles.Contains(new Vector2(x - 1, z - 1)))
-        {
-            emptyTile = new Vector2(x - 1, z - 1);
-            return true;
-        }
+    //    if (!closeNonEmptyTiles.Contains(new Vector2(x - 1, z - 1)))
+    //    {
+    //        emptyTile = new Vector2(x - 1, z - 1);
+    //        return true;
+    //    }
     
 
-        Debug.Log("no nearby tiles found, failed spawning item");
-        emptyTile = new Vector2(x+3, z);
-        return false;
-    }
+    //    Debug.Log("no nearby tiles found, failed spawning item");
+    //    emptyTile = new Vector2(x+3, z);
+    //    return false;
+    //}
 
-    public void MovePlayer(int x, int z)
-    {
-        //Room startRoom = rooms.First();
-        //Vector3 playerPos = new Vector3(startRoom.bottom_left_x + 1, 1, startRoom.bottom_left_y + 1);
-        //player.transform.position = playerPos;
+    //public void MovePlayer(int x, int z)
+    //{
+    //    //Room startRoom = rooms.First();
+    //    //Vector3 playerPos = new Vector3(startRoom.bottom_left_x + 1, 1, startRoom.bottom_left_y + 1);
+    //    //player.transform.position = playerPos;
 
-        //TODO find player and move him to this location
-        GameObject player = GameObject.FindGameObjectWithTag("Player");
+    //    //TODO find player and move him to this location
+    //    GameObject player = GameObject.FindGameObjectWithTag("Player");
 
-        player.transform.position = new Vector3(x,1,z);
-    }
+    //    player.transform.position = new Vector3(x,1,z);
+    //}
 
-    public void CreateObstacle(int x, int z)
-    {
-        //TileInfo obstacleTileInfo = roomSlots.Dequeue();
-        //obstacleTileInfo.prefabType = PrefabType.Obstacle;
-        Transform obstaclePrefab = GameObject.Find("DestructibleObstacle").transform;
-        //Transform obstaclePrefab = obstacleTiles[Random.Range(0, obstacleTiles.Length - 1)];
-        Transform newObstacle = Instantiate(obstaclePrefab, new Vector3(x, 1, z), Quaternion.identity);
-        NoSpawnTilesList.Add(newObstacle);
+    //public void CreateObstacle(int x, int z)
+    //{
+    //    //TileInfo obstacleTileInfo = roomSlots.Dequeue();
+    //    //obstacleTileInfo.prefabType = PrefabType.Obstacle;
+    //    Transform obstaclePrefab = GameObject.Find("DestructibleObstacle").transform;
+    //    //Transform obstaclePrefab = obstacleTiles[Random.Range(0, obstacleTiles.Length - 1)];
+    //    Transform newObstacle = Instantiate(obstaclePrefab, new Vector3(x, 1, z), Quaternion.identity);
+    //    NoSpawnTilesList.Add(newObstacle);
 
-    }
-    private void CreateFloor(int x, int z)
-    {
-        if (boardHolder == null)
-            boardHolder = new GameObject().transform;
-
-
-        Transform floorPrefab = GameObject.Find("Floor").transform;
-        //Transform floorPrefab = floorTiles[Random.Range(0, floorTiles.Length - 1)];
-        Transform floorTile = Instantiate(floorPrefab, new Vector3(x, -.25f, z), Quaternion.identity);
-        floorTile.parent = boardHolder;
-    }
-
-    public void CreateWall(int x, int z)
-    {
-        if (boardHolder == null)
-            boardHolder = new GameObject().transform;
-
-        // TileInfo wallTileInfo = roomSlots.Dequeue();
-        //wallTileInfo.prefabType = PrefabType.Wall;
-        //Transform wallPrefab = wallTiles[Random.Range(0, wallTiles.Length - 1)];
-        Transform wallPrefab = GameObject.Find("Wall").transform;
-        Transform wallTile = Instantiate(wallPrefab, new Vector3(x, 1, z), Quaternion.identity);
-        wallTile.parent = boardHolder;
+    //}
+    //private void CreateFloor(int x, int z)
+    //{
+    //    if (boardHolder == null)
+    //        boardHolder = new GameObject().transform;
 
 
-        NoSpawnTilesList.Add(wallTile);
-    }
+    //    Transform floorPrefab = GameObject.Find("Floor").transform;
+    //    //Transform floorPrefab = floorTiles[Random.Range(0, floorTiles.Length - 1)];
+    //    Transform floorTile = Instantiate(floorPrefab, new Vector3(x, -.25f, z), Quaternion.identity);
+    //    floorTile.parent = boardHolder;
+    //}
 
-    public void CreateEnemy(int x, int z)
-    {
-        //TileInfo enemyTileInfo = roomSlots.Dequeue();
-        //enemyTileInfo.prefabType = PrefabType.Enemy;
-        Transform enemyPrefab = enemies[Random.Range(0, enemies.Length - 1)];
-        Transform enemy = Instantiate(enemyPrefab, new Vector3(x, 1, z), Quaternion.identity);
+    //public void CreateWall(int x, int z)
+    //{
+    //    if (boardHolder == null)
+    //        boardHolder = new GameObject().transform;
 
-        int enemyHealth = 5;
-        int enemyDamage = 1;
+    //    // TileInfo wallTileInfo = roomSlots.Dequeue();
+    //    //wallTileInfo.prefabType = PrefabType.Wall;
+    //    //Transform wallPrefab = wallTiles[Random.Range(0, wallTiles.Length - 1)];
+    //    Transform wallPrefab = GameObject.Find("Wall").transform;
+    //    Transform wallTile = Instantiate(wallPrefab, new Vector3(x, 1, z), Quaternion.identity);
+    //    wallTile.parent = boardHolder;
 
-        enemy.GetComponent<Enemy>().SetUpEnemy(enemyHealth, enemyDamage, enemyColor, 1, 2);
 
-    }
+    //    NoSpawnTilesList.Add(wallTile);
+    //}
 
-    public void SetUpLevel(LevelType lLeveltype,int levelNo)
-    {
-        //Debug.Log(lLeveltype);
+    //public void CreateEnemy(int x, int z)
+    //{
+    //    //TileInfo enemyTileInfo = roomSlots.Dequeue();
+    //    //enemyTileInfo.prefabType = PrefabType.Enemy;
+    //    Transform enemyPrefab = enemies[Random.Range(0, enemies.Length - 1)];
+    //    Transform enemy = Instantiate(enemyPrefab, new Vector3(x, 1, z), Quaternion.identity);
 
-        leveltype = lLeveltype;
+    //    int enemyHealth = 5;
+    //    int enemyDamage = 1;
 
-        switch (leveltype)
-        {
-            case LevelType.DebugOpenArea:
-                SetupLevel(DebugOpenAreaParams);
-                break;
-            case LevelType.RandomSmallRooms:
-                SetupLevel(RandomSmallRoomsParams);
-                break;
-            case LevelType.FromFile:
-                loadLevelFromFile(levelNo);
-                break;
-            default:
-                Debug.LogError("Leveltype not defined");
-                break;
-        }
-        GameManager.instance.loading = false;
+    //    enemy.GetComponent<Enemy>().SetUpEnemy(enemyHealth, enemyDamage, enemyColor, 1, 2);
 
-    }
+    //}
+
+
 
     public void DestroyLevel()
     {

@@ -22,4 +22,29 @@ public struct Coord
     {
         return !(c1 == c2);
     }
+
+    public override string ToString()
+    {
+        return x.ToString() + "," + y.ToString();
+    }
+
+    public string ToString(string Seperator)
+    {
+        return x.ToString() + Seperator + y.ToString();
+    }
+
+    public override bool Equals(object obj)
+    {
+        return base.Equals(obj);
+    }
+
+    public bool Equals(Coord obj)
+    {
+        return this == obj;
+    }
+
+    public override int GetHashCode()
+    {
+        return base.GetHashCode();
+    }
 }

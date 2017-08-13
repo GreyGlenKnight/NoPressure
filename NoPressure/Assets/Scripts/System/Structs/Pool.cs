@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using System;
 
 // Consumeable resource types that can refill the charges of items
 public enum ResourceType
@@ -114,11 +115,49 @@ public class Pool
 
     public static bool operator ==(Pool lPool, float lAmount)
     {
+        if (object.ReferenceEquals(lPool, null))
+        {
+
+            return false;
+
+        }
+
         return lPool.mValue == lAmount;
     }
     public static bool operator !=(Pool lPool, float lAmount)
     {
+        if (object.ReferenceEquals(lPool, null))
+        {
+            return true;
+        }
+
         return lPool.mValue != lAmount;
+    }
+
+    public static bool operator ==(Pool lPool, Pool lPool2)
+    {
+        if (object.ReferenceEquals(lPool, null))
+        {
+            if (object.ReferenceEquals(lPool2, null))
+                return true;
+            else
+                return false;
+        }
+
+        return lPool.mValue == lPool2.mValue;
+    }
+    public static bool operator !=(Pool lPool, Pool lPool2)
+    {
+
+        if (object.ReferenceEquals(lPool, null))
+        {
+            if (object.ReferenceEquals(lPool2, null))
+                return false;
+            else
+                return true;
+        }
+
+        return lPool.mValue != lPool2.mValue;
     }
 
     public override bool Equals(object obj)
@@ -143,7 +182,7 @@ public class Pool
 
     public override string ToString()
     {
-        return mValue + " / " + mCapacity;
+        return Math.Round(mValue, 2) + " / " + Math.Round(mCapacity, 2);
     }
 
     public static implicit operator float(Pool lPool)  
@@ -234,6 +273,7 @@ public class ResourcePool : Pool
 
     public static ResourcePool operator -(ResourcePool lResourcePool, float lAmount)
     {
+        //Debug.Log("" + lResourcePool.mValue + " - " + lAmount);  
         lResourcePool.Add(-lAmount);
         return lResourcePool;
     }
@@ -280,6 +320,17 @@ public class ResourcePool : Pool
 
     public static bool operator ==(ResourcePool lResourcePool, ResourcePool lResourcePool2)
     {
+        if (object.ReferenceEquals(lResourcePool, null))
+        {
+            if (object.ReferenceEquals(lResourcePool2, null))
+                return true;
+            else
+                return false;
+        }
+
+        if (lResourcePool2 == null)
+            return false;
+
         if (lResourcePool.mResourceType != lResourcePool2.mResourceType)
         {
             Debug.Log("Warning, Trying to compare two different resource types");
@@ -290,6 +341,17 @@ public class ResourcePool : Pool
 
     public static bool operator !=(ResourcePool lResourcePool, ResourcePool lResourcePool2)
     {
+        if (object.ReferenceEquals(lResourcePool,null))
+        {
+            if (object.ReferenceEquals(lResourcePool2, null))
+                return false;
+            else
+                return true;
+        }
+
+        if (lResourcePool2 == null)
+            return true;
+
         if (lResourcePool.mResourceType != lResourcePool2.mResourceType)
         {
             Debug.Log("Warning, Trying to compare two different resource types");
@@ -315,7 +377,7 @@ public class ResourcePool : Pool
 
     public bool Equals(ResourcePool lResourcePool2) 
     {
-        return (this == lResourcePool2);
+        return (this.Equals(lResourcePool2));
     }
 
     public override int GetHashCode()
@@ -325,7 +387,7 @@ public class ResourcePool : Pool
 
     public override string ToString()
     {
-        return mResourceType + ": " + mValue + " / " + mCapacity;
+        return Math.Round(mValue, 2) + " / " + Math.Round(mCapacity,2);
     }
 
     public static implicit operator float(ResourcePool d)

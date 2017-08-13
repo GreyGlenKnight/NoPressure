@@ -17,11 +17,41 @@ public class Inventory {
     int InventoryCount = 0;
     int CurentlySelected = 0;
 
-    bool mHasFixPressureSkill
+    public bool mHasFixPressureSkill
     {
         get
         {
-            return true;
+            if (GetSelectionItem() == null)
+                return false;
+
+            List<ISkill> skills = GetSelectionItem().GetSkillsFromItem();
+            if (skills != null)
+            {
+                if (skills[0].mName.Equals("OpenVent"))
+                {
+                    return true;
+                }
+            }
+            return false;
+        }
+    }
+
+    public bool mHasDisableTrapSkill
+    {
+        get
+        {
+            if (GetSelectionItem() == null)
+                return false;
+
+            List<ISkill> skills = GetSelectionItem().GetSkillsFromItem();
+            if (skills != null)
+            {
+                if (skills[0].mName.Equals("DisableTrap"))
+                {
+                    return true;
+                }
+            }
+            return false;
         }
     }
 
@@ -63,9 +93,51 @@ public class Inventory {
         }
     }
 
+    public string DisplayChargesForItem(int index)
+    {
+        if (inventory[index] == null)
+        {
+            return "";
+        }
+
+        if (inventory[index].mCharges == null)
+        {
+            return "";
+        }
+
+        ResourcePool pool = getResource(inventory[index].mCharges.mResourceType);
+
+        return inventory[index].mCharges.mValue + " / " + pool.mValue;
+    }
+
     public void ReloadEquipedWeapon()
     {
+        IInventoryItem currentItem = GetSelectionItem();
+        if (currentItem == null)
+            return;
 
+        ResourceType reloadWithResource = currentItem.mCharges.mResourceType;
+        ResourcePool resource = getResource(reloadWithResource);
+
+        currentItem.Reload(resource);
+    }
+
+    public ResourcePool getResource(ResourceType resourceType)
+    {
+        switch (resourceType)
+        {
+            case ResourceType.EnergyCell:
+                return mEnergyCells;
+            case ResourceType.Explosive:
+                return mExplosives;
+            case ResourceType.MassDriver:
+                return mMassDriverAmmo;
+            case ResourceType.Parts:
+                return mParts;
+            default:
+                Debug.Log("Player does not know Resource: " + resourceType);
+                return null;
+        }
     }
 
     public int getInventoryCap()

@@ -14,6 +14,8 @@ public class ToolsItem : IInventoryItem {
         RepairConsole,//Elc
     }
 
+    public List<ISkill> ItemSkills;
+
     // The display icon of the item
     public Sprite mDisplaySprite { get; protected set; }
 
@@ -39,6 +41,18 @@ public class ToolsItem : IInventoryItem {
     {
         toolActionList = lToolActions;
         mDisplaySprite = lDisplaySprite;
+        ItemSkills = new List<ISkill>();
+
+        if (toolActionList.Contains(ToolActions.OpenVent))
+        {
+            ItemSkills.Add(new ActionSkill("OpenVent", 1));
+        }
+        if (toolActionList.Contains(ToolActions.DisableTrap))
+        {
+            ItemSkills.Add(new ActionSkill("DisableTrap", 2));
+        }
+
+
     }
 
     public void Select(Transform lEquipedBy)
@@ -53,16 +67,6 @@ public class ToolsItem : IInventoryItem {
             return;
         }
 
-        if (toolActionList.Contains(ToolActions.OpenVent))
-        {
-            //player.mHasFixPressureSkill = true;
-            Debug.Log("player gained Fix pressure station skill");
-        }
-        if (toolActionList.Contains(ToolActions.DisableTrap))
-        {
-            //player.mHasDisableTrapSkill = true;
-            Debug.Log("player gained disable trap skill");
-        }
         //Functionality to display gun on character when selected
     }
 
@@ -77,16 +81,7 @@ public class ToolsItem : IInventoryItem {
         {
             return;
         }
-        Player player = mEquipedBy.GetComponent<Player>();
 
-        if (toolActionList.Contains(ToolActions.OpenVent)) ;
-            //player.mHasFixPressureSkill = false;
-            //TODo FIX
-
-        if (toolActionList.Contains(ToolActions.DisableTrap))
-            player.mHasDisableTrapSkill = false;
-
-        mEquipedBy = null;
     }
     public void AbortUse()
     {
@@ -101,6 +96,11 @@ public class ToolsItem : IInventoryItem {
     public void AbortReload()
     {
 
+    }
+
+    public List<ISkill> GetSkillsFromItem()
+    {
+        return ItemSkills;
     }
 
 }

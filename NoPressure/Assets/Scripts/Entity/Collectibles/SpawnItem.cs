@@ -60,4 +60,9 @@ public class SpawnItem : IInventoryItem {
 
     }
 
+    public List<ISkill> GetSkillsFromItem()
+    {
+        return null;
+    }
+
 }

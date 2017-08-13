@@ -4,7 +4,8 @@ using System.Collections.Generic;
 using UnityEngine.UI;
 using System;
 
-public class Player : LivingEntity {
+public class Player : MovingEntity
+{
 
     Rigidbody rb;
     // Player Condition
@@ -27,12 +28,11 @@ public class Player : LivingEntity {
     ColorBlock mUnselectedColorBlock = new ColorBlock();
     ColorBlock mSelectedColorBlock;
 
-    //public bool mHasFixPressureSkill { get; set; }
-    //public bool mHasDisableTrapSkill { get; set; }
+    // Cheats
+    bool mGodMode = true;
 
     private void Awake()
     {
-        Debug.Log("Player Awake");
     }
 
     protected override void Start()
@@ -80,11 +80,13 @@ public class Player : LivingEntity {
                 mNearbyCrates.Remove(mNearbyCrates[i]);
             }
         }
-
-        // Because Inventoryitems are not not mono objects and have no update, we need
-        // to call a custom update on them to keep track of cooldown timers like
-        // fire rate and reload speed.
-        
+        // God mode for debugging
+        if (mGodMode == true)
+        {
+            mShield += 10;
+            mHealth += 10;
+            mPressure += 10;
+        }
 
         UpdateGUIText();
     }
@@ -93,35 +95,6 @@ public class Player : LivingEntity {
     {
         base.TakeDamage(damage);
     }
-
-
-    //public void changeShield(int amount)
-    //{
-    //    mShield += amount;
-
-    //    if (mShield > mMaxShield)
-    //    {
-    //        mShield = mMaxShield;
-    //    }
-    //    if (mShield < 0)
-    //    {
-    //        mShield = 0;
-    //    }
-    //}
-
-    //public void changePressure(float amount)
-    //{
-    //    mPressure += amount;
-
-    //    if(mPressure > mMaxPressure)
-    //    {
-    //        mPressure = mMaxPressure;
-    //    }
-    //    if (mPressure < 0)
-    //    {
-    //        Die();
-    //    }
-    //}
 
     private void FixedUpdate()
     {
@@ -150,8 +123,6 @@ public class Player : LivingEntity {
     public void UpdateGUIText()
     {
         string HUDstring = "";
-        int maxPressure = (int)Math.Round(mPressure , 0);
-        int pressure = (int)Math.Round(mPressure, 0);
 
         HUDstring = "Player HUD \n";
         HUDstring += mPressure + "\n";
@@ -172,7 +143,7 @@ public class Player : LivingEntity {
         
         // Try to spawn the item on the ground, is sucessfull
         // remove the item from our inventory
-        if (BoardManager.getBoardManager().CreateCrate(
+        if (PrefabSpawner.GetPrefabSpawner().CreateCrate(
             (int)Math.Round(transform.position.x,0), 
             (int)Math.Round(transform.position.z,0),
             mInventory.GetSelectionItem()) == true)
@@ -286,13 +257,16 @@ public class Player : LivingEntity {
         for (int i = 0; i < pInventoryDisplay.Count; i++)
         {
             string displayChargesText = "";
-            IInventoryItem inventoryItem = mInventory.getItemAt(i);
+            displayChargesText += mInventory.DisplayChargesForItem(i);
 
-            if (inventoryItem != null)
-            {
-                ResourcePool charges = mInventory.getItemAt(i).mCharges;
-                displayChargesText += charges;
-            }
+            
+            //IInventoryItem inventoryItem = mInventory.getItemAt(i);
+
+            //if (inventoryItem != null)
+            //{
+            //    ResourcePool charges = mInventory.getItemAt(i).mCharges;
+                
+            //}
             pInventoryDisplay[i].Find("TxtUses").GetComponent<Text>().text = displayChargesText;
         }
     }
@@ -384,14 +358,7 @@ public class Player : LivingEntity {
     // Press/Hold the reload button
     public void Reload()
     {
-        IInventoryItem currentItem = mInventory.GetSelectionItem();
-        if (currentItem == null)
-            return;
-
-        ResourceType reloadWithResource = currentItem.mCharges.mResourceType;
-        ResourcePool resource = getResource(reloadWithResource);
-
-        currentItem.Reload(resource);
+        mInventory.ReloadEquipedWeapon();
 
         //setResource(reloadWithResource,resourceRemain);
         UpdateResourceInGUI();
@@ -450,7 +417,4 @@ public class Player : LivingEntity {
         mSelectedColorBlock.highlightedColor = pSelectedColor;
         mSelectedColorBlock.colorMultiplier = 1;
     }
-
-
-
 }

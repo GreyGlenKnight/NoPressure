@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class Crate : MonoBehaviour {
+public class Crate : PersistentEntity {
 
     public static List<IInventoryItem> RandomItemSpawn = new List<IInventoryItem>();
     public static void addRandomItemToSpawn(IInventoryItem addItem)
@@ -60,7 +60,8 @@ public class Crate : MonoBehaviour {
 
     public void Remove()
     {
-        BoardManager.getBoardManager().RemoveCrateFromList(transform);
+        Debug.Log("Reminder for TODO");
+        //TODO BoardManager.getBoardManager().RemoveCrateFromList(transform);
         Destroy(gameObject);
     }
 
@@ -69,7 +70,6 @@ public class Crate : MonoBehaviour {
     {
         if (permissibleTags.Contains(collider.tag))
         {
-            Debug.Log("Detect Coll on player");
             ButtonClone.gameObject.SetActive(true);
             Player player = collider.GetComponent<Player>();
             //Add to nearby Items list

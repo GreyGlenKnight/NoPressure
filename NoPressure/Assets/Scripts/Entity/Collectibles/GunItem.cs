@@ -140,9 +140,8 @@ public class GunItem : IInventoryItem {
         }
 
         // There is no need to reload because we have a full clip
-        if (mCharges.IsFull() == false)
+        if (mCharges.IsFull() == true)
         {
-            Debug.Log("Full clip");
             return false;
         }
 
@@ -238,7 +237,6 @@ public class GunItem : IInventoryItem {
     {
         if (mCharges == 0)
         {
-            Debug.Log("Out of ammo in clip");
             return;
         }
         LayerMask CollisionMask = LayerMask.GetMask(new string[] {"Entity", "Obstacle" });
@@ -265,5 +263,10 @@ public class GunItem : IInventoryItem {
         // Cause damage to the target
         damageableObject.TakeHit(mDamage, hitPoint, mEquipedBy.forward);
         return true;
+    }
+
+    public List<ISkill> GetSkillsFromItem()
+    {
+        return null;
     }
 }

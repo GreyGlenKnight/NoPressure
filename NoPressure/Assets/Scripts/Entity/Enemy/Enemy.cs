@@ -4,7 +4,7 @@ using UnityEngine;
 using UnityEngine.AI;
 
 [RequireComponent( typeof(NavMeshAgent))]
-public class Enemy : LivingEntity, IItemCase {
+public class Enemy : MovingEntity, IItemCase {
 
     public float rangeOfSight; // how far the Enemy can see
     public float rangeOfAttack; // how far the Enemy can attack
@@ -28,7 +28,7 @@ public class Enemy : LivingEntity, IItemCase {
     private NavMeshAgent navMeshAgent;
     private FloorBoss bossBehaviour;
     Transform target;
-    LivingEntity targetEntity;
+    PersistentEntity targetEntity;
     bool hasTarget;
 
     float collisionRadius;
@@ -56,7 +56,7 @@ public class Enemy : LivingEntity, IItemCase {
 
             // Get a reference to the Player
             target = GameObject.FindGameObjectWithTag("Player").transform;
-            targetEntity = target.GetComponent<LivingEntity>();
+            targetEntity = target.GetComponent<PersistentEntity>();
 
             // The Player and Enemy should collide on their surfaces and not their centres.
             collisionRadius = GetComponent<CapsuleCollider>().radius;
@@ -172,7 +172,7 @@ public class Enemy : LivingEntity, IItemCase {
                     Vector3 dirToTarget = (target.position - transform.position).normalized;
                     Vector3 targetPos = target.position - dirToTarget * (collisionRadius + targetCollisionRadius);
 
-                    navMeshAgent.SetDestination(targetPos);
+                    //navMeshAgent.SetDestination(targetPos);
                 }  
             } else
             {
@@ -209,7 +209,7 @@ public class Enemy : LivingEntity, IItemCase {
             newProjectile.SetSpeed(attackSpeed);
 
             currentState = prevState;
-            navMeshAgent.enabled = true;
+            //navMeshAgent.enabled = true;
         }
     }
 
@@ -280,7 +280,7 @@ public class Enemy : LivingEntity, IItemCase {
     {
         Explode(deathEffect, transform.position);
         SpawnItems(deathItems);
-        bossBehaviour.SpawnExit(transform.position);
+        //bossBehaviour.SpawnExit(transform.position);
         base.Die();
     }
 }

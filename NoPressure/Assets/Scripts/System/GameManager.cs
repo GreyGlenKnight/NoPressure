@@ -39,6 +39,12 @@ public class GameManager : MonoBehaviour
         player.mOnDeathHandler += GameOver;
     }
 
+    private void Start()
+    {
+        Debug.Log("Game Start");
+        boardScript.SetUpLevel(BoardManager.LevelType.FromFileMap, new Coord(45, 85));
+    }
+
     void OnLevelFinishedLoading(Scene scene, LoadSceneMode mode)
     {
         if (scene.name == "Game")
@@ -47,9 +53,11 @@ public class GameManager : MonoBehaviour
             level++;
             loading = true;
 
+
+            Debug.Log("Scene");
             // TODO: show a loading banner here
             //boardScript.SetUpLevel(BoardManager.LevelType.DebugOpenArea);
-            boardScript.SetUpLevel(BoardManager.LevelType.FromFile, 12);
+            //boardScript.SetUpLevel(BoardManager.LevelType.FromFileMap, new Coord(1,2));
         }
     }
     private void OnEnable()
