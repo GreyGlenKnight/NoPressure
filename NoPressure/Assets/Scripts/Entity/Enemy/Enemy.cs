@@ -100,10 +100,12 @@ public class Enemy : MovingEntity, IItemCase {
         originalColor = enemyColor;
     }
 
-    private void Update()
+    protected override void Update()
     {
         if (GameManager.instance.loading)
             return;
+
+        base.Update();
 
         if (hasTarget)
         {
@@ -166,7 +168,7 @@ public class Enemy : MovingEntity, IItemCase {
                 // navMeshAgent does not.
                 if(!mDead)
                 {
-                    navMeshAgent.enabled = true;
+                    //navMeshAgent.enabled = true;
                     currentState = State.Chasing;
 
                     Vector3 dirToTarget = (target.position - transform.position).normalized;

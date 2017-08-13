@@ -203,8 +203,11 @@ public class BoardManager : MonoBehaviour {
             Debug.LogError("Failed to load file: " + fileName);
         }
 
-        if (fileLoader.getLineCommaDelim() != null);//step passed header line. it is not used by program
+        if (fileLoader.getLineCommaDelim() == null)//step passed header line. it is not used by program
+            Debug.LogError("Failure reading file for level " + levelNo.ToString());
+
         DilimLine = fileLoader.getIntLineCommaDelim();//Param line
+
         if (DilimLine == null)
             Debug.LogError("Failure reading file for level " + levelNo.ToString());
 

@@ -22,7 +22,7 @@ public class ControlsManager : MonoBehaviour {
     }
 
     public Player player;
-	private CameraController camera;
+	private CameraController mCamera;
 
 	Crosshair crosshair;
  	float lookSpeed = 20f; // turning speed for game controller
@@ -48,7 +48,7 @@ public class ControlsManager : MonoBehaviour {
 
     public void SetCameraController(CameraController lCamera)
     {
-        camera = lCamera;
+        mCamera = lCamera;
     }
 
 	private void controlPlayerMouseAndKeyboard()
@@ -72,10 +72,10 @@ public class ControlsManager : MonoBehaviour {
         // accurate position of the mouse cursor in the game world.
 
         // 1. Cast a ray from the camera through the mouse cursor's position
-        if (camera == null)
+        if (mCamera == null)
             Debug.Log("Camera is null");
         
-        Ray ray = camera.ScreenPointToRay(Input.mousePosition);
+        Ray ray = mCamera.ScreenPointToRay(Input.mousePosition);
         // 2. draw a plane that's perpendicular to the y-axis and passes through a point at the gun height.
         // this would be a plane just above the ground and slicing the player at gun height.
         Plane groundPlane = new Plane(Vector3.up, Vector3.up * 1); // 1 here represents the height of the gun

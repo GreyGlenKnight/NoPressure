@@ -334,8 +334,6 @@ public class MapNode
         SectorRowFloor2 = fileLoader.GetIntLineCommaDelim(SECTOR_TILE_SIZE, SECTOR_TILE_SIZE);
         SectorRowFloor3 = fileLoader.GetIntLineCommaDelim(SECTOR_TILE_SIZE, SECTOR_TILE_SIZE);
 
-        SpawnType[,] spawnsForSector;
-        FloorTiles[,] FloorForSector;
 
         for (int i = 0; i < 4; i++)
         {

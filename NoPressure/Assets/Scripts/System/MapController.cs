@@ -8,25 +8,37 @@ public class MapController : MonoBehaviour
     private static MapController instance;
 
     public Transform CameraFocus { get; set; }
-    const int LoadRadius = 1;// Max = 4 (64 sectors or 6400 tiles)
+    const int LoadRadius = 2;// Max = 4 (64 sectors or 6400 tiles)
     string levelName = "Demo";
 
     PrefabSpawner spawner;
 
     Coord CurrentSector;
 
-    float updateDelay = 1f;
+    float updateDelay = 0.25f;
     float updateCurrent = 0f;
 
     //Moveing2DimArray<MapSector>()
 
     //MapSector[,] LoadedSectors = new MapSector[LoadRadius, LoadRadius]; 
 
+    private void Start()
+    {
+        Debug.Log("LoadRadius: " + LoadRadius);
+        if (CameraFocus == null)
+        {
+            CameraFocus = GameObject.Find("Player").transform;
+            CurrentSector = new Coord((int)CameraFocus.position.x, (int)CameraFocus.position.z);
+        }
+    }
+
     private void Update()
     {
         if (CameraFocus == null)
+        {
             CameraFocus = GameObject.Find("Player").transform;
-
+            CurrentSector = new Coord((int)CameraFocus.position.x, (int) CameraFocus.position.z);
+        }
         if (CameraFocus == null)
             Debug.LogError("Can not find player");
 
@@ -34,13 +46,22 @@ public class MapController : MonoBehaviour
         if(updateCurrent >= updateDelay * 2 )
         {
             updateCurrent = 0;
-            DespawnSectors();
+            Coord focusSector = ConvertToSectorSpace(WorldSpaceUnit.Tile,
+                new Coord((int)CameraFocus.position.x, (int)CameraFocus.position.z));
+
+            if (focusSector != CurrentSector)
+            {
+                DespawnSectors(focusSector);
+                CurrentSector = focusSector;
+                LoadSectorIntoMemory(WorldSpaceUnit.Sector, CurrentSector);
+
+            }
         }
     }
 
     public void DespawnCol(int Col)
     {
-        DespawnRow(Col, 0, 10);
+        DespawnCol(Col, 0, 40);
     }
 
     public void DespawnCol(int Col, int LowerBound, int UpperBound)
@@ -55,7 +76,7 @@ public class MapController : MonoBehaviour
 
     public void DespawnRow(int Row)
     {
-        DespawnRow(Row, 0, 10);
+        DespawnRow(Row, 0, 40);
     }
 
     public void DespawnRow(int Row, int LowerBound, int UpperBound)
@@ -68,13 +89,10 @@ public class MapController : MonoBehaviour
         }
     }
 
-    public void DespawnSectors()
+    public void DespawnSectors(Coord focusSector)
     {
-        Coord focusSector = ConvertToSectorSpace(WorldSpaceUnit.Tile,
-            new Coord((int)CameraFocus.position.x, (int)CameraFocus.position.y));
 
-        if (focusSector != CurrentSector)
-        {
+
             int xChange = focusSector.x - CurrentSector.x;
 
             int yChange = focusSector.y - CurrentSector.y;
@@ -110,8 +128,8 @@ public class MapController : MonoBehaviour
                     DespawnCol(CurrentSector.y + i + LoadRadius);
                 }
             }
+            
 
-        }
     }
 
     public Coord ConvertToSectorSpace(WorldSpaceUnit unit, Coord location)
@@ -192,8 +210,8 @@ public class MapController : MonoBehaviour
 
         //Coord SectorInNode = GetMapNodeSectorFromWorldSpaceSector(SectorLocation);
 
-        for (int i = -LoadRadius; i< LoadRadius; i++)
-            for(int j = -LoadRadius; j< LoadRadius; j++)
+        for (int i = -LoadRadius; i<= LoadRadius; i++)
+            for(int j = -LoadRadius; j<= LoadRadius; j++)
             {
                 Coord SectorLocation = new Coord(StartSectorLocation.x + i, StartSectorLocation.y + j);
                 MapSector mapSector = GetSectorAt(WorldSpaceUnit.Sector, SectorLocation);
@@ -246,11 +264,5 @@ public class MapController : MonoBehaviour
             
         }
     }
-
-
-
-
-
-
 
 }

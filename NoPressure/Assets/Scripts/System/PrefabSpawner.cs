@@ -68,14 +68,14 @@ public class PrefabSpawner : MonoBehaviour {
         if (SpawnSector.pIsLoaded == true)
             return;
 
-        Debug.Log("spawning Sector: " + SectorLocation.ToString("_"));
+        //Debug.Log("spawning Sector: " + SectorLocation.ToString("_"));
         GameObject SectorContainer = GameObject.Find("Sector" + SectorLocation.ToString("_"));
 
         if (SectorContainer == null)
         {
             // Create Container
             SectorContainer = Instantiate(boardHolder.gameObject);
-            SectorContainer.name = "Sector" + SectorLocation.ToString("");
+            SectorContainer.name = "Sector" + SectorLocation.ToString("_");
         }
 
 
@@ -92,7 +92,6 @@ public class PrefabSpawner : MonoBehaviour {
                     entity.transform.parent = SectorContainer.transform;
                     entity.SetSpawnPoint(SpawnSector, new Coord(i, j));
                 }
-
             }
         }
 
@@ -103,12 +102,13 @@ public class PrefabSpawner : MonoBehaviour {
     {
         if (SpawnSector == null)
             return;
-        Debug.Log("Despawning Sector: " + SectorLocation.ToString("_"));
+
         // Dont do anything if the sector was already despawned are was never spawned
         if (SpawnSector.pIsLoaded == false)
             return;
 
-        
+        //Debug.Log("Despawning Sector: " + SectorLocation.ToString("_"));
+
         GameObject SectorContainer = GameObject.Find("Sector" + SectorLocation.ToString("_"));
 
         List<Transform> childList = new List<Transform>();
@@ -120,8 +120,8 @@ public class PrefabSpawner : MonoBehaviour {
 
         for (int i = 0; i< childList.Count; i++ )
         {
-            Debug.Log("Setting Stuff Inactive");
             childList[i].gameObject.SetActive(false);
+            Destroy(childList[i].gameObject);
         }
 
         SpawnSector.pIsLoaded = false;
@@ -424,9 +424,7 @@ public class PrefabSpawner : MonoBehaviour {
         if (boardHolder == null)
             boardHolder = new GameObject().transform;
 
-
         Transform floorPrefab = GameObject.Find("Floor").transform;
-
 
         //Transform floorPrefab = floorTiles[Random.Range(0, floorTiles.Length - 1)];
         Transform floorTile = Instantiate(floorPrefab, new Vector3(x, -.25f, z), Quaternion.identity);
@@ -470,7 +468,7 @@ public class PrefabSpawner : MonoBehaviour {
         //TileInfo enemyTileInfo = roomSlots.Dequeue();
         //enemyTileInfo.prefabType = PrefabType.Enemy;
         Transform enemyPrefab = enemies[UnityEngine.Random.Range(0, enemies.Length - 1)];
-        Transform enemy = Instantiate(enemyPrefab, new Vector3(x, 1, z), Quaternion.identity);
+        //Transform enemy = Instantiate(enemyPrefab, new Vector3(x, 1, z), Quaternion.identity);
 
         int enemyHealth = 5;
         int enemyDamage = 1;
@@ -478,8 +476,8 @@ public class PrefabSpawner : MonoBehaviour {
         Color enemyColor = Color.red;
 
         //enemy.GetComponent<Enemy>().SetUpEnemy(enemyHealth, enemyDamage, enemyColor, 1, 2);
-
-        return enemy.GetComponent<Enemy>();
+         
+        return null;// enemy.GetComponent<Enemy>();
     }
 
     public void DespawnObject(GameObject despawn)

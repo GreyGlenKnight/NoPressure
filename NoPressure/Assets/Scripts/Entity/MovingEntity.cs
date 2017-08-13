@@ -8,8 +8,8 @@ public class MovingEntity : PersistentEntity
     //TODO add Logic to use pathfinding
 
 	// Use this for initialization
-	void Start () {
-		
+	protected override void Start () {
+        base.Start();
 	}
 
     // Update is called once per frame

@@ -181,7 +181,9 @@ public class FileLoader
                 {
                     intEntries[i] = Convert.ToInt32(entries[i]);
                 }
+#pragma warning disable CS0168 // Variable is declared but never used
                 catch (Exception e)
+#pragma warning restore CS0168 // Variable is declared but never used
                 {
                     intEntries[i] = 0;
                 }
@@ -212,7 +214,9 @@ public class FileLoader
             theReader = new StreamReader(fs);
             return true;
         }
+#pragma warning disable CS0168 // Variable is declared but never used
         catch (FileNotFoundException e)
+#pragma warning restore CS0168 // Variable is declared but never used
         {
             //Debug.LogException(e);
             return false;
