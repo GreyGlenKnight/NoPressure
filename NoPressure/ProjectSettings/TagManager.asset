@@ -17,8 +17,8 @@ TagManager:
   - Player
   - Obstacle
   - Entity
-  - 
-  - 
+  - Ground
+  - Items
   - 
   - 
   - 
@@ -41,4 +41,7 @@ TagManager:
   m_SortingLayers:
   - name: Default
     uniqueID: 0
+    locked: 0
+  - name: GUI
+    uniqueID: 453594983
     locked: 0

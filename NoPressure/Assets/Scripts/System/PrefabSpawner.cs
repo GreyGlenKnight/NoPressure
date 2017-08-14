@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.AI;
 using System;
+using Pathfinding;
 
 public class PrefabSpawner : MonoBehaviour {
 
@@ -24,6 +25,8 @@ public class PrefabSpawner : MonoBehaviour {
 
     TileInfo[,] tileMap;
 
+    
+
     private void Awake()
     {
         // Ensure the instance is of the type GameManager
@@ -38,8 +41,6 @@ public class PrefabSpawner : MonoBehaviour {
 
         NoSpawnTilesList = new List<Transform>();
         boardHolder = transform.Find("BoardHolder").transform;
-        groundPlane = transform.Find("Ground").transform;
-        groundSurface = groundPlane.GetComponent<NavMeshSurface>();
     }
 
     public static PrefabSpawner GetPrefabSpawner()
@@ -408,6 +409,16 @@ public class PrefabSpawner : MonoBehaviour {
         Transform newObstacle = Instantiate(obstaclePrefab, new Vector3(x, 1, z), Quaternion.identity);
         NoSpawnTilesList.Add(newObstacle);
 
+        GraphUpdateObject GUO = new GraphUpdateObject();
+        GUO.bounds = new Bounds(new Vector3(x , 0.0f, z ), new Vector3(1.4f, 2f, 1.4f));
+        GUO.setWalkability = false;
+        GUO.modifyWalkability = true;
+
+
+
+
+        AstarPath.active.UpdateGraphs(GUO);
+
         PersistentEntity returnVal = newObstacle.GetComponent<DestructibleObstacle>();
 
         return returnVal;
@@ -451,6 +462,14 @@ public class PrefabSpawner : MonoBehaviour {
         Transform wallTile = Instantiate(wallPrefab, new Vector3(x, 1, z), Quaternion.identity);
         wallTile.parent = boardHolder;
 
+        //Debug.Log("Wall");
+
+        GraphUpdateObject GUO = new GraphUpdateObject();
+        GUO.bounds = new Bounds(new Vector3(x , 0.0f, z), new Vector3(1.4f, 2f, 1.4f));
+        GUO.setWalkability = false;
+        GUO.modifyWalkability = true;
+
+        AstarPath.active.UpdateGraphs(GUO);
 
         NoSpawnTilesList.Add(wallTile);
 
@@ -468,7 +487,7 @@ public class PrefabSpawner : MonoBehaviour {
         //TileInfo enemyTileInfo = roomSlots.Dequeue();
         //enemyTileInfo.prefabType = PrefabType.Enemy;
         Transform enemyPrefab = enemies[UnityEngine.Random.Range(0, enemies.Length - 1)];
-        Transform enemy = Instantiate(enemyPrefab, new Vector3(x, 1, z), Quaternion.identity);
+        Transform enemy = Instantiate(enemyPrefab, new Vector3(x-1, 0.8f, z), Quaternion.identity);
 
         int enemyHealth = 5;
         int enemyDamage = 1;
@@ -482,7 +501,22 @@ public class PrefabSpawner : MonoBehaviour {
 
     public void DespawnObject(GameObject despawn)
     {
+        
+        DestructibleObstacle obsticle= despawn.GetComponent<DestructibleObstacle>();
+        if (obsticle != null)
+        {
+            GraphUpdateObject GUO = new GraphUpdateObject();
+            GUO.bounds = new Bounds(
+                new Vector3(despawn.transform.position.x, 0.0f, despawn.transform.position.z), 
+                new Vector3(1.4f, 2f, 1.4f));
+            GUO.setWalkability = true;
+            GUO.modifyWalkability = true;
+            AstarPath.active.UpdateGraphs(GUO);
+        }
+
+        
         despawn.SetActive(false);
+        
     }
 
 

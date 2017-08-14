@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
 using UnityEngine.SceneManagement;
-
+using Pathfinding;
 
 public class GameManager : MonoBehaviour
 {
@@ -41,8 +41,33 @@ public class GameManager : MonoBehaviour
 
     private void Start()
     {
-        Debug.Log("Game Start 3");
-        boardScript.SetUpLevel(BoardManager.LevelType.FromFileMap, new Coord(53, 103));
+        Debug.Log("Game Start 5");
+        //AstarPath aStarPath = GameObject.Find("_A*").GetComponent<AstarPath>();
+        //AstarPath.active.Scan(aStarPath.graphs[0]);
+
+        //GridGraph gridGraph = new GridGraph();
+        //gridGraph.SetDimensions(40,40,1);
+
+        //NavGraph navGraph;
+
+        //navGraph = aStarPath.data.CreateGraph(gridGraph.GetType());
+
+        //gridGraph = (GridGraph) aStarPath.data.AddGraph(gridGraph.GetType());
+
+        //gridGraph.SetDimensions(40, 40,1);
+        //gridGraph.center = new Vector3 (39.5f,-0.1f, 39.5f);
+
+        //GridGraph moveGraph = (GridGraph)aStarPath.graphs[1];
+        //moveGraph.center = new Vector3(59.5f, -0.1f, 139.5f); 
+
+        //AstarPath.active.Scan(aStarPath.graphs[1]);
+
+        PathfindingManager pathfindingmanager = GetComponent<PathfindingManager>();
+        pathfindingmanager.Init(new Coord(1,2));
+
+
+        boardScript.SetUpLevel(BoardManager.LevelType.FromFileMap, new Coord(65, 115)); 
+
     }
 
     void OnLevelFinishedLoading(Scene scene, LoadSceneMode mode)

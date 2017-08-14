@@ -14,9 +14,14 @@ public class MapController : MonoBehaviour
     PrefabSpawner spawner;
 
     Coord CurrentSector;
+    Coord CurrentMapNode;
 
-    float updateDelay = 0.25f;
+    float updateDelay = 1f;
     float updateCurrent = 0f;
+
+    PathfindingManager pathfindingManager;
+
+    Map map;
 
     //Moveing2DimArray<MapSector>()
 
@@ -29,7 +34,6 @@ public class MapController : MonoBehaviour
         {
             instance = this;
         }
-
     }
 
     public static MapController GetMapController()
@@ -51,6 +55,9 @@ public class MapController : MonoBehaviour
             CameraFocus = GameObject.Find("Player").transform;
             CurrentSector = new Coord((int)CameraFocus.position.x, (int)CameraFocus.position.z);
         }
+
+        pathfindingManager = PathfindingManager.getPathfindingManager();
+        map = Map.getMap();
     }
 
     private void Update()
@@ -64,18 +71,40 @@ public class MapController : MonoBehaviour
             Debug.LogError("Can not find player");
 
         updateCurrent += Time.deltaTime;
-        if(updateCurrent >= updateDelay * 2 )
+        if(updateCurrent >= updateDelay )
         {
             updateCurrent = 0;
             Coord focusSector = ConvertToSectorSpace(WorldSpaceUnit.Tile,
                 new Coord((int)CameraFocus.position.x, (int)CameraFocus.position.z));
+
+            AstarPath aStarPath = GameObject.Find("_A*").GetComponent<AstarPath>();
+            AstarPath.active.ScanAsync(aStarPath.graphs[0]);
 
             if (focusSector != CurrentSector)
             {
                 DespawnSectors(focusSector);
                 CurrentSector = focusSector;
                 LoadSectorIntoMemory(WorldSpaceUnit.Sector, CurrentSector);
+
+                // Pathfinder mesh update
+                Coord NewMapNode = ConvertToMapNode(WorldSpaceUnit.Sector, CurrentSector);
+
+
+                if (NewMapNode.x > CurrentMapNode.x)
+                    pathfindingManager.MovePlayerMapNodeRight();
+                else if (NewMapNode.x < CurrentMapNode.x)
+                    pathfindingManager.MovePlayerMapNodeLeft();
+
+                if (NewMapNode.y > CurrentMapNode.y)
+                    pathfindingManager.MovePlayerMapNodeUp();
+                else if (NewMapNode.y < CurrentMapNode.y)
+                    pathfindingManager.MovePlayerMapNodeDown();
+
+                CurrentMapNode = NewMapNode;
+
             }
+
+
         }
     }
 
@@ -191,9 +220,8 @@ public class MapController : MonoBehaviour
 
     public MapSector GetSectorAt(WorldSpaceUnit unit, Coord location)
     {
-        Map map = Map.getMap();
         Coord SectorLocation = ConvertToSectorSpace(unit, location);
-
+        
         Coord MapNodLocation = ConvertToMapNode(WorldSpaceUnit.Sector, SectorLocation);
         MapNode mapNode = map.GetMapNodeAt(MapNodLocation, levelName);
         MapSector mapSector = null;
@@ -204,7 +232,6 @@ public class MapController : MonoBehaviour
         }
 
         return mapSector;
-
     }
 
     public Coord GetMapNodeSectorFromWorldSpaceSector(Coord location)
@@ -212,19 +239,21 @@ public class MapController : MonoBehaviour
         return new Coord(location.x % 4, location.y % 4);
     }
 
+    public void Init(WorldSpaceUnit unit, Coord location)
+    {
+        CurrentMapNode = ConvertToMapNode(unit, location);
+        CurrentSector = ConvertToMapNode(unit,location);
+
+        pathfindingManager.Init(CurrentSector);
+
+        LoadSectorIntoMemory( unit, location);
+
+    }
+
     public void LoadSectorIntoMemory(WorldSpaceUnit unit, Coord location)
     {
         // Convert everything into Sector units
         Coord StartSectorLocation = ConvertToSectorSpace(unit, location);
-
-        // we have the sector number, use that to get the Node
-        //Coord MapNode = ConvertToMapNode(unit, SectorLocation);
-
-        Map map = Map.getMap();
-
-        //MapNode mapNode = map.GetMapNodeAt(MapNode, levelName);
-
-        //Coord SectorInNode = GetMapNodeSectorFromWorldSpaceSector(SectorLocation);
 
         for (int i = -LoadRadius; i<= LoadRadius; i++)
             for(int j = -LoadRadius; j<= LoadRadius; j++)
@@ -237,32 +266,13 @@ public class MapController : MonoBehaviour
             }
         CurrentSector = location;
         //PrefabSpawner.GetPrefabSpawner().SpawnSector(mapSector, SectorLocation);
-
     }
-
-
-    public void MoveOrigon()
-    {
-        // Check if the current sector is loaded 
-
-
-        // if not, load it
-
-        // Check if all sectors in a radius of displayDistance
-
-    }
-
-
 
     private void LoadLine(int[] csvLine, int height, int room)
     {
         for (int i = 0; i < csvLine.Length; i++)
         {
-
             spawner.SpawnPrefab((SpawnType)csvLine[i], new Coord(i, height));
-
-            
-            
         }
     }
 

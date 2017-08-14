@@ -1,0 +1,220 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!1001 &100100000
+Prefab:
+  m_ObjectHideFlags: 1
+  serializedVersion: 2
+  m_Modification:
+    m_TransformParent: {fileID: 0}
+    m_Modifications: []
+    m_RemovedComponents: []
+  m_ParentPrefab: {fileID: 0}
+  m_RootGameObject: {fileID: 1491169282365106}
+  m_IsPrefabParent: 1
+--- !u!1 &1151021646318990
+GameObject:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  serializedVersion: 5
+  m_Component:
+  - component: {fileID: 4539459934587922}
+  m_Layer: 0
+  m_Name: BoardHolder
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!1 &1448764862428562
+GameObject:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  serializedVersion: 5
+  m_Component:
+  - component: {fileID: 4310281420793032}
+  m_Layer: 0
+  m_Name: GameObject
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!1 &1491169282365106
+GameObject:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  serializedVersion: 5
+  m_Component:
+  - component: {fileID: 4342698621100214}
+  - component: {fileID: 114413580884112494}
+  - component: {fileID: 114255227186555106}
+  - component: {fileID: 114531559706211388}
+  - component: {fileID: 114899026279267066}
+  - component: {fileID: 114269294232096384}
+  - component: {fileID: 114889750180552814}
+  - component: {fileID: 114477306271664936}
+  m_Layer: 0
+  m_Name: GameManager 1
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &4310281420793032
+Transform:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1448764862428562}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 4342698621100214}
+  m_RootOrder: 1
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!4 &4342698621100214
+Transform:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1491169282365106}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children:
+  - {fileID: 4539459934587922}
+  - {fileID: 4310281420793032}
+  m_Father: {fileID: 0}
+  m_RootOrder: 0
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!4 &4539459934587922
+Transform:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1151021646318990}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 4342698621100214}
+  m_RootOrder: 0
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &114255227186555106
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1491169282365106}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5f4b98eb736d78e4c9d60ea9a7dc8392, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  leveltype: 0
+  floorTiles:
+  - {fileID: 4695427047662516, guid: e1fb88d402dc2574da46849b1aa26bae, type: 2}
+  wallTiles:
+  - {fileID: 4890539369049032, guid: 3e8444c30a20af040a6ec89aa5607c31, type: 2}
+  obstacleTiles:
+  - {fileID: 4940294265528492, guid: 3c496983f6128e747889bfee8cb6b18d, type: 2}
+  enemies:
+  - {fileID: 4686440200016638, guid: fa299c509953a854d974eb9355351f57, type: 2}
+  floorBoss: {fileID: 4633411542954632, guid: f5b3ba201eb7950499aa3adfe72dc92f, type: 2}
+  CratePrefab: {fileID: 4475821844648902, guid: 54d43c3db34f74249a17b35b443eed00,
+    type: 2}
+  ElectricTrapTile: {fileID: 4010959192213430, guid: 89d6627be2a29e745a4a3809da7df4d0,
+    type: 2}
+  PTSDTile: {fileID: 0}
+  BrokenPressureStationTile: {fileID: 4472268347913608, guid: 818db38160c6baa40b1c6a00877ec13c,
+    type: 2}
+--- !u!114 &114269294232096384
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1491169282365106}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 47af3ada4dbddf24d987fb8b01118627, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  boardHolder: {fileID: 4539459934587922}
+  ElectricTrapTile: {fileID: 0}
+  PressureTile: {fileID: 0}
+  BrokenPressureStationTile: {fileID: 0}
+  CratePrefab: {fileID: 0}
+  enemies:
+  - {fileID: 4686440200016638, guid: fa299c509953a854d974eb9355351f57, type: 2}
+--- !u!114 &114413580884112494
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1491169282365106}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a1bf63dfa95914246b8ba556652f0ab8, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  level: 0
+  loading: 1
+  playerHealth: 0
+  playerXP: 0
+--- !u!114 &114477306271664936
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1491169282365106}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f995567196d35ac48b0562432665e07b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!114 &114531559706211388
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1491169282365106}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9bf80a651d21a254dae4d1339ce78f01, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  player: {fileID: 0}
+--- !u!114 &114889750180552814
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1491169282365106}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 64193f58bf5cf224587f5f4f9b82b21d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  ProjectilePrototype: {fileID: 114722131871964668, guid: c16712574f99d79419bc2d571755116e,
+    type: 2}
+--- !u!114 &114899026279267066
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1491169282365106}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 29c99e2c7a1bb704eaf95fc2e4fe7fff, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  Focus: {fileID: 0}
+  HUDDisplay: {fileID: 0}
+  xBoundMin: 0
+  xBoundMax: 100
+  zBoundMin: 0
+  zBoundMax: 100

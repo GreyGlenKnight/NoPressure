@@ -186,7 +186,7 @@ public class BoardManager : MonoBehaviour {
     {
         MapController mapContoller = MapController.GetMapController();
 
-        mapContoller.LoadSectorIntoMemory(WorldSpaceUnit.Tile, startLocation);
+        mapContoller.Init(WorldSpaceUnit.Tile, startLocation);
 
         PrefabSpawner.GetPrefabSpawner().MovePlayer(startLocation.x, startLocation.y);
 
@@ -632,8 +632,8 @@ public class BoardManager : MonoBehaviour {
 
         // There need to be checks here. The lines below assume the objects exist.
         boardHolder = transform.Find("BoardHolder").transform;
-        groundPlane = transform.Find("Ground").transform;
-        groundSurface = groundPlane.GetComponent<NavMeshSurface>();
+       // groundPlane = transform.Find("Ground").transform;
+        //groundSurface = groundPlane.GetComponent<NavMeshSurface>();
     }
 
 
