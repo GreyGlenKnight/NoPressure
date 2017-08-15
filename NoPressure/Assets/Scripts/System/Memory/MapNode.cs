@@ -250,6 +250,19 @@ public class Map
 
     private MapNode[,] sMapNodes = new MapNode[10,10];
 
+    public void SetAllSectorsToNotLoaded()
+    {
+        for (int i = 0; i < 10; i++)
+            for (int j = 0; j < 10; j++)
+            {
+                if (sMapNodes[i, j] != null)
+                {
+                    sMapNodes[i, j].SetAllSectorsUnloaded();
+                    sMapNodes[i, j] = null;
+                }
+            } 
+    }
+
     public static Map getMap()
     {
         if (instance == null)
@@ -436,7 +449,15 @@ public class MapNode
     }
 
 
-
+    public void SetAllSectorsUnloaded()
+    {
+        for(int i = 0; i<4; i++)
+            for(int j = 0; j<4; j++)
+            {
+                if (mSectors[i, j] != null)
+                    mSectors[i, j].pIsLoaded = false;
+            }
+    }
 
     private void CreateBlankSectors()
     {

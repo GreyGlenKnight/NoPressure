@@ -118,7 +118,7 @@ public class PersistentEntity : MonoBehaviour, IDamageable {
         //If it dies remove it from the Sector
         if (SectorSpawn == null)
         {
-            Debug.Log("Set the Sector of the spawn");
+            //Debug.Log("Set the Sector of the spawn");
         }
         else
         {

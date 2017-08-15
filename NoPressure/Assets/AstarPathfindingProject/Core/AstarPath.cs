@@ -1099,6 +1099,7 @@ public class AstarPath : VersionedMonoBehaviour {
 				"This can cause serious errors since the AstarPath component builds around a singleton pattern.");
 		}
 
+
 		// Disable GUILayout to gain some performance, it is not used in the OnGUI call
 		useGUILayout = false;
 

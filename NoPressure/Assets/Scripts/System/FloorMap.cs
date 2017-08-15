@@ -25,6 +25,7 @@ public class FloorMap : MonoBehaviour {
             instance = this;
         else if (instance != this)
         {
+            Debug.Log("SelfDestroy");
             Destroy(gameObject);
         }
         // Persist the GameManager instance across scenes

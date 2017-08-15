@@ -28,6 +28,7 @@ public class PathfindingManager {
     {
         if (instance == null)
         {
+            GridGraph[,] mapNodeAStarGraphs = new GridGraph[3, 3];
             instance = new PathfindingManager();
         }
         return instance;
@@ -40,8 +41,16 @@ public class PathfindingManager {
     
     public void Init(Coord MapNode)
     {
+        Debug.Log("OnInit");
         PlayerMapNode = MapNode; 
         aStarPath = GameObject.Find("_A*").GetComponent<AstarPath>();
+        if (aStarPath.graphs.Length != 9)
+        {
+            Debug.Log("num of graphs need to be 9");
+
+        }
+
+
 
         for (int i = 0; i < 9; i++)
         {

@@ -21,14 +21,15 @@ public class ProjectileManager : MonoBehaviour {
 
     private void Awake()
     {
-        if (instance == null)
+        //if (instance == null)
             instance = this;
-        else if (instance != this)
-        {
-            Destroy(gameObject);
-        }
-        // Persist the GameManager instance across scenes
-        DontDestroyOnLoad(gameObject);
+        //else if (instance != this)
+        //{
+        //    Debug.Log("SelfDestroy");
+        //    Destroy(gameObject);
+        //}
+        //Persist the GameManager instance across scenes
+        //DontDestroyOnLoad(gameObject);
     }
 
     void Start () {

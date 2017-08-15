@@ -15,6 +15,60 @@ using System.Linq;
 
 public class ControlsManager : MonoBehaviour {
 
+    // create a keycode list of all user actions
+    KeyCode ShootKey;
+    bool RebindingShoot = false;
+
+    KeyCode ReloadKey;
+    bool RebindingReload = false;
+
+    KeyCode MoveUp;
+    bool RebindingMoveUp = false;
+
+    KeyCode MoveDown;
+    bool RebindingMoveDown = false;
+    //...
+    KeyCode LastKeyPressed;
+    bool newKeyPressed = false;
+
+    // Call from gui button "Rebind reload"
+    public void StartListenRebindKeyReload()
+    {
+        RebindingMoveDown = true;
+        newKeyPressed = false;
+    }
+    // Call in update()
+    public void RebindReloadKey()
+    {
+        if (newKeyPressed == false)
+            return;// waiting on user to imput a key in OnGUI();
+        else
+        {
+            ReloadKey = LastKeyPressed;
+            RebindingReload = true;
+        }
+    }
+
+    // in update()
+    //...
+    // if (RebindingReload == true)
+    //    RebindReloadKey();
+    //...
+    // if Input.GetKey(ReloadKey) {
+    //    player.Reload();
+    // }
+    //...
+    // 
+
+    //public void OnGUI()
+    //{
+    //    Event e = Event.current;
+    //    if (e.isKey)
+    //        Debug.Log("Detected key code: " + e.keyCode);
+    //    LastKeyPressed = e.keyCode;
+    //    newKeyPressed = true;
+    //}
+
     public enum Controller
     {
         MouseAndKeyboard,
@@ -57,13 +111,16 @@ public class ControlsManager : MonoBehaviour {
         Vector3 moveInput = new Vector3(Input.GetAxis("Horizontal"), 0, Input.GetAxis("Vertical"));
         if (player == null)
 		{
-            player = GameObject.Find("Player").GetComponent<Player>();
-            if (player == null)
+            GameObject temp = GameObject.Find("Player");
+            
+            if (temp == null)
             {
                 Debug.Log("Player Is null");
                 return;
             }
-		}
+            player = temp.GetComponent<Player>();
+
+        }
         player.Move(moveInput.normalized);
 
         //Aiming controls

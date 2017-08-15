@@ -1,6 +1,8 @@
 ﻿using UnityEngine;
 using UnityEngine.SceneManagement;
 using Pathfinding;
+using UnityEngine.SceneManagement;
+using System.Collections;
 
 public class GameManager : MonoBehaviour
 {
@@ -17,61 +19,93 @@ public class GameManager : MonoBehaviour
     public float playerHealth;
     public float playerXP;
 
+    private bool isLoaded = false;
+
+
     private void Awake()
     {
+        Debug.Log("Awake");
         // Ensure the instance is of the type GameManager
-        if (instance == null)
+        //if (instance == null)
             instance = this;
-        else if (instance != this)
-        {
-            Destroy(gameObject);
-        }
-        // Persist the GameManager instance across scenes
-        DontDestroyOnLoad(gameObject);
+        //else if (instance != this)
+        //{
+        //    Debug.Log("SelfDestroy");
+        //    Destroy(gameObject);
+        //}
+        //// Persist the GameManager instance across scenes
+        //DontDestroyOnLoad(gameObject);
 
         boardScript = GetComponent<BoardManager>();
         controlsManager = GetComponent<ControlsManager>();
         cameraController = GetComponent<CameraController>();
-        controlsManager.SetCameraController(cameraController);
-
-        player = GameObject.FindGameObjectWithTag("Player").GetComponent<Player>();
-        playerHealth = 10;
-        player.mOnDeathHandler += GameOver;
     }
 
     private void Start()
     {
-        Debug.Log("Game Start 6");
+        Debug.Log("Start");
+        //LoadLevel();
+
+
+    }
+
+    private void LoadLevel()
+    {
+
+        controlsManager.SetCameraController(cameraController);
+
+        player = GameObject.FindGameObjectWithTag("Player").GetComponent<Player>();
+        //playerHealth = 10;
+        player.mOnDeathHandler += GameOver;
+
+        Debug.Log("Game Start 15");
 
         PathfindingManager pathfindingmanager = PathfindingManager.getPathfindingManager();
-        pathfindingmanager.Init(new Coord(1,2));
+        //pathfindingmanager.Init(new Coord(1, 2));
 
-        boardScript.SetUpLevel(BoardManager.LevelType.FromFileMap, new Coord(65, 115)); 
-
+        boardScript.SetUpLevel(BoardManager.LevelType.FromFileMap, new Coord(65, 115));
     }
 
-    void OnLevelFinishedLoading(Scene scene, LoadSceneMode mode)
+    private void OnUpdate()
     {
-        if (scene.name == "Game")
-        {
-            player = GameObject.FindGameObjectWithTag("Player").GetComponent<Player>();
-            level++;
-            loading = true;
-
-
-            Debug.Log("Scene");
-            // TODO: show a loading banner here
-            //boardScript.SetUpLevel(BoardManager.LevelType.DebugOpenArea);
-            //boardScript.SetUpLevel(BoardManager.LevelType.FromFileMap, new Coord(1,2));
-        }
     }
+
+    void OnSceneLoaded(Scene scene, LoadSceneMode mode)
+    {
+        if (scene.buildIndex != 2)
+        {
+            Debug.Log("Loading not Game scene");
+            return;
+        }
+        Debug.Log("Scene Loaded");
+        LoadLevel();
+    }
+
+    //void OnLevelFinishedLoading(Scene scene, LoadSceneMode mode)
+    //{
+    //    if (scene.name == "Game")
+    //    {
+    //        player = GameObject.FindGameObjectWithTag("Player").GetComponent<Player>();
+    //        level++;
+    //        loading = true;
+
+
+    //        Debug.Log("Scene");
+    //        // TODO: show a loading banner here
+    //        //boardScript.SetUpLevel(BoardManager.LevelType.DebugOpenArea);
+    //        //boardScript.SetUpLevel(BoardManager.LevelType.FromFileMap, new Coord(1,2));
+    //    }
+    //}
+
+
     private void OnEnable()
     {
-        SceneManager.sceneLoaded += OnLevelFinishedLoading;
+        //SceneManager.sceneLoaded += OnLevelFinishedLoading;
+        SceneManager.sceneLoaded += OnSceneLoaded;
     }
     private void OnDisable()
     {
-        SceneManager.sceneLoaded -= OnLevelFinishedLoading;
+        SceneManager.sceneLoaded -= OnSceneLoaded;
     }
     public void Restart()
     {
@@ -92,7 +126,12 @@ public class GameManager : MonoBehaviour
 
     void GameOver()
     {
+        isLoaded = false;
         Debug.Log("Reloading game");
-        SceneManager.LoadScene("Game");
+        MapController.GetMapController().ResetLevel();
+        SceneManager.LoadScene(1);
+        //SceneManager.LoadSceneAsync("Game");
     }
+
+
 }

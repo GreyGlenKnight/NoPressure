@@ -9,20 +9,20 @@ Prefab:
     m_Modifications: []
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 0}
-  m_RootGameObject: {fileID: 1093710096394176}
+  m_RootGameObject: {fileID: 1757485420644254}
   m_IsPrefabParent: 1
---- !u!1 &1093710096394176
+--- !u!1 &1757485420644254
 GameObject:
   m_ObjectHideFlags: 0
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 100100000}
   serializedVersion: 5
   m_Component:
-  - component: {fileID: 4961973219372218}
-  - component: {fileID: 33391150488498204}
-  - component: {fileID: 23978312561156906}
-  - component: {fileID: 65099174694558742}
-  - component: {fileID: 114866939292538268}
+  - component: {fileID: 4125070687833690}
+  - component: {fileID: 33177959607228104}
+  - component: {fileID: 23691618687771666}
+  - component: {fileID: 65286614743639744}
+  - component: {fileID: 114876547056100718}
   m_Layer: 0
   m_Name: PressureStation
   m_TagString: Untagged
@@ -30,25 +30,25 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!4 &4961973219372218
+--- !u!4 &4125070687833690
 Transform:
   m_ObjectHideFlags: 1
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 100100000}
-  m_GameObject: {fileID: 1093710096394176}
+  m_GameObject: {fileID: 1757485420644254}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 8.06, y: 0.10446181, z: 15.21}
+  m_LocalPosition: {x: -100, y: 0, z: -100}
   m_LocalScale: {x: 0.95, y: 0.20892362, z: 0.95}
   m_Children: []
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!23 &23978312561156906
+--- !u!23 &23691618687771666
 MeshRenderer:
   m_ObjectHideFlags: 1
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 100100000}
-  m_GameObject: {fileID: 1093710096394176}
+  m_GameObject: {fileID: 1757485420644254}
   m_Enabled: 1
   m_CastShadows: 1
   m_ReceiveShadows: 1
@@ -75,40 +75,47 @@ MeshRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
---- !u!33 &33391150488498204
+--- !u!33 &33177959607228104
 MeshFilter:
   m_ObjectHideFlags: 1
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 100100000}
-  m_GameObject: {fileID: 1093710096394176}
+  m_GameObject: {fileID: 1757485420644254}
   m_Mesh: {fileID: 10202, guid: 0000000000000000e000000000000000, type: 0}
---- !u!65 &65099174694558742
+--- !u!65 &65286614743639744
 BoxCollider:
   m_ObjectHideFlags: 1
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 100100000}
-  m_GameObject: {fileID: 1093710096394176}
+  m_GameObject: {fileID: 1757485420644254}
   m_Material: {fileID: 0}
   m_IsTrigger: 1
   m_Enabled: 1
   serializedVersion: 2
   m_Size: {x: 1, y: 1, z: 1}
   m_Center: {x: 0, y: 0, z: 0}
---- !u!114 &114866939292538268
+--- !u!114 &114876547056100718
 MonoBehaviour:
   m_ObjectHideFlags: 1
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 100100000}
-  m_GameObject: {fileID: 1093710096394176}
+  m_GameObject: {fileID: 1757485420644254}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: e9133890a7cb3a94485280b54be71349, type: 3}
+  m_Script: {fileID: 11500000, guid: 4e0359eebd15cc94f82111342d02ca0a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  pMaxHealth: 1
+  pIsIndestructable: 0
+  pIsOrganic: 0
+  pIsElectronic: 0
+  pIsFloor: 0
+  enabledMateral: {fileID: 0}
+  disabledMateral: {fileID: 0}
   pCollisionLayer:
     serializedVersion: 2
-    m_Bits: 2048
-  pEffectType: 2
-  pMagnitude: 6
+    m_Bits: 0
+  pEffectType: 0
+  pMagnitude: 0
   TimesinceLastTrigger: 0
   TriggerDelay: 1

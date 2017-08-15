@@ -29,20 +29,23 @@ public class PrefabSpawner : MonoBehaviour {
     TileInfo[,] tileMap;
 
     private List<Transform> movingEntities = new List<Transform>();
-    
+
     private void Awake()
     {
-        // Ensure the instance is of the type GameManager
-        if (instance == null)
+
+        //// Ensure the instance is of the type GameManager
+        //if (instance == null)
             instance = this;
-        else if (instance != this)
-        {
-            Destroy(gameObject);
-        }
-        // Persist the GameManager instance across scenes
-        DontDestroyOnLoad(gameObject);
+        //else if (instance != this)
+        //{
+        //    Debug.Log("SelfDestroy");
+        //    Destroy(gameObject);
+        //}
+        //// Persist the GameManager instance across scenes
+        //DontDestroyOnLoad(gameObject);
 
         NoSpawnTilesList = new List<Transform>();
+        BoardHolder = transform.Find("BoardHolder").transform;
         //MovingUnitsHolder = transform.Find("BoardHolder").transform;
     }
 
@@ -79,9 +82,12 @@ public class PrefabSpawner : MonoBehaviour {
 
         if (SectorContainer == null)
         {
+            if (BoardHolder == null)
+                BoardHolder = GameObject.Find("BoardHolder").transform;
+
             // Create Container
-            SectorContainer = Instantiate(BlankObject.gameObject);
-            SectorContainer.name = "Sector" + SectorLocation.ToString("_");
+            SectorContainer = Instantiate(BoardHolder.gameObject);
+            SectorContainer.name = "Sector" + SectorLocation.ToString("_"); 
         }
 
         for (int i = 0; i< 10; i++)
@@ -135,7 +141,12 @@ public class PrefabSpawner : MonoBehaviour {
         List<Transform> returnVal = new List<Transform>();
         for (int i = 0; i < movingEntities.Count; i++)
         {
-            if (movingEntities[i].position.x > (sector * 10) +10)
+            if( movingEntities[i] == null)
+            {
+                movingEntities.RemoveAt(i);
+                i--;
+            }
+            else if (movingEntities[i].position.x > (sector * 10) +10)
             {
                 returnVal.Add(movingEntities[i]);
                 //movingEntities.RemoveAt(i);
@@ -240,6 +251,9 @@ public class PrefabSpawner : MonoBehaviour {
         GameObject SectorContainer = GameObject.Find("Sector" + SectorLocation.ToString("_"));
 
         List<Transform> childList = new List<Transform>();
+
+        if (SectorContainer == null)
+            return;
 
         for (int i = 0; i< SectorContainer.transform.childCount; i++)
         {
@@ -601,6 +615,8 @@ public class PrefabSpawner : MonoBehaviour {
         GUO.setWalkability = false;
         GUO.modifyWalkability = true;
 
+        if (AstarPath.active == null) 
+            AstarPath.active = GameObject.Find("_A*").GetComponent<AstarPath>();
         AstarPath.active.UpdateGraphs(GUO);
 
         NoSpawnTilesList.Add(wallTile);

@@ -84,7 +84,15 @@ public class MapController : MonoBehaviour
     {
         if (CameraFocus == null)
         {
-            CameraFocus = GameObject.Find("Player").transform;
+            GameObject temp = GameObject.Find("Player");
+
+            if (temp == null)
+            {
+                Debug.Log("Player Is null");
+                return;
+            }
+            CameraFocus = temp.transform;
+
             CurrentSector = new Coord((int)CameraFocus.position.x, (int) CameraFocus.position.z);
         }
         if (CameraFocus == null)
@@ -229,11 +237,23 @@ public class MapController : MonoBehaviour
 
     }
 
+    public void ResetLevel()
+    {
+        map.SetAllSectorsToNotLoaded();
+    }
 
     public void Init(WorldSpaceUnit unit, Coord location)
     {
+        if (map == null)
+            map = Map.getMap();
+
+        Debug.Log("Init Map");
+
         CurrentMapNode = map.ConvertToMapNode(unit, location);
         CurrentSector = map.ConvertToSectorSpace(unit,location);
+
+        if (pathfindingManager == null)
+            pathfindingManager = PathfindingManager.getPathfindingManager();
 
         pathfindingManager.Init(CurrentMapNode);
 

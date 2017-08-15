@@ -621,6 +621,7 @@ public class BoardManager : MonoBehaviour {
             instance = this;
         else if (instance != this)
         {
+            Debug.Log("SelfDestroy");
             Destroy(gameObject);
         }
 

@@ -29,7 +29,7 @@ public class Player : MovingEntity
     ColorBlock mSelectedColorBlock;
 
     // Cheats
-    bool mGodMode = true;
+    bool mGodMode = false;
 
     private void Awake()
     {

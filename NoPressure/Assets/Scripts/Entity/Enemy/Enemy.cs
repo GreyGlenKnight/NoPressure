@@ -132,12 +132,10 @@ public class Enemy : MovingEntity, IItemCase {
 
         base.Update();
 
-        //if (hasTarget)
-        //{
-        //    if (CanAttackPlayer())
-        //    {
-        //        Attack();
-        //    }
+        if (CanAttackPlayer())
+        {
+            Attack();
+        }
 
 
         if (CanSeePlayer())

@@ -13,14 +13,15 @@ public class DynamicLoader : MonoBehaviour {
     private void Awake()
     {
         // Ensure the instance is of the type GameManager
-        if (instance == null)
+        //if (instance == null)
             instance = this;
-        else if (instance != this)
-        {
-            Destroy(gameObject);
-        }
-        // Persist the GameManager instance across scenes
-        DontDestroyOnLoad(gameObject);
+        //else if (instance != this)
+        //{
+        //    Debug.Log("SelfDestroy");
+        //    Destroy(gameObject);
+        //}
+        //// Persist the GameManager instance across scenes
+        //DontDestroyOnLoad(gameObject);
 
     }
 

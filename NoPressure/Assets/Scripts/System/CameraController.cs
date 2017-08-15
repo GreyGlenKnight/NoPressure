@@ -37,7 +37,7 @@ public class CameraController : MonoBehaviour {
 
         if (Focus == null)
             Focus = GameObject.Find("Player");
-        DontDestroyOnLoad(gameObject);
+        //DontDestroyOnLoad(gameObject);
     }
 	
 	// Update is called once per frame
@@ -55,6 +55,9 @@ public class CameraController : MonoBehaviour {
 	public void MoveCameraToFocus ()
 	{
         if (mCameraObject == null)
+            return;
+
+        if (Focus == null)
             return;
 
         mCameraObject.transform.position = new Vector3(
