@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class MovingEntity : PersistentEntity
 {
-
+    
     //TODO add Logic to use pathfinding
 
 	// Use this for initialization

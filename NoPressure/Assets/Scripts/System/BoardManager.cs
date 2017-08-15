@@ -96,7 +96,6 @@ public class BoardManager : MonoBehaviour {
     List<Corridor> corridors;
     private Color enemyColor = Color.green;
     
-    
     public void SetupLevel(LevelPerams levelParams)
     {
         player = GameObject.FindGameObjectWithTag("Player");
@@ -126,8 +125,6 @@ public class BoardManager : MonoBehaviour {
 
     public void SetUpLevel(LevelType lLeveltype)
     {
-        //Debug.Log(lLeveltype);
-
         leveltype = lLeveltype;
 
         switch (leveltype)
@@ -151,8 +148,6 @@ public class BoardManager : MonoBehaviour {
 
     public void SetUpLevel(LevelType lLeveltype, Coord levelNo)
     {
-        //Debug.Log(lLeveltype);
-
         leveltype = lLeveltype;
 
         switch (leveltype)
@@ -178,7 +173,6 @@ public class BoardManager : MonoBehaviour {
                 break;
         }
         GameManager.instance.loading = false;
-
     }
 
     // StartLocation is in unity units tile space

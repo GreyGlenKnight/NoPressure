@@ -3,44 +3,41 @@ using System.Collections.Generic;
 using UnityEngine;
 using Pathfinding;
 
-public class PathfindingManager : MonoBehaviour {
+public class PathfindingManager {
 
     static PathfindingManager instance;
 
     GridGraph[,] mapNodeAStarGraphs = new GridGraph[3,3];
     Coord PlayerMapNode;
 
+    Queue<GridGraph> GridGraphsToScanQueue;
+
     AstarPath aStarPath;
+
+    public bool ScanNextQueue()
+    {
+        if (GridGraphsToScanQueue.Count == 0)
+        {
+            return false;
+        }
+        AstarPath.active.Scan(GridGraphsToScanQueue.Dequeue());
+        return true;
+    }
 
     public static PathfindingManager getPathfindingManager()
     {
         if (instance == null)
-            Debug.Log("Trying to access Pathfinding Manager before it was loaded");
-
-        return instance;
-
-    }
-
-    private void Awake()
-    {
-        // Ensure the instance is of the type GameManager
-        if (instance == null)
-            instance = this;
-        else if (instance != this)
         {
-            Destroy(gameObject);
+            instance = new PathfindingManager();
         }
-        // Persist the GameManager instance across scenes
-        DontDestroyOnLoad(gameObject);
+        return instance;
     }
 
-    // Update is called once per frame
-    void Update()
-    {
-
+    private PathfindingManager()
+    { 
+        GridGraphsToScanQueue = new Queue<GridGraph>();
     }
-
-
+    
     public void Init(Coord MapNode)
     {
         PlayerMapNode = MapNode; 
@@ -63,14 +60,6 @@ public class PathfindingManager : MonoBehaviour {
 
     }
 
-    public void SetPlayerLocation(Coord MapNode)
-    {
-        //Intensive, should be done at startup
-
-
-
-    }
-
     public void MovePlayerMapNodeUp()
     {
         PlayerMapNode = new Coord(PlayerMapNode.x, PlayerMapNode.y + 1);
@@ -83,7 +72,8 @@ public class PathfindingManager : MonoBehaviour {
             mapNodeAStarGraphs[i, 2] = temp;
 
             mapNodeAStarGraphs[i, 2].center = new Vector3(40 * (PlayerMapNode.x + i - 1) + 19.5f, -0.1f, 40 * (PlayerMapNode.y + 1) + 19.5f);
-            AstarPath.active.Scan(mapNodeAStarGraphs[i, 2]);
+            GridGraphsToScanQueue.Enqueue(mapNodeAStarGraphs[i, 2]);
+            //AstarPath.active.Scan(mapNodeAStarGraphs[i, 2]);
             
         }
     }
@@ -100,7 +90,8 @@ public class PathfindingManager : MonoBehaviour {
             mapNodeAStarGraphs[i, 0] = temp;
 
             mapNodeAStarGraphs[i, 0].center = new Vector3(40 * (PlayerMapNode.x + i -1) + 19.5f, -0.1f, 40 * (PlayerMapNode.y -1) + 19.5f);
-            AstarPath.active.Scan(mapNodeAStarGraphs[i, 0]);
+            GridGraphsToScanQueue.Enqueue(mapNodeAStarGraphs[i, 0]);
+            //AstarPath.active.Scan(mapNodeAStarGraphs[i, 0]);
         }
 
     }
@@ -117,7 +108,8 @@ public class PathfindingManager : MonoBehaviour {
             mapNodeAStarGraphs[2, i] = temp;
 
             mapNodeAStarGraphs[2, i].center = new Vector3(40 * (PlayerMapNode.x + 1) + 19.5f, -0.1f, 40 * (PlayerMapNode.y + i - 1) + 19.5f);
-            AstarPath.active.Scan(mapNodeAStarGraphs[2, i]);
+            GridGraphsToScanQueue.Enqueue(mapNodeAStarGraphs[2, i]);
+            //AstarPath.active.Scan(mapNodeAStarGraphs[2, i]);
         }
     }
 
@@ -133,14 +125,10 @@ public class PathfindingManager : MonoBehaviour {
             mapNodeAStarGraphs[0, i] = temp;
 
             mapNodeAStarGraphs[0, i].center = new Vector3(40 * (PlayerMapNode.x - 1) + 19.5f, -0.1f, 40 * (PlayerMapNode.y + i - 1) + 19.5f);
-            AstarPath.active.Scan(mapNodeAStarGraphs[0, i]); 
+            GridGraphsToScanQueue.Enqueue(mapNodeAStarGraphs[0, i]);
+            //AstarPath.active.Scan(mapNodeAStarGraphs[0, i]); 
         }
     }
 
-    // Use this for initialization
-    void Start () {
-		
-	}
-	
 
 }

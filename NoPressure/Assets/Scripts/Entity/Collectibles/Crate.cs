@@ -56,6 +56,9 @@ public class Crate : PersistentEntity {
             ButtonClone.gameObject.SetActive(false);
             Destroy(gameObject);
         }
+
+        SectorSpawn.RemoveObjectAt(TileLocationInSector);
+
     }
 
     public void Remove()

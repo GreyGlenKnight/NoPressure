@@ -20,13 +20,28 @@ public class MapController : MonoBehaviour
     float updateCurrent = 0f;
 
     PathfindingManager pathfindingManager;
-
+    PrefabSpawner prefabSpawner;
     Map map;
+    Queue<MapSector> SectorsToSpawnQueue;
+    Queue<MapSector> SectorsToDespawnQueue;
 
-    //Moveing2DimArray<MapSector>()
+    public bool LoadNextSector()
+    {
+        if (SectorsToSpawnQueue.Count == 0)
+            return false;
 
-    //MapSector[,] LoadedSectors = new MapSector[LoadRadius, LoadRadius]; 
+        PrefabSpawner.GetPrefabSpawner().SpawnSector(SectorsToSpawnQueue.Dequeue());
+        return true;
+    }
 
+    public bool DespawnNextSector()
+    {
+        if (SectorsToDespawnQueue.Count == 0)
+            return false;
+
+        PrefabSpawner.GetPrefabSpawner().DespawnSector(SectorsToDespawnQueue.Dequeue());
+        return true;
+    }
 
     private void Awake()
     {
@@ -34,6 +49,8 @@ public class MapController : MonoBehaviour
         {
             instance = this;
         }
+        SectorsToSpawnQueue = new Queue<MapSector>();
+        SectorsToDespawnQueue = new Queue<MapSector>();
     }
 
     public static MapController GetMapController()
@@ -58,6 +75,9 @@ public class MapController : MonoBehaviour
 
         pathfindingManager = PathfindingManager.getPathfindingManager();
         map = Map.getMap();
+        prefabSpawner = PrefabSpawner.GetPrefabSpawner();
+
+
     }
 
     private void Update()
@@ -74,21 +94,18 @@ public class MapController : MonoBehaviour
         if(updateCurrent >= updateDelay )
         {
             updateCurrent = 0;
-            Coord focusSector = ConvertToSectorSpace(WorldSpaceUnit.Tile,
+            Coord focusSector = map.ConvertToSectorSpace(WorldSpaceUnit.Tile,
                 new Coord((int)CameraFocus.position.x, (int)CameraFocus.position.z));
-
-            AstarPath aStarPath = GameObject.Find("_A*").GetComponent<AstarPath>();
-            AstarPath.active.ScanAsync(aStarPath.graphs[0]);
 
             if (focusSector != CurrentSector)
             {
                 DespawnSectors(focusSector);
                 CurrentSector = focusSector;
-                LoadSectorIntoMemory(WorldSpaceUnit.Sector, CurrentSector);
+
+                LoadSectorPerformance(WorldSpaceUnit.Sector, CurrentSector);
 
                 // Pathfinder mesh update
-                Coord NewMapNode = ConvertToMapNode(WorldSpaceUnit.Sector, CurrentSector);
-
+                Coord NewMapNode = map.ConvertToMapNode(WorldSpaceUnit.Sector, CurrentSector);
 
                 if (NewMapNode.x > CurrentMapNode.x)
                     pathfindingManager.MovePlayerMapNodeRight();
@@ -102,9 +119,9 @@ public class MapController : MonoBehaviour
 
                 CurrentMapNode = NewMapNode;
 
+                DynamicLoader.getDynamicLoader().Rest = true;
+
             }
-
-
         }
     }
 
@@ -118,8 +135,18 @@ public class MapController : MonoBehaviour
 
         for (int i = LowerBound; i < UpperBound; i++)
         {
-            MapSector despawnSector = GetSectorAt(WorldSpaceUnit.Sector, new Coord(i, Col));
-            PrefabSpawner.GetPrefabSpawner().DespawnSector(despawnSector, new Coord(i, Col));
+            //Debug.Log(new Coord(i, Col));
+
+            MapSector despawnSector = map.GetSectorAt(WorldSpaceUnit.Sector, new Coord(i, Col),"Demo");
+            if (despawnSector != null)
+            {
+                //Debug.Log(new Coord(i, Col));
+                if (despawnSector.pIsLoaded == true)
+                {
+                    SectorsToDespawnQueue.Enqueue(despawnSector);
+                    Debug.Log(new Coord(i, Col));
+                }
+            }
         }
     }
 
@@ -133,8 +160,11 @@ public class MapController : MonoBehaviour
 
         for (int i = LowerBound; i < UpperBound; i++)
         {
-            MapSector despawnSector = GetSectorAt(WorldSpaceUnit.Sector, new Coord(Row, i));
-            PrefabSpawner.GetPrefabSpawner().DespawnSector(despawnSector,new Coord(Row, i));
+            MapSector despawnSector = map.GetSectorAt(WorldSpaceUnit.Sector, new Coord(Row, i),"Demo");
+            //PrefabSpawner.GetPrefabSpawner().DespawnSector(despawnSector,new Coord(Row, i));
+            if (despawnSector != null)
+                if (despawnSector.pIsLoaded == true)
+                    SectorsToDespawnQueue.Enqueue(despawnSector);
         }
     }
 
@@ -144,20 +174,32 @@ public class MapController : MonoBehaviour
 
         int yChange = focusSector.y - CurrentSector.y;
 
+        List<Transform> RemoveEntities = new List<Transform>();
+
         if (xChange > 0)
         {
             for (int i = 0; i < xChange; i++)
             {
                 DespawnRow(CurrentSector.x - i - LoadRadius);
             }
+            Debug.Log("Despawn left of :" + (focusSector.x - LoadRadius));
+            RemoveEntities = prefabSpawner.FindEntityLeftOf(focusSector.x - LoadRadius );
         }
 
-        if (xChange < 0)
+        else if (xChange < 0)
         {
             for (int i = 0; i < -xChange; i++)
             {
                 DespawnRow(CurrentSector.x + i + LoadRadius);
             }
+            Debug.Log("Despawn right of :" + (focusSector.x + LoadRadius));
+            RemoveEntities = prefabSpawner.FindEntityRightOf(focusSector.x + LoadRadius );
+        }
+
+        if (RemoveEntities.Count >0)
+        {
+            prefabSpawner.DespawnList(RemoveEntities);
+            RemoveEntities = new List<Transform>();
         }
 
         if (yChange > 0)
@@ -166,106 +208,72 @@ public class MapController : MonoBehaviour
             {
                 DespawnCol(CurrentSector.y - i - LoadRadius);
             }
+            Debug.Log("Despawn Below of :" + (focusSector.y - LoadRadius));
+            RemoveEntities = prefabSpawner.FindEntityBelow(focusSector.y - LoadRadius );
         }
 
-        if (yChange < 0)
+        else if (yChange < 0)
         {
             for (int i = 0; i < -yChange; i++)
             {
                 DespawnCol(CurrentSector.y + i + LoadRadius);
             }
+            Debug.Log("Despawn Above of :" + (focusSector.y + LoadRadius));
+            RemoveEntities = prefabSpawner.FindEntityAbove(focusSector.y + LoadRadius );
         }
-    }
 
-    public Coord ConvertToSectorSpace(WorldSpaceUnit unit, Coord location)
-    {
-        switch (unit)
+        if (RemoveEntities.Count > 0)
         {
-            case WorldSpaceUnit.Tile:
-                return new Coord((int)Math.Floor(location.x / 10f), (int)Math.Floor(location.y / 10f));
-
-            case WorldSpaceUnit.Sector:
-                return location;
-
-            // return the bottom left sector
-            case WorldSpaceUnit.MpaNode:
-                return new Coord(location.x * 4, location.y * 4);
-
-            default:
-                Debug.LogError("Unknown Unit: " + unit);
-                return new Coord(-1, -1);
-        }
-    }
-
-    public Coord ConvertToMapNode(WorldSpaceUnit unit, Coord location)
-    {
-        switch (unit)
-        {
-            case WorldSpaceUnit.Tile:
-                return new Coord((int)Math.Floor(location.x / 40f), (int)Math.Floor(location.y / 40f));
-
-            case WorldSpaceUnit.Sector:
-                return new Coord((int)Math.Floor(location.x / 4f), (int)Math.Floor(location.y / 4f));
-
-            // return the bottom left sector
-            case WorldSpaceUnit.MpaNode:
-                return location;
-
-            default:
-                Debug.LogError("Unknown Unit: " + unit);
-                return new Coord(-1, -1);
-
-        }
-    }
-
-    public MapSector GetSectorAt(WorldSpaceUnit unit, Coord location)
-    {
-        Coord SectorLocation = ConvertToSectorSpace(unit, location);
-        
-        Coord MapNodLocation = ConvertToMapNode(WorldSpaceUnit.Sector, SectorLocation);
-        MapNode mapNode = map.GetMapNodeAt(MapNodLocation, levelName);
-        MapSector mapSector = null;
-        if (mapNode != null)
-        {
-            Coord SectorInNode = GetMapNodeSectorFromWorldSpaceSector(SectorLocation);
-            mapSector = mapNode.getSectorAt(SectorInNode);
+            prefabSpawner.DespawnList(RemoveEntities);
         }
 
-        return mapSector;
     }
 
-    public Coord GetMapNodeSectorFromWorldSpaceSector(Coord location)
-    {
-        return new Coord(location.x % 4, location.y % 4);
-    }
 
     public void Init(WorldSpaceUnit unit, Coord location)
     {
-        CurrentMapNode = ConvertToMapNode(unit, location);
-        CurrentSector = ConvertToMapNode(unit,location);
+        CurrentMapNode = map.ConvertToMapNode(unit, location);
+        CurrentSector = map.ConvertToSectorSpace(unit,location);
 
-        pathfindingManager.Init(CurrentSector);
+        pathfindingManager.Init(CurrentMapNode);
 
-        LoadSectorIntoMemory( unit, location);
-
+        LoadSector(unit, location);
     }
 
-    public void LoadSectorIntoMemory(WorldSpaceUnit unit, Coord location)
+    public void LoadSector(WorldSpaceUnit unit, Coord location)
     {
         // Convert everything into Sector units
-        Coord StartSectorLocation = ConvertToSectorSpace(unit, location);
+        Coord StartSectorLocation = map.ConvertToSectorSpace(unit, location);
+
+        for (int i = -LoadRadius; i <= LoadRadius; i++)
+            for (int j = -LoadRadius; j <= LoadRadius; j++)
+            {
+                Coord SectorLocation = new Coord(StartSectorLocation.x + i, StartSectorLocation.y + j);
+                MapSector mapSector = map.GetSectorAt(WorldSpaceUnit.Sector, SectorLocation,"Demo");
+                if (mapSector != null)
+                {
+                    //SectorsToSpawnQueue.Enqueue(mapSector);
+                    PrefabSpawner.GetPrefabSpawner().SpawnSector(mapSector);
+                }
+            }
+    }
+
+    public void LoadSectorPerformance(WorldSpaceUnit unit, Coord location)
+    {
+        // Convert everything into Sector units
+        Coord StartSectorLocation = map.ConvertToSectorSpace(unit, location);
 
         for (int i = -LoadRadius; i<= LoadRadius; i++)
             for(int j = -LoadRadius; j<= LoadRadius; j++)
             {
                 Coord SectorLocation = new Coord(StartSectorLocation.x + i, StartSectorLocation.y + j);
-                MapSector mapSector = GetSectorAt(WorldSpaceUnit.Sector, SectorLocation);
+                MapSector mapSector = map.GetSectorAt(WorldSpaceUnit.Sector, SectorLocation,"Demo");
                 if (mapSector != null)
-                    PrefabSpawner.GetPrefabSpawner().SpawnSector(mapSector, SectorLocation);
-                
+                {
+                    SectorsToSpawnQueue.Enqueue(mapSector);
+                    //PrefabSpawner.GetPrefabSpawner().SpawnSector(mapSector, SectorLocation);
+                }
             }
-        CurrentSector = location;
-        //PrefabSpawner.GetPrefabSpawner().SpawnSector(mapSector, SectorLocation);
     }
 
     private void LoadLine(int[] csvLine, int height, int room)

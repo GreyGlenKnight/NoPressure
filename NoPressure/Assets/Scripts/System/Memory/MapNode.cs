@@ -47,34 +47,144 @@ public class MapSector
 {
     const int SECTOR_SIZE = 10;
 
+    const FloorTiles defaultTile = FloorTiles.Blank;
+    const SpawnType defaultSpawn = SpawnType.None;
+
     FloorTiles[,] mFloorTiles = new FloorTiles[SECTOR_SIZE, SECTOR_SIZE];
     SpawnType[,] mObsticleLayer = new SpawnType[SECTOR_SIZE, SECTOR_SIZE];
 
     MapNode mParentNode;
+    public Coord mSectorLocation { get; private set; }
 
     public bool pIsLoaded { get; set; }
 
     public void RemoveTileAt(Coord location)
     {
-        mObsticleLayer[location.x, 9- location.y] = 0;
+        location = new Coord(location.x % 10, location.y % 10);
+        mFloorTiles[location.x, 9- location.y] = defaultTile;
+    }
+
+    public void SetNearby(Coord location, SpawnType toSpawn)
+    {
+        if (location.x < 9)
+        {
+            if (mObsticleLayer[location.x +1, 9 - location.y] == defaultSpawn)
+            {
+                mObsticleLayer[location.x +1, 9 - location.y] = toSpawn;
+                return;
+            }
+
+            if((9 -location.y) < 9)
+            {
+                if (mObsticleLayer[location.x +1, (9 - location.y) +1] == defaultSpawn)
+                {
+                    mObsticleLayer[location.x +1, (9 - location.y) +1] = toSpawn;
+                    return;
+                }
+            }
+
+            if ((9 - location.y) > 0)
+            {
+                if (mObsticleLayer[location.x +1, (9 - location.y) - 1] == defaultSpawn)
+                {
+                    mObsticleLayer[location.x +1, (9 - location.y) - 1] = toSpawn;
+                    return;
+                }
+            }
+
+        }
+
+        if (location.x > 0)
+        {
+            if (mObsticleLayer[location.x - 1, 9 - location.y] == defaultSpawn)
+            {
+                mObsticleLayer[location.x - 1, 9 - location.y] = toSpawn;
+                return;
+            }
+
+            if ((9 - location.y) < 9)
+            {
+                if (mObsticleLayer[location.x - 1, (9 - location.y) + 1] == defaultSpawn)
+                {
+                    mObsticleLayer[location.x - 1, (9 - location.y) + 1] = toSpawn;
+                    return;
+                }
+            }
+
+            if ((9 - location.y) > 0)
+            {
+                if (mObsticleLayer[location.x - 1, (9 - location.y) - 1] == defaultSpawn)
+                {
+                    mObsticleLayer[location.x - 1, (9 - location.y) - 1] = toSpawn;
+                    return;
+                }
+            }
+        }
+
+        if ((9 - location.y) < 9)
+        {
+            if (mObsticleLayer[location.x , (9 - location.y) + 1] == defaultSpawn)
+            {
+                mObsticleLayer[location.x , (9 - location.y) + 1] = toSpawn;
+                return;
+            }
+        }
+
+        if ((9 - location.y) > 0)
+        {
+            if (mObsticleLayer[location.x , (9 - location.y) - 1] == defaultSpawn)
+            {
+                mObsticleLayer[location.x , (9 - location.y) - 1] = toSpawn;
+                return;
+            }
+        }
+
+
+    }
+
+    public void SetObjectAt(Coord location, SpawnType toSpawn)
+    {
+        location = new Coord(location.x % 10, location.y % 10);
+
+        if (mObsticleLayer[location.x, 9 - location.y] == defaultSpawn)
+        {
+            mObsticleLayer[location.x, 9 - location.y] = toSpawn;
+            return;
+        }
+        else
+            SetNearby(location, toSpawn);
+
+    }
+
+    public void SetTileAt(Coord location, FloorTiles toSpawn)
+    {
+
+        location = new Coord(location.x % 10, location.y % 10);
+        mFloorTiles[location.x, 9 - location.y] = toSpawn;
     }
 
     public void RemoveObjectAt(Coord location)
     {
-        mObsticleLayer[location.x, 9- location.y] = 0;
+        Debug.Log(mObsticleLayer[location.x, 9 - location.y] + " -> " + defaultSpawn);
+        location = new Coord(location.x % 10, location.y % 10);
+        mObsticleLayer[location.x, 9- location.y] = defaultSpawn;
     }
 
     public FloorTiles GetFloorTileAt(int x, int y)
     {
-        return mFloorTiles[x, y];
+        x = x % 10;
+        y = y % 10;
+        return mFloorTiles[x, 9 - y];
     }
 
     public SpawnType GetSpawnAt(int x, int y)
     {
-        return mObsticleLayer[x, 9-y];
+        x = x % 10;
+        y = y % 10;
+        return mObsticleLayer[x, 9 - y];
     }
 
-    public MapSector (MapNode lParentNode, SpawnType[,] lObsticleLayer, FloorTiles[,] lFloorTiles )
+    public MapSector (MapNode lParentNode,Coord lSectorLocation, SpawnType[,] lObsticleLayer, FloorTiles[,] lFloorTiles )
     {
         // Confirm sector is SECTOR_SIZE x SECTOR_SIZE
         if (lFloorTiles.GetLength(0) != SECTOR_SIZE)
@@ -93,6 +203,7 @@ public class MapSector
             Debug.LogError("Creating MapSector with improper length: "
                 + lObsticleLayer.GetLength(0) + "," + lObsticleLayer.GetLength(1));
 
+        mSectorLocation = lSectorLocation;
 
         mFloorTiles = lFloorTiles;
         mObsticleLayer = lObsticleLayer;
@@ -106,14 +217,13 @@ public class MapSector
         {
             for(int j =0; j< SECTOR_SIZE; j++)
             {
-                mFloorTiles[i, j] = FloorTiles.Blank;
-                mObsticleLayer[i, j] = SpawnType.None;
+                mFloorTiles[i, j] = defaultTile;
+                mObsticleLayer[i, j] = defaultSpawn;
             }
         }
 
         mParentNode = lParentNode;
     }
-
 
 }
 
@@ -146,6 +256,78 @@ public class Map
             instance = new Map();
 
         return instance;
+    }
+
+    public void SetObjectAtTile(SpawnType itemToSet, Coord location)
+    {
+        // find the sector
+        MapSector Sector = GetSectorAt(WorldSpaceUnit.Tile, location, "Demo");
+
+        Sector.SetObjectAt(location, itemToSet);
+
+
+    }
+
+
+    public Coord ConvertToSectorSpace(WorldSpaceUnit unit, Coord location)
+    {
+        switch (unit)
+        {
+            case WorldSpaceUnit.Tile:
+                return new Coord((int)Math.Floor(location.x / 10f), (int)Math.Floor(location.y / 10f));
+
+            case WorldSpaceUnit.Sector:
+                return location;
+
+            // return the bottom left sector
+            case WorldSpaceUnit.MpaNode:
+                return new Coord(location.x * 4, location.y * 4);
+
+            default:
+                Debug.LogError("Unknown Unit: " + unit);
+                return new Coord(-1, -1);
+        }
+    }
+
+    public Coord ConvertToMapNode(WorldSpaceUnit unit, Coord location)
+    {
+        switch (unit)
+        {
+            case WorldSpaceUnit.Tile:
+                return new Coord((int)Math.Floor(location.x / 40f), (int)Math.Floor(location.y / 40f));
+
+            case WorldSpaceUnit.Sector:
+                return new Coord((int)Math.Floor(location.x / 4f), (int)Math.Floor(location.y / 4f));
+
+            // return the bottom left sector
+            case WorldSpaceUnit.MpaNode:
+                return location;
+
+            default:
+                Debug.LogError("Unknown Unit: " + unit);
+                return new Coord(-1, -1);
+        }
+    }
+
+    public MapSector GetSectorAt(WorldSpaceUnit unit, Coord location,string levelName)
+    {
+        Coord SectorLocation = ConvertToSectorSpace(unit, location);
+
+        Coord MapNodLocation = ConvertToMapNode(WorldSpaceUnit.Sector, SectorLocation);
+        MapNode mapNode = GetMapNodeAt(MapNodLocation, levelName);
+        MapSector mapSector = null;
+        if (mapNode != null)
+        {
+            Coord SectorInNode = GetMapNodeSectorFromWorldSpaceSector(SectorLocation);
+            mapSector = mapNode.getSectorAt(SectorInNode);
+        }
+
+        return mapSector;
+    }
+
+    public Coord GetMapNodeSectorFromWorldSpaceSector(Coord location)
+    {
+        return new Coord(location.x % 4, location.y % 4);
     }
 
 
@@ -253,6 +435,9 @@ public class MapNode
         return mSectors[location.x, location.y];
     }
 
+
+
+
     private void CreateBlankSectors()
     {
         for(int i =0; i<4;i++)
@@ -297,6 +482,8 @@ public class MapNode
             return false;
         }
 
+        
+
         fileLoader.getLineCommaDelim();//Param line
 
         List<int[,]> SectorRowObstacles0;
@@ -334,29 +521,49 @@ public class MapNode
         SectorRowFloor2 = fileLoader.GetIntLineCommaDelim(SECTOR_TILE_SIZE, SECTOR_TILE_SIZE);
         SectorRowFloor3 = fileLoader.GetIntLineCommaDelim(SECTOR_TILE_SIZE, SECTOR_TILE_SIZE);
 
+        Coord SectorLocation;
 
         for (int i = 0; i < 4; i++)
         {
+            SectorLocation = new Coord(lRoomLocation.x * 4 + i, (lRoomLocation.y * 4) + 3);
+
             //Debug.Log(i);
             mSectors[i , 3 ] = new MapSector(this,
+                SectorLocation,
                 (SpawnType[,])(object)SectorRowObstacles0[i],
                 (FloorTiles[,])(object)SectorRowFloor0[i]);
         }
+
+
         for (int i = 0; i < 4; i++)
-            mSectors[i,2] = new MapSector(this,
+        {
+            SectorLocation = new Coord(lRoomLocation.x * 4 + i, (lRoomLocation.y * 4) + 2);
+
+            mSectors[i, 2] = new MapSector(this,
+                SectorLocation,
                 (SpawnType[,])(object)SectorRowObstacles1[i],
                 (FloorTiles[,])(object)SectorRowFloor1[i]);
+        }
+
 
         for (int i = 0; i < 4; i++)
-            mSectors[i,1] = new MapSector(this,
+        {
+            SectorLocation = new Coord(lRoomLocation.x * 4 + i, (lRoomLocation.y * 4) + 1);
+
+            mSectors[i, 1] = new MapSector(this,
+                SectorLocation,
                 (SpawnType[,])(object)SectorRowObstacles2[i],
                 (FloorTiles[,])(object)SectorRowFloor2[i]);
+        }
 
         for (int i = 0; i < 4; i++)
-            mSectors[i,0] = new MapSector(this,
+        {
+            SectorLocation = new Coord(lRoomLocation.x * 4 + i, (lRoomLocation.y * 4) + 0);
+            mSectors[i, 0] = new MapSector(this,
+                SectorLocation,
                 (SpawnType[,])(object)SectorRowObstacles3[i],
                 (FloorTiles[,])(object)SectorRowFloor3[i]);
-
+        }
         return true;
 
     }

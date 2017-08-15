@@ -24,8 +24,10 @@ public class PersistentEntity : MonoBehaviour, IDamageable {
     // Resources, TODO drop when killed
     protected Inventory mInventory;
 
-    MapSector SectorSpawn;
-    Coord TileLocationInSector;
+    public SpawnType spawnType { get; set; }
+
+    public MapSector SectorSpawn{ get; private set; }
+    public Coord TileLocationInSector { get; private set; }
 
     public void SetSpawnPoint(MapSector sector, Coord Tile)
     {
