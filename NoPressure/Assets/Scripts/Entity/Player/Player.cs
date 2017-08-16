@@ -7,6 +7,10 @@ using System;
 public class Player : MovingEntity
 {
 
+
+    public delegate PersistentEntity AttemptDropItem(Transform lTransform, IInventoryItem lItem);
+    public AttemptDropItem mAttemptDropItem;
+
     Rigidbody rb;
     // Player Condition
     Vector3 mVelocity;
@@ -140,21 +144,27 @@ public class Player : MovingEntity
         // Don't do anything if we are not holding an item
         if (mInventory.GetSelectionItem() == null)
             return false;
-        
+
         // Try to spawn the item on the ground, is sucessfull
         // remove the item from our inventory
-        if (PrefabSpawner.GetPrefabSpawner().CreateCrate(
-            (int)Math.Round(transform.position.x,0), 
-            (int)Math.Round(transform.position.z,0),
-            mInventory.GetSelectionItem()) == true)
-        {
-            // Remove item from inventory
-            mInventory.RemoveSelectedItem();
 
-            // Reflect the loss of item in the GUI
-            pInventoryDisplay[mInventory.getSelectionIndex()].Find("Image").GetComponent<Image>().sprite = pEmptyInventorySprite;
-            UpdateResourceInGUI();
-            return true;
+        if (mAttemptDropItem != null)
+        {
+            if (mAttemptDropItem(transform, mInventory.GetSelectionItem()) != null)
+            {
+                //if (PrefabSpawner.GetPrefabSpawner().CreateCrate(
+                //    (int)Math.Round(transform.position.x,0), 
+                //    (int)Math.Round(transform.position.z,0),
+                //    mInventory.GetSelectionItem()) == true)
+                //{
+                // Remove item from inventory
+                mInventory.RemoveSelectedItem();
+
+                // Reflect the loss of item in the GUI
+                pInventoryDisplay[mInventory.getSelectionIndex()].Find("Image").GetComponent<Image>().sprite = pEmptyInventorySprite;
+                UpdateResourceInGUI();
+                return true;
+            }
         }
 
         // Failed to drop item on the ground, there may be too many 

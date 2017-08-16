@@ -5,19 +5,31 @@ using System;
 
 public class MapController : MonoBehaviour
 {
-    private static MapController instance;
+    // public Settings
 
+    // How many sectors [10x10 Tiles] are to be kept in memory in each direction
+    // 0 = 1 Sector loaded [1x1 sectors in memory]
+    // 1 = 9 Sectors loaded [3x3 sectors in memory]
+    // 2 = 25 Sectors loaded [5x5 sectors in memory] * recommended
+    // 3 = 49 Sectors loaded [7x7 sectors in memory] 
+    // 4 = 81 Sectors loaded [9x9 sectors in memory]
+    public int pLoadRadius = 2;
+
+    //   How often to check if the focus has moved to another sector and to 
+    // schedule loading of sectors within the load radius and unload sectors
+    // outside that range
+    public float pUpdateDelay = 1f;
+
+    // Current time counter for update delay
+    float mUpdateCurrent = 0f;
+
+    // TODO: Get from camera controller
     public Transform CameraFocus { get; set; }
-    const int LoadRadius = 2;// Max = 4 (64 sectors or 6400 tiles)
-    string levelName = "Demo";
-
+    
     PrefabSpawner spawner;
 
     Coord CurrentSector;
     Coord CurrentMapNode;
-
-    float updateDelay = 1f;
-    float updateCurrent = 0f;
 
     PathfindingManager pathfindingManager;
     PrefabSpawner prefabSpawner;
@@ -25,48 +37,17 @@ public class MapController : MonoBehaviour
     Queue<MapSector> SectorsToSpawnQueue;
     Queue<MapSector> SectorsToDespawnQueue;
 
-    public bool LoadNextSector()
-    {
-        if (SectorsToSpawnQueue.Count == 0)
-            return false;
-
-        PrefabSpawner.GetPrefabSpawner().SpawnSector(SectorsToSpawnQueue.Dequeue());
-        return true;
-    }
-
-    public bool DespawnNextSector()
-    {
-        if (SectorsToDespawnQueue.Count == 0)
-            return false;
-
-        PrefabSpawner.GetPrefabSpawner().DespawnSector(SectorsToDespawnQueue.Dequeue());
-        return true;
-    }
+    TheDynamicLoader gDynamicLoader;
 
     private void Awake()
     {
-        if (instance == null)
-        {
-            instance = this;
-        }
         SectorsToSpawnQueue = new Queue<MapSector>();
         SectorsToDespawnQueue = new Queue<MapSector>();
     }
 
-    public static MapController GetMapController()
-    {
-        if (instance == null)
-        {
-            Debug.Log("Trying to acces MapController befor it has spawned");
-        }
-        return instance;
-    }
-
     private void Start()
     {
-
-        spawner = PrefabSpawner.GetPrefabSpawner();
-        Debug.Log("LoadRadius: " + LoadRadius);
+        Debug.Log("LoadRadius: " + pLoadRadius);
         if (CameraFocus == null)
         {
             CameraFocus = GameObject.Find("Player").transform;
@@ -74,10 +55,8 @@ public class MapController : MonoBehaviour
         }
 
         pathfindingManager = PathfindingManager.getPathfindingManager();
-        map = Map.getMap();
-        prefabSpawner = PrefabSpawner.GetPrefabSpawner();
-
-
+        //prefabSpawner = PrefabSpawner.GetPrefabSpawner();
+        gDynamicLoader = TheDynamicLoader.getDynamicLoader();
     }
 
     private void Update()
@@ -98,10 +77,10 @@ public class MapController : MonoBehaviour
         if (CameraFocus == null)
             Debug.LogError("Can not find player");
 
-        updateCurrent += Time.deltaTime;
-        if(updateCurrent >= updateDelay )
+        mUpdateCurrent += Time.deltaTime;
+        if(mUpdateCurrent >= pUpdateDelay )
         {
-            updateCurrent = 0;
+            mUpdateCurrent = 0;
             Coord focusSector = map.ConvertToSectorSpace(WorldSpaceUnit.Tile,
                 new Coord((int)CameraFocus.position.x, (int)CameraFocus.position.z));
 
@@ -127,7 +106,7 @@ public class MapController : MonoBehaviour
 
                 CurrentMapNode = NewMapNode;
 
-                DynamicLoader.getDynamicLoader().Rest = true;
+                TheDynamicLoader.getDynamicLoader().Rest = true;
 
             }
         }
@@ -143,16 +122,12 @@ public class MapController : MonoBehaviour
 
         for (int i = LowerBound; i < UpperBound; i++)
         {
-            //Debug.Log(new Coord(i, Col));
-
             MapSector despawnSector = map.GetSectorAt(WorldSpaceUnit.Sector, new Coord(i, Col),"Demo");
             if (despawnSector != null)
             {
-                //Debug.Log(new Coord(i, Col));
                 if (despawnSector.pIsLoaded == true)
                 {
-                    SectorsToDespawnQueue.Enqueue(despawnSector);
-                    Debug.Log(new Coord(i, Col));
+                    ScheduleDespawnSector(despawnSector);
                 }
             }
         }
@@ -165,14 +140,12 @@ public class MapController : MonoBehaviour
 
     public void DespawnRow(int Row, int LowerBound, int UpperBound)
     {
-
         for (int i = LowerBound; i < UpperBound; i++)
         {
             MapSector despawnSector = map.GetSectorAt(WorldSpaceUnit.Sector, new Coord(Row, i),"Demo");
-            //PrefabSpawner.GetPrefabSpawner().DespawnSector(despawnSector,new Coord(Row, i));
             if (despawnSector != null)
                 if (despawnSector.pIsLoaded == true)
-                    SectorsToDespawnQueue.Enqueue(despawnSector);
+                    ScheduleDespawnSector(despawnSector);
         }
     }
 
@@ -188,20 +161,20 @@ public class MapController : MonoBehaviour
         {
             for (int i = 0; i < xChange; i++)
             {
-                DespawnRow(CurrentSector.x - i - LoadRadius);
+                DespawnRow(CurrentSector.x - i - pLoadRadius);
             }
-            Debug.Log("Despawn left of :" + (focusSector.x - LoadRadius));
-            RemoveEntities = prefabSpawner.FindEntityLeftOf(focusSector.x - LoadRadius );
+            Debug.Log("Despawn left of :" + (focusSector.x - pLoadRadius));
+            RemoveEntities = prefabSpawner.FindEntityLeftOf(focusSector.x - pLoadRadius );
         }
 
         else if (xChange < 0)
         {
             for (int i = 0; i < -xChange; i++)
             {
-                DespawnRow(CurrentSector.x + i + LoadRadius);
+                DespawnRow(CurrentSector.x + i + pLoadRadius);
             }
-            Debug.Log("Despawn right of :" + (focusSector.x + LoadRadius));
-            RemoveEntities = prefabSpawner.FindEntityRightOf(focusSector.x + LoadRadius );
+            Debug.Log("Despawn right of :" + (focusSector.x + pLoadRadius));
+            RemoveEntities = prefabSpawner.FindEntityRightOf(focusSector.x + pLoadRadius );
         }
 
         if (RemoveEntities.Count >0)
@@ -214,27 +187,26 @@ public class MapController : MonoBehaviour
         {
             for (int i = 0; i < yChange; i++)
             {
-                DespawnCol(CurrentSector.y - i - LoadRadius);
+                DespawnCol(CurrentSector.y - i - pLoadRadius);
             }
-            Debug.Log("Despawn Below of :" + (focusSector.y - LoadRadius));
-            RemoveEntities = prefabSpawner.FindEntityBelow(focusSector.y - LoadRadius );
+            Debug.Log("Despawn Below of :" + (focusSector.y - pLoadRadius));
+            RemoveEntities = prefabSpawner.FindEntityBelow(focusSector.y - pLoadRadius );
         }
 
         else if (yChange < 0)
         {
             for (int i = 0; i < -yChange; i++)
             {
-                DespawnCol(CurrentSector.y + i + LoadRadius);
+                DespawnCol(CurrentSector.y + i + pLoadRadius);
             }
-            Debug.Log("Despawn Above of :" + (focusSector.y + LoadRadius));
-            RemoveEntities = prefabSpawner.FindEntityAbove(focusSector.y + LoadRadius );
+            Debug.Log("Despawn Above of :" + (focusSector.y + pLoadRadius));
+            RemoveEntities = prefabSpawner.FindEntityAbove(focusSector.y + pLoadRadius );
         }
 
         if (RemoveEntities.Count > 0)
         {
             prefabSpawner.DespawnList(RemoveEntities);
         }
-
     }
 
     public void ResetLevel()
@@ -242,10 +214,17 @@ public class MapController : MonoBehaviour
         map.SetAllSectorsToNotLoaded();
     }
 
-    public void Init(WorldSpaceUnit unit, Coord location)
+    // Load the map starting at location
+    public void Init(WorldSpaceUnit unit, Coord location, PrefabSpawner lPrefabSpawner)
     {
-        if (map == null)
-            map = Map.getMap();
+        map = new Map();
+
+        prefabSpawner = lPrefabSpawner;
+        prefabSpawner.Init(map.SaveLocationOnMap);
+
+        Player player = GameObject.Find("Player").GetComponent<Player>();
+
+        player.mAttemptDropItem += lPrefabSpawner.CreateCrate;
 
         Debug.Log("Init Map");
 
@@ -260,48 +239,75 @@ public class MapController : MonoBehaviour
         LoadSector(unit, location);
     }
 
+    // Load everything in one frame, only call during Init
     public void LoadSector(WorldSpaceUnit unit, Coord location)
     {
-        // Convert everything into Sector units
-        Coord StartSectorLocation = map.ConvertToSectorSpace(unit, location);
+        List<MapSector> SpawnSectors = FindSectorsToSpawn(unit,location);
 
-        for (int i = -LoadRadius; i <= LoadRadius; i++)
-            for (int j = -LoadRadius; j <= LoadRadius; j++)
-            {
-                Coord SectorLocation = new Coord(StartSectorLocation.x + i, StartSectorLocation.y + j);
-                MapSector mapSector = map.GetSectorAt(WorldSpaceUnit.Sector, SectorLocation,"Demo");
-                if (mapSector != null)
-                {
-                    //SectorsToSpawnQueue.Enqueue(mapSector);
-                    PrefabSpawner.GetPrefabSpawner().SpawnSector(mapSector);
-                }
-            }
+        for (int i =0; i<SpawnSectors.Count; i++)
+            prefabSpawner.SpawnSector(SpawnSectors[i]);
     }
 
+    // Load sector over several frames.
     public void LoadSectorPerformance(WorldSpaceUnit unit, Coord location)
     {
-        // Convert everything into Sector units
-        Coord StartSectorLocation = map.ConvertToSectorSpace(unit, location);
+        List<MapSector> SpawnSectors = FindSectorsToSpawn(unit, location);
 
-        for (int i = -LoadRadius; i<= LoadRadius; i++)
-            for(int j = -LoadRadius; j<= LoadRadius; j++)
-            {
-                Coord SectorLocation = new Coord(StartSectorLocation.x + i, StartSectorLocation.y + j);
-                MapSector mapSector = map.GetSectorAt(WorldSpaceUnit.Sector, SectorLocation,"Demo");
-                if (mapSector != null)
-                {
-                    SectorsToSpawnQueue.Enqueue(mapSector);
-                    //PrefabSpawner.GetPrefabSpawner().SpawnSector(mapSector, SectorLocation);
-                }
-            }
+        for (int i = 0; i < SpawnSectors.Count; i++)
+            ScheduleSpawnSector(SpawnSectors[i]);
     }
 
-    private void LoadLine(int[] csvLine, int height, int room)
+    private List<MapSector> FindSectorsToSpawn(WorldSpaceUnit unit, Coord location)
     {
-        for (int i = 0; i < csvLine.Length; i++)
+        Coord StartSectorLocation = map.ConvertToSectorSpace(unit, location);
+        List<MapSector> returnVal = new List<MapSector>();
+
+        for (int i = -pLoadRadius; i <= pLoadRadius; i++)
+            for (int j = -pLoadRadius; j <= pLoadRadius; j++)
+            {
+                Coord SectorLocation = new Coord(StartSectorLocation.x + i, StartSectorLocation.y + j);
+                MapSector mapSector = map.GetSectorAt(WorldSpaceUnit.Sector, SectorLocation, "Demo");
+                if (mapSector != null)
+                {
+                    returnVal.Add(mapSector);
+                }
+            }
+        return returnVal;
+    }
+
+    public void ScheduleSpawnSector(MapSector lSectorToSpawn)
+    {
+        SectorsToSpawnQueue.Enqueue(lSectorToSpawn);
+        gDynamicLoader.AddActionToQueue(SpawnNextSector, Priority.High);
+    }
+
+    public void ScheduleDespawnSector(MapSector lSectorToDespawn)
+    {
+        SectorsToDespawnQueue.Enqueue(lSectorToDespawn);
+        gDynamicLoader.AddActionToQueue(DespawnNextSector, Priority.Low);
+    }
+
+    // Expensive action, call only one expensive action per frame with the help of DynamicLoader
+    public void SpawnNextSector()
+    {
+        if (SectorsToSpawnQueue.Count == 0)
         {
-            spawner.SpawnPrefab((SpawnType)csvLine[i], new Coord(i, height));
+            Debug.Log("Warning, Dynamic loader and SectorsToSpawnQueue out of sync");
+            return;
         }
+        prefabSpawner.SpawnSector(SectorsToSpawnQueue.Dequeue());
+    }
+
+    // Expensive action, call only one expensive action per frame with the help of DynamicLoader
+    public void DespawnNextSector()
+    {
+        if (SectorsToDespawnQueue.Count == 0)
+        {
+            Debug.Log("Warning, Dynamic loader and SectorsToDespawnQueue out of sync");
+            return;
+        }
+
+        prefabSpawner.DespawnSector(SectorsToDespawnQueue.Dequeue());
     }
 
 }

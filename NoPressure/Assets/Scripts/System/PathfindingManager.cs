@@ -10,18 +10,28 @@ public class PathfindingManager {
     GridGraph[,] mapNodeAStarGraphs = new GridGraph[3,3];
     Coord PlayerMapNode;
 
+    TheDynamicLoader gDynamicLoader;
     Queue<GridGraph> GridGraphsToScanQueue;
 
     AstarPath aStarPath;
 
-    public bool ScanNextQueue()
+    private void ScheduleScan(GridGraph lToScan)
+    {
+        GridGraphsToScanQueue.Enqueue(lToScan);
+        gDynamicLoader.AddActionToQueue(ScanNextQueue,Priority.Medium);
+    }
+
+    // Expensive action, call only once per turn with the help of DynamicLoader
+    public void ScanNextQueue()
     {
         if (GridGraphsToScanQueue.Count == 0)
         {
-            return false;
+            // Beware of adding ScanNextQueue to the action queue 
+            Debug.Log("Warning, DynamicLoader and Scan queue may be out of sinc");
+            return;
         }
+
         AstarPath.active.Scan(GridGraphsToScanQueue.Dequeue());
-        return true;
     }
 
     public static PathfindingManager getPathfindingManager()
@@ -41,6 +51,8 @@ public class PathfindingManager {
     
     public void Init(Coord MapNode)
     {
+        gDynamicLoader = TheDynamicLoader.getDynamicLoader();
+
         Debug.Log("OnInit");
         PlayerMapNode = MapNode; 
         aStarPath = GameObject.Find("_A*").GetComponent<AstarPath>();
@@ -49,8 +61,6 @@ public class PathfindingManager {
             Debug.Log("num of graphs need to be 9");
 
         }
-
-
 
         for (int i = 0; i < 9; i++)
         {
@@ -81,7 +91,7 @@ public class PathfindingManager {
             mapNodeAStarGraphs[i, 2] = temp;
 
             mapNodeAStarGraphs[i, 2].center = new Vector3(40 * (PlayerMapNode.x + i - 1) + 19.5f, -0.1f, 40 * (PlayerMapNode.y + 1) + 19.5f);
-            GridGraphsToScanQueue.Enqueue(mapNodeAStarGraphs[i, 2]);
+            ScheduleScan(mapNodeAStarGraphs[i, 2]);
             //AstarPath.active.Scan(mapNodeAStarGraphs[i, 2]);
             
         }
@@ -99,7 +109,7 @@ public class PathfindingManager {
             mapNodeAStarGraphs[i, 0] = temp;
 
             mapNodeAStarGraphs[i, 0].center = new Vector3(40 * (PlayerMapNode.x + i -1) + 19.5f, -0.1f, 40 * (PlayerMapNode.y -1) + 19.5f);
-            GridGraphsToScanQueue.Enqueue(mapNodeAStarGraphs[i, 0]);
+            ScheduleScan(mapNodeAStarGraphs[i, 0]);
             //AstarPath.active.Scan(mapNodeAStarGraphs[i, 0]);
         }
 
@@ -117,7 +127,7 @@ public class PathfindingManager {
             mapNodeAStarGraphs[2, i] = temp;
 
             mapNodeAStarGraphs[2, i].center = new Vector3(40 * (PlayerMapNode.x + 1) + 19.5f, -0.1f, 40 * (PlayerMapNode.y + i - 1) + 19.5f);
-            GridGraphsToScanQueue.Enqueue(mapNodeAStarGraphs[2, i]);
+            ScheduleScan(mapNodeAStarGraphs[2, i]);
             //AstarPath.active.Scan(mapNodeAStarGraphs[2, i]);
         }
     }
@@ -134,7 +144,7 @@ public class PathfindingManager {
             mapNodeAStarGraphs[0, i] = temp;
 
             mapNodeAStarGraphs[0, i].center = new Vector3(40 * (PlayerMapNode.x - 1) + 19.5f, -0.1f, 40 * (PlayerMapNode.y + i - 1) + 19.5f);
-            GridGraphsToScanQueue.Enqueue(mapNodeAStarGraphs[0, i]);
+            ScheduleScan(mapNodeAStarGraphs[0, i]);
             //AstarPath.active.Scan(mapNodeAStarGraphs[0, i]); 
         }
     }

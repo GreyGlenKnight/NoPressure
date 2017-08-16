@@ -91,8 +91,6 @@ public class ControlsManager : MonoBehaviour {
 	// Update is called once per frame
 	void Update () {
 
-        if (GameManager.instance.loading)
-            return;
 
 		if (Input.GetJoystickNames().Contains("Controller (XBOX 360 For Windows)"))
 			controlPlayerXboxController();

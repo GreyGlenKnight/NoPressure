@@ -7,17 +7,11 @@ using Pathfinding;
 
 public class PrefabSpawner : MonoBehaviour {
 
-    // Singleton to Spawn assets in the world
-    private static PrefabSpawner instance;
-
     public Transform MovingUnitsHolder;
     public Transform BlankObject;
     public Transform BoardHolder;
 
     private List<Transform> NoSpawnTilesList; //TODO add in sector logic
-
-    private Transform groundPlane;
-    private NavMeshSurface groundSurface;
 
     public Transform ElectricTrapTile;
     public Transform PressureTile;
@@ -26,49 +20,20 @@ public class PrefabSpawner : MonoBehaviour {
     public Transform CratePrefab;
     public Transform[] enemies;
 
-    TileInfo[,] tileMap;
-
     private List<Transform> movingEntities = new List<Transform>();
+
+    private Action<Transform> mSaveLocationOnMap;
 
     private void Awake()
     {
-
-        //// Ensure the instance is of the type GameManager
-        //if (instance == null)
-            instance = this;
-        //else if (instance != this)
-        //{
-        //    Debug.Log("SelfDestroy");
-        //    Destroy(gameObject);
-        //}
-        //// Persist the GameManager instance across scenes
-        //DontDestroyOnLoad(gameObject);
-
         NoSpawnTilesList = new List<Transform>();
         BoardHolder = transform.Find("BoardHolder").transform;
-        //MovingUnitsHolder = transform.Find("BoardHolder").transform;
     }
 
-    public static PrefabSpawner GetPrefabSpawner()
+    public void Init(Action<Transform> lSaveLocationOnMap)
     {
-        if (instance == null)
-        {
-            Debug.Log("Trying to access PrefabSpawner before it has loaded");
-        }
-        return instance;
-
+        mSaveLocationOnMap = lSaveLocationOnMap;
     }
-
-
-	// Use this for initialization
-	void Start () {
-        //tileMap = new TileInfo[10 * + 1, Height + 1];
-    }
-	
-	// Update is called once per frame
-	void Update () {
-		
-	}
 
     public void SpawnSector(MapSector SpawnSector )
     {
@@ -95,14 +60,15 @@ public class PrefabSpawner : MonoBehaviour {
             for (int j = 0; j<10; j++)
             {
                 PersistentEntity entity;
-                //Debug.Log((SectorLocation.x * 10) +"," + (SectorLocation.y * 10 + j));
                 SpawnType spawnType = SpawnSector.GetSpawnAt(i, j);
 
                 entity = SpawnPrefab(spawnType, new Coord(SectorLocation.x*10 + i, SectorLocation.y*10 + j));
                 
+
                 if (entity != null)
                 {
                     entity.spawnType = spawnType;
+                    entity.mOnDeathHandler += DespawnObject;
                     if (entity is MovingEntity)
                     {
                         Debug.Log("Adding Moving entity");
@@ -110,6 +76,7 @@ public class PrefabSpawner : MonoBehaviour {
                         entity.transform.parent = MovingUnitsHolder;
                         entity.SetSpawnPoint(SpawnSector,new Coord(i, j));
                         SpawnSector.RemoveObjectAt(new Coord(i, j));
+                        entity.mOnDespawn += mSaveLocationOnMap;
                     }
                     else
                     {
@@ -183,7 +150,6 @@ public class PrefabSpawner : MonoBehaviour {
         return returnVal;
     }
 
-
     public void DespawnList(List<Transform> despawn)
     {
         for(int i=0; i<despawn.Count; i++)
@@ -192,13 +158,6 @@ public class PrefabSpawner : MonoBehaviour {
             SpawnType spawnType = entity.spawnType;
             Coord location = new Coord((int)Math.Round(despawn[i].position.x, 0), (int)Math.Round(despawn[i].position.z, 0));
 
-            //Debug.Log(location);
-
-            if(entity.mDead == false)
-            Map.getMap().SetObjectAtTile(
-                spawnType,
-                location);
-
             movingEntities.Remove(despawn[i]);
             despawn[i].gameObject.SetActive(false);
 
@@ -206,34 +165,6 @@ public class PrefabSpawner : MonoBehaviour {
 
         }
     }
-
-    //public List<Transform> findObjectsAtSector(List<Transform> Search,Coord Sector)
-    //{
-    //    List<Transform> returnVal = new List<Transform>();
-    //    for(int i = 0; i< Search.Count; i++)
-    //    {
-    //        int Highboundx = ((Sector.x +1 ) * 10) +5;
-    //        int LowBoundx = ((Sector.x ) * 10) +5;
-    //        int HighBoundZ = ((Sector.y + 1) * 10) +5;
-    //        int LowBoundZ = ((Sector.y) * 10) +5;
-
-    //        Debug.Log(LowBoundx +"<" +Search[i].position.x + "<" + Highboundx
-    //            + "\n" + LowBoundZ + "<" + Search[i].position.z + "<" + HighBoundZ);
-
-    //        if (Search[i].position.x <= Highboundx && Search[i].position.x >= LowBoundx)
-    //        {
-    //            Debug.Log("X in bounds");
-    //            if (Search[i].position.z <= HighBoundZ && Search[i].position.z >= LowBoundZ)
-    //            {
-    //                Debug.Log("Found some object in bounds");
-    //                returnVal.Add(Search[i]);
-    //                Search.RemoveAt(i); 
-    //            }
-    //        }
-    //    }
-
-    //    return returnVal;
-    //}
 
     public void DespawnSector(MapSector SpawnSector)
     {
@@ -267,31 +198,11 @@ public class PrefabSpawner : MonoBehaviour {
             Destroy(childList[i].gameObject);
         }
 
-        // find moving objects that where in that sector
-        //List<Transform> ToDespawn = findObjectsAtSector(movingEntities, SpawnSector.mSectorLocation);
-
-        //for (int i = 0; i < ToDespawn.Count; i++)
-        //{
-        //    MovingEntity currentToDespawn = ToDespawn[i].GetComponent<MovingEntity>();
-
-        //    // Add them to the Sector Data
-        //    SpawnSector.SetObjectAt(
-        //        new Coord((int)Math.Round(ToDespawn[i].position.x,0),
-        //        (int) Math.Round (ToDespawn[i].position.z,0)),
-        //        currentToDespawn.spawnType);
-
-        //    // Destroy them
-        //    ToDespawn[i].gameObject.SetActive(false);
-        //    Destroy(ToDespawn[i].gameObject); 
-        //}
-
         SpawnSector.pIsLoaded = false;
     }
 
     public PersistentEntity SpawnPrefab(SpawnType itemTypeToSpawn, Coord SpawnLocation)
     {
-        //tileMap[SpawnLocation.x, SpawnLocation.y] = new TileInfo(SpawnLocation, TilePosition.Room, PrefabType.None, "");
-
         switch (itemTypeToSpawn)
         {
             case SpawnType.None:
@@ -399,6 +310,14 @@ public class PrefabSpawner : MonoBehaviour {
 
         return crateObject.GetComponent<EffectTile>();
 
+    }
+
+    public PersistentEntity CreateCrate(Transform location, IInventoryItem contents)
+    {
+        return CreateCrate(
+            (int) Math.Round(location.position.x, 0),
+            (int) Math.Round(location.position.z, 0),
+            contents);
     }
 
     public PersistentEntity CreateCrate(Coord location, IInventoryItem contents)
@@ -600,15 +519,8 @@ public class PrefabSpawner : MonoBehaviour {
 
     public PersistentEntity CreateWall(int x, int z)
     {
-
-
-        // TileInfo wallTileInfo = roomSlots.Dequeue();
-        //wallTileInfo.prefabType = PrefabType.Wall;
-        //Transform wallPrefab = wallTiles[Random.Range(0, wallTiles.Length - 1)];
         Transform wallPrefab = GameObject.Find("Wall").transform;
         Transform wallTile = Instantiate(wallPrefab, new Vector3(x, 1, z), Quaternion.identity);
-
-        //Debug.Log("Wall");
 
         GraphUpdateObject GUO = new GraphUpdateObject();
         GUO.bounds = new Bounds(new Vector3(x , 0.0f, z), new Vector3(1.4f, 2f, 1.4f));
@@ -629,11 +541,8 @@ public class PrefabSpawner : MonoBehaviour {
         return CreateEnemy(location.x, location.y);
     }
 
-
     public PersistentEntity CreateEnemy(int x, int z)
     {
-        //TileInfo enemyTileInfo = roomSlots.Dequeue();
-        //enemyTileInfo.prefabType = PrefabType.Enemy;
         Transform enemyPrefab = enemies[UnityEngine.Random.Range(0, enemies.Length - 1)];
         Transform enemy = Instantiate(enemyPrefab, new Vector3(x, 0.8f, z), Quaternion.identity);
 
@@ -641,15 +550,15 @@ public class PrefabSpawner : MonoBehaviour {
         int enemyDamage = 1;
 
         Color enemyColor = Color.red;
+        Enemy newEnemy = enemy.GetComponent<Enemy>();
+        newEnemy.SetUpEnemy(enemyHealth, enemyDamage, enemyColor, 1, 2);
+        //newEnemy.mOnDeathHandler +=
 
-        enemy.GetComponent<Enemy>().SetUpEnemy(enemyHealth, enemyDamage, enemyColor, 1, 2);
-         
-        return enemy.GetComponent<Enemy>();
+        return newEnemy;
     }
 
-    public void DespawnObject(GameObject despawn)
+    public void DespawnObject(Transform despawn)
     {
-        
         DestructibleObstacle Obstacle = despawn.GetComponent<DestructibleObstacle>();
         if (Obstacle != null)
         {
@@ -662,8 +571,6 @@ public class PrefabSpawner : MonoBehaviour {
             AstarPath.active.UpdateGraphs(GUO);
         }
 
-        despawn.SetActive(false);
-        
+        despawn.gameObject.SetActive(false);
     }
-
 }

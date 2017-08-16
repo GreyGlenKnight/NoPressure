@@ -57,7 +57,8 @@ public class Crate : PersistentEntity {
             Destroy(gameObject);
         }
 
-        SectorSpawn.RemoveObjectAt(TileLocationInSector);
+        Die();
+        //SectorSpawn.RemoveObjectAt(TileLocationInSector);
 
     }
 

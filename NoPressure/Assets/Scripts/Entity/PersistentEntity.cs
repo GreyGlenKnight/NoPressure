@@ -3,8 +3,11 @@
 // Everything that can Die() or be destroyed.
 public class PersistentEntity : MonoBehaviour, IDamageable {
 
-    // Event to be fired off when LivingEntity dies
-    public event System.Action mOnDeathHandler;
+    // Event to be fired off when PersistentEntity dies
+    public event System.Action<Transform> mOnDeathHandler;
+
+    // Event to be fired off when PersistentEntity is despawned
+    public event System.Action<Transform> mOnDespawn;
 
     // Public Set variables
     public int pMaxHealth = 1;
@@ -107,13 +110,20 @@ public class PersistentEntity : MonoBehaviour, IDamageable {
         }
     }
 
+    // What to do when this entiry has despawned from being to far away
+    public virtual void Despawn()
+    {
+        if (mOnDespawn != null)
+            mOnDespawn(transform);
+    }
+
     public virtual void Die()
     {
         mDead = true;
 
         // If there are any on death triggers, call them
         if (mOnDeathHandler != null)
-            mOnDeathHandler.Invoke();
+            mOnDeathHandler(transform);
 
         //If it dies remove it from the Sector
         if (SectorSpawn == null)
@@ -131,7 +141,7 @@ public class PersistentEntity : MonoBehaviour, IDamageable {
             }
         }
 
-        PrefabSpawner.GetPrefabSpawner().DespawnObject(gameObject);
+        //mPrefabSpawner.DespawnObject(gameObject);
 
     }
 

@@ -1,137 +1,50 @@
 ﻿using UnityEngine;
 using UnityEngine.SceneManagement;
-using Pathfinding;
-using UnityEngine.SceneManagement;
-using System.Collections;
 
 public class GameManager : MonoBehaviour
 {
-    public static GameManager instance = null;
-    private BoardManager boardScript;
-    private Player player;
-
-    private ControlsManager controlsManager;
-    private CameraController cameraController;
-
-    public int level = 0;
-    public bool loading = true;
-
-    public float playerHealth;
-    public float playerXP;
-
-    private bool isLoaded = false;
-
-
-    private void Awake()
-    {
-        Debug.Log("Awake");
-        // Ensure the instance is of the type GameManager
-        //if (instance == null)
-            instance = this;
-        //else if (instance != this)
-        //{
-        //    Debug.Log("SelfDestroy");
-        //    Destroy(gameObject);
-        //}
-        //// Persist the GameManager instance across scenes
-        //DontDestroyOnLoad(gameObject);
-
-        boardScript = GetComponent<BoardManager>();
-        controlsManager = GetComponent<ControlsManager>();
-        cameraController = GetComponent<CameraController>();
-    }
+    public Coord pStartLocation = new Coord(65,115);
+    public string levelName = "Demo";
 
     private void Start()
     {
-        Debug.Log("Start");
-        //LoadLevel();
+        Debug.Log("Awake 9"); 
 
-
-    }
-
-    private void LoadLevel()
-    {
-
+        // Set the camera on the control manager to allow manual control of the camera
+        // or assign camera to have a different focus
+        // ^ Not implemented currently
+        CameraController cameraController = GetComponent<CameraController>();
+        ControlsManager controlsManager = GetComponent<ControlsManager>();
         controlsManager.SetCameraController(cameraController);
 
-        player = GameObject.FindGameObjectWithTag("Player").GetComponent<Player>();
-        //playerHealth = 10;
+        // Assign a Game over condition to the player that is called if the player dies
+        Player player = GameObject.FindGameObjectWithTag("Player").GetComponent<Player>();
         player.mOnDeathHandler += GameOver;
 
-        Debug.Log("Game Start 15");
+        // Load the map
+        //MapController mapContoller = MapController.GetMapController();
 
-        PathfindingManager pathfindingmanager = PathfindingManager.getPathfindingManager();
-        //pathfindingmanager.Init(new Coord(1, 2));
+        PrefabSpawner prefabSpawner = GetComponent<PrefabSpawner>();
 
-        boardScript.SetUpLevel(BoardManager.LevelType.FromFileMap, new Coord(65, 115));
+        MapController mapContoller =GetComponent<MapController>();
+        mapContoller.Init(WorldSpaceUnit.Tile, pStartLocation, prefabSpawner);
+
+        // Move the player to the starting location
+        player.transform.position = new Vector3(pStartLocation.x, 1, pStartLocation.y);
     }
 
-    private void OnUpdate()
+    void GameOver(Transform player)
     {
+        GameOver();
     }
 
-    void OnSceneLoaded(Scene scene, LoadSceneMode mode)
-    {
-        if (scene.buildIndex != 2)
-        {
-            Debug.Log("Loading not Game scene");
-            return;
-        }
-        Debug.Log("Scene Loaded");
-        LoadLevel();
-    }
-
-    //void OnLevelFinishedLoading(Scene scene, LoadSceneMode mode)
-    //{
-    //    if (scene.name == "Game")
-    //    {
-    //        player = GameObject.FindGameObjectWithTag("Player").GetComponent<Player>();
-    //        level++;
-    //        loading = true;
-
-
-    //        Debug.Log("Scene");
-    //        // TODO: show a loading banner here
-    //        //boardScript.SetUpLevel(BoardManager.LevelType.DebugOpenArea);
-    //        //boardScript.SetUpLevel(BoardManager.LevelType.FromFileMap, new Coord(1,2));
-    //    }
-    //}
-
-
-    private void OnEnable()
-    {
-        //SceneManager.sceneLoaded += OnLevelFinishedLoading;
-        SceneManager.sceneLoaded += OnSceneLoaded;
-    }
-    private void OnDisable()
-    {
-        SceneManager.sceneLoaded -= OnSceneLoaded;
-    }
-    public void Restart()
-    {
-        // compute new health as fraction of xp
-        float currentHealth = player.mHealth;
-        //float currentXP = player.mExperience;
-
-        //float remainingXP = currentXP % 5;
-        //float healthGain = currentXP / 5;
-
-        // store player stats
-        //playerHealth = currentHealth + healthGain;
-        //playerXP = remainingXP;
-
-        boardScript.DestroyLevel();
-        SceneManager.LoadScene("Loading");
-    }
-
+    // What happens if there is a game over event
     void GameOver()
     {
-        isLoaded = false;
-        Debug.Log("Reloading game");
-        MapController.GetMapController().ResetLevel();
+        // Non-mono objects retain their state, make sure that relevent data is reset
+        GetComponent<MapController>().ResetLevel();
+
+        // Load the loading scene
         SceneManager.LoadScene(1);
-        //SceneManager.LoadSceneAsync("Game");
     }
-
-
 }

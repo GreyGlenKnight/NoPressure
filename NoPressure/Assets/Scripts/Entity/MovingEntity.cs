@@ -15,8 +15,6 @@ public class MovingEntity : PersistentEntity
     // Update is called once per frame
     protected virtual void Update()
     {
-        if (GameManager.instance.loading)
-            return;
 
         if (pIsElectronic == false)
         {

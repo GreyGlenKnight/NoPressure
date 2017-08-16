@@ -26,7 +26,7 @@ public class Enemy : MovingEntity, IItemCase {
     State currentState;
 
     //private NavMeshAgent navMeshAgent;
-    private FloorBoss bossBehaviour;
+    //private FloorBoss bossBehaviour;
     Transform target;
     PersistentEntity targetEntity;
     bool hasTarget;
@@ -72,7 +72,7 @@ public class Enemy : MovingEntity, IItemCase {
 
         //navMeshAgent = GetComponent<NavMeshAgent>();
         skinMaterial = GetComponent<Renderer>().material;
-        bossBehaviour = GetComponent<FloorBoss>();
+        //bossBehaviour = GetComponent<FloorBoss>();
 
         //if (GameObject.FindGameObjectWithTag("Player") != null)
         //{
@@ -127,9 +127,6 @@ public class Enemy : MovingEntity, IItemCase {
 
     protected override void Update()
     {
-        if (GameManager.instance.loading)
-            return;
-
         base.Update();
 
         if (CanAttackPlayer())
