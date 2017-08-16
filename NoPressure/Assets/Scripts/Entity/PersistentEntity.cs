@@ -140,9 +140,6 @@ public class PersistentEntity : MonoBehaviour, IDamageable {
                 SectorSpawn.RemoveTileAt(TileLocationInSector);
             }
         }
-
-        //mPrefabSpawner.DespawnObject(gameObject);
-
     }
 
     // This method assumes the amount is positive

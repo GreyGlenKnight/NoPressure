@@ -17,7 +17,6 @@ public enum WorldSpaceUnit
     MpaNode, // 1 File 40x40 Tiles
 }
 
-
 public enum SpawnType
 {
     None = 0,
@@ -43,9 +42,6 @@ public enum SpawnType
 
 };
 
-
-
-
 // MapNode knows how to load information with the help of the loader
 public class MapNode
 {
@@ -58,22 +54,6 @@ public class MapNode
     MapSector[,] mSectors = new MapSector[MAP_NODE_SECTOR_SIZE, MAP_NODE_SECTOR_SIZE];
 
     Coord mRoomLocation;
-
-    //MapNode mMapNodeZUp;
-    //MapNode mMapNodeZDown;
-    //MapNode mMapNodeXUp;
-    //MapNode mMapNodeXDown;
-
-    // Only attempt to load once
-    //public bool AttemptedLoad { get; private set; }
-    //public bool hasLoaded { get; private set; }
-
-    //private MapNode(Coord lRoomLocation, string lMapName)
-    //{
-    //    mRoomLocation = lRoomLocation;
-
-    //    loadMapDataFromFile(lRoomLocation, lMapName);
-    //}
 
     public MapSector getSectorAt(Coord location)
     {
@@ -102,7 +82,6 @@ public class MapNode
         }
     }
 
-
     public MapNode(Coord lStartLocation, string lMapName)
     {
         if (loadMapDataFromFile(lStartLocation, lMapName) == false)
@@ -113,14 +92,12 @@ public class MapNode
         mRoomLocation = lStartLocation;
     }
 
-
     private bool loadMapDataFromFile(Coord lRoomLocation, string lMapName)
     {
-        //int[] DilimLine;
         FileLoader fileLoader = new FileLoader();
 
-        // example Demo23.csv 
-        // example Hello11.csv
+        // Example: Demo23.csv 
+        // Example: Hello11.csv
         string fileName = "Assets\\Levels\\" +lMapName + lRoomLocation.ToString("") + ".csv";
 
         if (fileLoader.load(fileName) == false)
@@ -135,8 +112,6 @@ public class MapNode
             return false;
         }
 
-        
-
         fileLoader.getLineCommaDelim();//Param line
 
         List<int[,]> SectorRowObstacles0;
@@ -150,8 +125,8 @@ public class MapNode
         SectorRowObstacles3 = fileLoader.GetIntLineCommaDelim(SECTOR_TILE_SIZE, SECTOR_TILE_SIZE);
 
         // Now load floor tile map
-        // example Demo23F.csv 
-        // example Hello11F.csv
+        // Example: Demo23F.csv 
+        // Example: Hello11F.csv
         fileName = "Assets\\Levels\\" + lMapName + lRoomLocation.ToString("") + "F.csv";
 
         if (fileLoader.load(fileName) == false)
@@ -187,7 +162,6 @@ public class MapNode
                 (FloorTiles[,])(object)SectorRowFloor0[i]);
         }
 
-
         for (int i = 0; i < 4; i++)
         {
             SectorLocation = new Coord(lRoomLocation.x * 4 + i, (lRoomLocation.y * 4) + 2);
@@ -197,7 +171,6 @@ public class MapNode
                 (SpawnType[,])(object)SectorRowObstacles1[i],
                 (FloorTiles[,])(object)SectorRowFloor1[i]);
         }
-
 
         for (int i = 0; i < 4; i++)
         {
@@ -218,7 +191,5 @@ public class MapNode
                 (FloorTiles[,])(object)SectorRowFloor3[i]);
         }
         return true;
-
     }
-
 }

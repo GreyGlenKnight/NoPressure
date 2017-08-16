@@ -4,8 +4,7 @@ using UnityEngine;
 
 public class MovingEntity : PersistentEntity
 {
-    
-    //TODO add Logic to use pathfinding
+    //TODO add Logic to use pathfinding, currently in enemy
 
 	// Use this for initialization
 	protected override void Start () {
@@ -14,8 +13,7 @@ public class MovingEntity : PersistentEntity
 
     // Update is called once per frame
     protected virtual void Update()
-    {
-
+    { 
         if (pIsElectronic == false)
         {
             mPressure -= Time.deltaTime * mPressureLeakRate;
@@ -30,6 +28,5 @@ public class MovingEntity : PersistentEntity
             Die();
         if (mHealth.IsEmpty())
             Die();
-
     }
 }

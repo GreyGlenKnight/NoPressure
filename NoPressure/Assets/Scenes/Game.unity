@@ -703,99 +703,90 @@ Prefab:
   m_Modification:
     m_TransformParent: {fileID: 0}
     m_Modifications:
-    - target: {fileID: 4342698621100214, guid: 9db7309e16ca22b4d91c05258567c8ef, type: 2}
+    - target: {fileID: 4903048620714974, guid: ca355fba67521734ebccb02d94a5f641, type: 2}
       propertyPath: m_LocalPosition.x
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 4342698621100214, guid: 9db7309e16ca22b4d91c05258567c8ef, type: 2}
+    - target: {fileID: 4903048620714974, guid: ca355fba67521734ebccb02d94a5f641, type: 2}
       propertyPath: m_LocalPosition.y
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 4342698621100214, guid: 9db7309e16ca22b4d91c05258567c8ef, type: 2}
+    - target: {fileID: 4903048620714974, guid: ca355fba67521734ebccb02d94a5f641, type: 2}
       propertyPath: m_LocalPosition.z
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 4342698621100214, guid: 9db7309e16ca22b4d91c05258567c8ef, type: 2}
+    - target: {fileID: 4903048620714974, guid: ca355fba67521734ebccb02d94a5f641, type: 2}
       propertyPath: m_LocalRotation.x
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 4342698621100214, guid: 9db7309e16ca22b4d91c05258567c8ef, type: 2}
+    - target: {fileID: 4903048620714974, guid: ca355fba67521734ebccb02d94a5f641, type: 2}
       propertyPath: m_LocalRotation.y
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 4342698621100214, guid: 9db7309e16ca22b4d91c05258567c8ef, type: 2}
+    - target: {fileID: 4903048620714974, guid: ca355fba67521734ebccb02d94a5f641, type: 2}
       propertyPath: m_LocalRotation.z
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 4342698621100214, guid: 9db7309e16ca22b4d91c05258567c8ef, type: 2}
+    - target: {fileID: 4903048620714974, guid: ca355fba67521734ebccb02d94a5f641, type: 2}
       propertyPath: m_LocalRotation.w
       value: 1
       objectReference: {fileID: 0}
-    - target: {fileID: 4342698621100214, guid: 9db7309e16ca22b4d91c05258567c8ef, type: 2}
+    - target: {fileID: 4903048620714974, guid: ca355fba67521734ebccb02d94a5f641, type: 2}
       propertyPath: m_RootOrder
       value: 8
       objectReference: {fileID: 0}
-    - target: {fileID: 114531559706211388, guid: 9db7309e16ca22b4d91c05258567c8ef,
-        type: 2}
-      propertyPath: player
-      value: 
-      objectReference: {fileID: 510990277}
-    - target: {fileID: 114899026279267066, guid: 9db7309e16ca22b4d91c05258567c8ef,
+    - target: {fileID: 114760069938107710, guid: ca355fba67521734ebccb02d94a5f641,
         type: 2}
       propertyPath: Focus
       value: 
       objectReference: {fileID: 510990275}
-    - target: {fileID: 114899026279267066, guid: 9db7309e16ca22b4d91c05258567c8ef,
+    - target: {fileID: 114760069938107710, guid: ca355fba67521734ebccb02d94a5f641,
         type: 2}
       propertyPath: HUDDisplay
       value: 
       objectReference: {fileID: 995294437}
-    - target: {fileID: 0}
-      propertyPath: PTSDTile
-      value: 
-      objectReference: {fileID: 947038067}
-    - target: {fileID: 1491169282365106, guid: 9db7309e16ca22b4d91c05258567c8ef, type: 2}
-      propertyPath: m_Name
-      value: GameManager
-      objectReference: {fileID: 0}
-    - target: {fileID: 114269294232096384, guid: 9db7309e16ca22b4d91c05258567c8ef,
+    - target: {fileID: 114985953790935870, guid: ca355fba67521734ebccb02d94a5f641,
         type: 2}
-      propertyPath: ElectricTrapTile
+      propertyPath: player
       value: 
-      objectReference: {fileID: 1196310178}
-    - target: {fileID: 114269294232096384, guid: 9db7309e16ca22b4d91c05258567c8ef,
-        type: 2}
-      propertyPath: PressureTile
-      value: 
-      objectReference: {fileID: 947038067}
-    - target: {fileID: 114269294232096384, guid: 9db7309e16ca22b4d91c05258567c8ef,
-        type: 2}
-      propertyPath: BrokenPressureStationTile
-      value: 
-      objectReference: {fileID: 1879687929}
-    - target: {fileID: 114269294232096384, guid: 9db7309e16ca22b4d91c05258567c8ef,
-        type: 2}
-      propertyPath: CratePrefab
-      value: 
-      objectReference: {fileID: 764017676}
-    - target: {fileID: 114269294232096384, guid: 9db7309e16ca22b4d91c05258567c8ef,
-        type: 2}
-      propertyPath: enemies.Array.data[0]
-      value: 
-      objectReference: {fileID: 1794440756}
-    - target: {fileID: 114269294232096384, guid: 9db7309e16ca22b4d91c05258567c8ef,
+      objectReference: {fileID: 510990277}
+    - target: {fileID: 114713651258395106, guid: ca355fba67521734ebccb02d94a5f641,
         type: 2}
       propertyPath: MovingUnitsHolder
       value: 
       objectReference: {fileID: 647495475}
-    - target: {fileID: 114269294232096384, guid: 9db7309e16ca22b4d91c05258567c8ef,
+    - target: {fileID: 114713651258395106, guid: ca355fba67521734ebccb02d94a5f641,
         type: 2}
       propertyPath: BlankObject
       value: 
       objectReference: {fileID: 337953473}
-    m_RemovedComponents:
-    - {fileID: 0}
-  m_ParentPrefab: {fileID: 100100000, guid: 9db7309e16ca22b4d91c05258567c8ef, type: 2}
+    - target: {fileID: 114713651258395106, guid: ca355fba67521734ebccb02d94a5f641,
+        type: 2}
+      propertyPath: ElectricTrapTile
+      value: 
+      objectReference: {fileID: 1196310178}
+    - target: {fileID: 114713651258395106, guid: ca355fba67521734ebccb02d94a5f641,
+        type: 2}
+      propertyPath: PressureTile
+      value: 
+      objectReference: {fileID: 947038067}
+    - target: {fileID: 114713651258395106, guid: ca355fba67521734ebccb02d94a5f641,
+        type: 2}
+      propertyPath: BrokenPressureStationTile
+      value: 
+      objectReference: {fileID: 1879687929}
+    - target: {fileID: 114713651258395106, guid: ca355fba67521734ebccb02d94a5f641,
+        type: 2}
+      propertyPath: CratePrefab
+      value: 
+      objectReference: {fileID: 764017676}
+    - target: {fileID: 114713651258395106, guid: ca355fba67521734ebccb02d94a5f641,
+        type: 2}
+      propertyPath: enemies.Array.data[0]
+      value: 
+      objectReference: {fileID: 1794440756}
+    m_RemovedComponents: []
+  m_ParentPrefab: {fileID: 100100000, guid: ca355fba67521734ebccb02d94a5f641, type: 2}
   m_IsPrefabParent: 0
 --- !u!1 &507847281
 GameObject:
@@ -3036,23 +3027,6 @@ Prefab:
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: 89d6627be2a29e745a4a3809da7df4d0, type: 2}
   m_IsPrefabParent: 0
---- !u!1 &1829210569 stripped
-GameObject:
-  m_PrefabParentObject: {fileID: 1491169282365106, guid: 9db7309e16ca22b4d91c05258567c8ef,
-    type: 2}
-  m_PrefabInternal: {fileID: 464099079}
---- !u!114 &1829210570
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 0}
-  m_GameObject: {fileID: 1829210569}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 25f630e9d747dcc46b9f2bfe6a734509, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  Rest: 0
 --- !u!4 &1879687929 stripped
 Transform:
   m_PrefabParentObject: {fileID: 4941598989777836, guid: 818db38160c6baa40b1c6a00877ec13c,

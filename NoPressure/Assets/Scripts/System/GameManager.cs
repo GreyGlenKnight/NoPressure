@@ -6,9 +6,12 @@ public class GameManager : MonoBehaviour
     public Coord pStartLocation = new Coord(65,115);
     public string levelName = "Demo";
 
+    private TheDynamicLoader gDynamicLoader;
+
     private void Start()
     {
-        Debug.Log("Awake 9"); 
+        gDynamicLoader = TheDynamicLoader.getDynamicLoader();
+        gDynamicLoader.ClearQueue();
 
         // Set the camera on the control manager to allow manual control of the camera
         // or assign camera to have a different focus
@@ -22,15 +25,14 @@ public class GameManager : MonoBehaviour
         player.mOnDeathHandler += GameOver;
 
         // Load the map
-        //MapController mapContoller = MapController.GetMapController();
-
         PrefabSpawner prefabSpawner = GetComponent<PrefabSpawner>();
-
         MapController mapContoller =GetComponent<MapController>();
         mapContoller.Init(WorldSpaceUnit.Tile, pStartLocation, prefabSpawner);
+    }
 
-        // Move the player to the starting location
-        player.transform.position = new Vector3(pStartLocation.x, 1, pStartLocation.y);
+    private void Update()
+    {
+        gDynamicLoader.DoNextAction();
     }
 
     void GameOver(Transform player)

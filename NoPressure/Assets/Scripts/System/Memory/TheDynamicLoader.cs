@@ -10,15 +10,23 @@ public enum Priority
     High
 };
 
-public class TheDynamicLoader : MonoBehaviour
+public class TheDynamicLoader
 {
     // Singleton refrence
     static TheDynamicLoader instance;
     public bool Rest = false;
 
     // Three queues all act as one, effectivly a priority queue with three settings
+
+    // Low priority Actions should be reserved for upkeep calls
     Queue<Action> mLowPriorityActions;
+
+    // Medium priority Actions are anything that is not an upkeep call or could affect
+    // the game experence in a meaningful way.
     Queue<Action> mMediumPriorityActions;
+
+    // High priority Actions are actions that could affect the game experence if
+    // they are delayed too long. 
     Queue<Action> mHighPriorityActions;
 
     // TODO, add functionality to test speed of each action ran
@@ -26,29 +34,31 @@ public class TheDynamicLoader : MonoBehaviour
     System.Diagnostics.Stopwatch mTimer;
     float TargetTime;
 
-    private void Awake()
+    private TheDynamicLoader()
     {
-        Debug.Log("Dynamic Loader Awake 2");
+        ClearQueue();
+    }
+    public void ClearQueue()
+    {
         instance = this;
-
         mLowPriorityActions = new Queue<Action>();
         mMediumPriorityActions = new Queue<Action>();
         mHighPriorityActions = new Queue<Action>();
     }
+
 
     // Singleton getter
     public static TheDynamicLoader getDynamicLoader()
     {
         if (instance == null)
         {
-            Debug.Log("Trying to access Dynamic loader before it loaded");
-            return null;
+            instance = new TheDynamicLoader();
         }
         return instance;
     }
 
-    // Update is called once per frame
-    void Update()
+    // Perform 1 action a frame
+    public void DoNextAction()
     {
         // Do nothing for one frame if Rest == true
         if (Rest == true)
@@ -59,10 +69,9 @@ public class TheDynamicLoader : MonoBehaviour
 
         // Perform 1 action per frame, performing the higher priority ones first
         Action nextAction = GetNextAction();
-        if (nextAction != null)
-        {
-            nextAction();
-        }
+        if(nextAction != null)
+            nextAction(); 
+
     }
 
     // Returns the next action in the priority queue, 
@@ -104,6 +113,8 @@ public class TheDynamicLoader : MonoBehaviour
                 break;
         }
     }
+
+
 
 }
 

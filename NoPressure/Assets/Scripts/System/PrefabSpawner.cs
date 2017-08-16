@@ -1,7 +1,6 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.AI;
 using System;
 using Pathfinding;
 
@@ -64,14 +63,12 @@ public class PrefabSpawner : MonoBehaviour {
 
                 entity = SpawnPrefab(spawnType, new Coord(SectorLocation.x*10 + i, SectorLocation.y*10 + j));
                 
-
                 if (entity != null)
                 {
                     entity.spawnType = spawnType;
                     entity.mOnDeathHandler += DespawnObject;
                     if (entity is MovingEntity)
                     {
-                        Debug.Log("Adding Moving entity");
                         movingEntities.Add(entity.transform);
                         entity.transform.parent = MovingUnitsHolder;
                         entity.SetSpawnPoint(SpawnSector,new Coord(i, j));
@@ -102,6 +99,32 @@ public class PrefabSpawner : MonoBehaviour {
         }
         return returnVal;
     }
+
+
+    public void DespawnAbove(int sector)
+    {
+        List<Transform> despawnList = FindEntityAbove(sector);
+        DespawnList(despawnList);
+    }
+
+    public void DespawnBelow(int sector)
+    {
+        List<Transform> despawnList = FindEntityBelow(sector);
+        DespawnList(despawnList);
+    }
+
+    public void DespawnRightOf(int sector)
+    {
+        List<Transform> despawnList = FindEntityRightOf(sector);
+        DespawnList(despawnList);
+    }
+
+    public void DespawnLeftOf(int sector)
+    {
+        List<Transform> despawnList = FindEntityLeftOf(sector);
+        DespawnList(despawnList);
+    }
+
 
     public List<Transform> FindEntityRightOf(int sector)
     {
@@ -158,11 +181,11 @@ public class PrefabSpawner : MonoBehaviour {
             SpawnType spawnType = entity.spawnType;
             Coord location = new Coord((int)Math.Round(despawn[i].position.x, 0), (int)Math.Round(despawn[i].position.z, 0));
 
+            entity.Despawn();
             movingEntities.Remove(despawn[i]);
             despawn[i].gameObject.SetActive(false);
 
             Destroy(despawn[i].gameObject);
-
         }
     }
 
@@ -390,7 +413,6 @@ public class PrefabSpawner : MonoBehaviour {
                 {
                     if (tileZ <= zBoundHigh && tileZ >= zBoundLow)
                     {
-                        //Debug.Log(tileX + "," + tileZ);
                         closeNonEmptyTiles.Add(new Vector2(tileX, tileZ));
                     }
                 }
@@ -448,23 +470,6 @@ public class PrefabSpawner : MonoBehaviour {
         Debug.Log("no nearby tiles found, failed spawning item");
         emptyTile = new Vector2(x + 3, z);
         return false;
-    }
-
-    public void MovePlayer(Coord location)
-    {
-        MovePlayer(location.x, location.y);
-    }
-
-    public void MovePlayer(int x, int z)
-    {
-        //Room startRoom = rooms.First();
-        //Vector3 playerPos = new Vector3(startRoom.bottom_left_x + 1, 1, startRoom.bottom_left_y + 1);
-        //player.transform.position = playerPos;
-
-        //TODO find player and move him to this location
-        GameObject player = GameObject.FindGameObjectWithTag("Player");
-
-        player.transform.position = new Vector3(x, 1, z);
     }
 
     public PersistentEntity CreateObstacle(Coord location)

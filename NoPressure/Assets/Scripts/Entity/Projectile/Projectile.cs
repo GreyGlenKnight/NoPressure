@@ -73,7 +73,6 @@ public class Projectile : MonoBehaviour {
     // Handle a successful collision
     void OnHitObject(Collider collider, Vector3 hitPoint)
     {
-        Debug.Log("Collision with: " + collider);
         if (collider == null)
         {
             Debug.Log("Target of collision is null");
@@ -90,8 +89,6 @@ public class Projectile : MonoBehaviour {
             Debug.Log("collision effect is null");
             return;
         }
-
-        Debug.Log("Collision with: " + collider);
 
         if (mOnCollisionHandler(collider.transform, hitPoint, transform.forward) == true)
         {

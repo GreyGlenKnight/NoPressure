@@ -111,19 +111,16 @@ public class MapSector
         }
         else
             SetNearby(location, toSpawn);
-
     }
 
     public void SetTileAt(Coord location, FloorTiles toSpawn)
     {
-
         location = new Coord(location.x % 10, location.y % 10);
         mFloorTiles[location.x, 9 - location.y] = toSpawn;
     }
 
     public void RemoveObjectAt(Coord location)
     {
-        Debug.Log(mObsticleLayer[location.x, 9 - location.y] + " -> " + defaultSpawn);
         location = new Coord(location.x % 10, location.y % 10);
         mObsticleLayer[location.x, 9 - location.y] = defaultSpawn;
     }

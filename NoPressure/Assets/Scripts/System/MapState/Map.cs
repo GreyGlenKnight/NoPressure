@@ -5,12 +5,60 @@ using System;
 
 public class Map
 {
-
     private MapNode[,] sMapNodes = new MapNode[10, 10];
 
     public Map()
     {
 
+    }
+
+    // Note: Considers diagonal steps as 1 distance unit
+    public int GetDistance(Coord sector1, Coord sector2)
+    {
+        // Find the difference in x
+        int xDist = Math.Abs(sector1.x - sector2.x);
+
+        // Find the difference in y
+        int yDist = Math.Abs(sector1.y - sector2.y);
+
+        // Return the larger value of the two. 
+        return Math.Max(xDist, yDist);
+    }
+
+    // Note: Considers diagonal steps as 1 distance unit
+    public int GetDistance(Coord sector1, MapSector sector2)
+    {
+        return GetDistance(sector1, sector2.mSectorLocation);
+    }
+
+    // Note: Considers diagonal steps as 1 distance unit
+    public int GetDistance(MapSector sector1, Coord sector2)
+    {
+        return GetDistance(sector1.mSectorLocation, sector2);
+    }
+
+    // Note: Considers diagonal steps as 1 distance unit
+    public int GetDistance(MapSector sector1, MapSector sector2)
+    {
+        return GetDistance(sector1.mSectorLocation, sector2.mSectorLocation);
+    }
+
+    public List<MapSector> FindSectorsAroundLocation(WorldSpaceUnit unit, Coord location, int radius)
+    {
+        Coord StartSectorLocation = ConvertToSectorSpace(unit, location);
+        List<MapSector> returnVal = new List<MapSector>();
+
+        for (int i = -radius; i <= radius; i++)
+            for (int j = -radius; j <= radius; j++)
+            {
+                Coord SectorLocation = new Coord(StartSectorLocation.x + i, StartSectorLocation.y + j);
+                MapSector mapSector = GetSectorAt(WorldSpaceUnit.Sector, SectorLocation, "Demo");
+                if (mapSector != null)
+                {
+                    returnVal.Add(mapSector);
+                }
+            }
+        return returnVal;
     }
 
     public void SaveLocationOnMap(Transform entity)
@@ -53,7 +101,6 @@ public class Map
 
         Sector.SetObjectAt(location, itemToSet);
     }
-
 
     public Coord ConvertToSectorSpace(WorldSpaceUnit unit, Coord location)
     {
@@ -116,17 +163,6 @@ public class Map
         return new Coord(location.x % 4, location.y % 4);
     }
 
-
-    //public void SetMapNode(MapNode toSet, Coord location )
-    //{
-    //    if (sMapNodes[location.x,location.y] != null)
-    //    {
-    //        Debug.LogError("Trying to set a map node twice!");
-    //    }
-
-    //    sMapNodes[location.x, location.y] = toSet;
-    //}
-
     // Load a file with lMapnameXY.csv and lMapnameXYF.csv if we have not loaded it and 
     // store the info if we need it later
     public MapNode GetMapNodeAt(Coord ILocation, string lMapName)
@@ -154,8 +190,6 @@ public class Map
 
         return sMapNodes[ILocation.x, ILocation.y];
     }
-
-
 
     private bool CheckBounds(Coord location)
     {
