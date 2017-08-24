@@ -22,6 +22,16 @@ public class Crate : PersistentEntity {
     public IInventoryItem contents = null;
     public bool isLocked = false;//TODO
 
+    public void SetButtonActive()
+    {
+        ButtonClone.gameObject.SetActive(true);
+    }
+
+    public void SetButtonInactive()
+    {
+        ButtonClone.gameObject.SetActive(false);
+    }
+
     private void CreateGuiButton()
     {
         Vector3 pos = new Vector3(transform.position.x, 3, transform.position.z);
@@ -34,7 +44,7 @@ public class Crate : PersistentEntity {
 
         //Add triger to onClick that adds item to player inventory and then deletes itself
 
-        ButtonClone.GetComponent<Button>().onClick.AddListener(Pickup);
+        //ButtonClone.GetComponent<Button>().onClick.AddListener(Pickup);
     }
 
     private void Awake()

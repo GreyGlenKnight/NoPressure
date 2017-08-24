@@ -1,0 +1,73 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!1001 &100100000
+Prefab:
+  m_ObjectHideFlags: 1
+  serializedVersion: 2
+  m_Modification:
+    m_TransformParent: {fileID: 0}
+    m_Modifications: []
+    m_RemovedComponents: []
+  m_ParentPrefab: {fileID: 0}
+  m_RootGameObject: {fileID: 1906349980365230}
+  m_IsPrefabParent: 1
+--- !u!1 &1906349980365230
+GameObject:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  serializedVersion: 5
+  m_Component:
+  - component: {fileID: 4570555248595228}
+  - component: {fileID: 114354324986197526}
+  m_Layer: 8
+  m_Name: MAG Pistol
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &4570555248595228
+Transform:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1906349980365230}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 4, y: 0.8, z: 4}
+  m_LocalScale: {x: 0.8, y: 1, z: 0.8}
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_RootOrder: 0
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &114354324986197526
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1906349980365230}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a39c9a4dedaacf842824775629036d52, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  soundManager: {fileID: 114253380063752512, guid: b6b0751b7163ef2449067d6171c3c80e,
+    type: 2}
+  mUseSFX:
+  - {fileID: 8300000, guid: 055ee65c3b962824cafb7fb1d45b6327, type: 3}
+  - {fileID: 8300000, guid: dbd7637d2c513784d810e8cee7b24415, type: 3}
+  - {fileID: 8300000, guid: bc8f9707d8e374f4ebb6281834f64327, type: 3}
+  mAbortUseSFX: []
+  mEquipSFX: []
+  mDropSFX: []
+  mReloadSFX: []
+  mDisplaySprite: {fileID: 21300004, guid: d45f990afb016c6499bc656a29f5a3ae, type: 3}
+  mEquipedBy: {fileID: 0}
+  mCharges: {fileID: 114397540532107496, guid: f33b6b3f9b40d294bab1fafd0b037280, type: 2}
+  mBulletSpeed: 6
+  mFireMode: 1
+  mDamage: 7
+  mReloadSpeed: 0.5
+  mFireRate: 0.15
+  mMaxChargeTime: 0
+  mMinChargeTime: 0

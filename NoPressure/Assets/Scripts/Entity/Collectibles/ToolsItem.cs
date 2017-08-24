@@ -7,56 +7,38 @@ public class ToolsItem : IInventoryItem {
 
     public enum ToolActions
     {
-        OpenDoor,//Mec
-        OpenVent,//Mec
-        OpenLock,//Mec
-        DisableTrap,//Elc
-        RepairConsole,//Elc
+        FixBroken,
+        AddRemoveWire,
     }
 
     public List<ISkill> ItemSkills;
 
-    // The display icon of the item
-    public Sprite mDisplaySprite { get; protected set; }
-
-    // The MonoBehaviour object that is currenly using this item
-    public Transform mEquipedBy { get; protected set; }
-
-    // The amount of uses the item has
-    public ResourcePool mCharges { get; protected set; }
+    public ToolActions toolAction;
 
     List<ToolActions> toolActionList;
 
-    public void UpdateTime()
+    public override void UpdateTime()
     {
 
     }
 
-    public IInventoryItem Clone()
+    public override IInventoryItem Clone()
     {
         return new ToolsItem(mDisplaySprite, toolActionList);
     }
 
-    public ToolsItem (Sprite lDisplaySprite, List<ToolActions> lToolActions)
+    public ToolsItem(Sprite lDisplaySprite, List<ToolActions> lToolActions)
     {
+        
         toolActionList = lToolActions;
         mDisplaySprite = lDisplaySprite;
         ItemSkills = new List<ISkill>();
 
-        if (toolActionList.Contains(ToolActions.OpenVent))
-        {
-            ItemSkills.Add(new ActionSkill("OpenVent", 1));
-        }
-        if (toolActionList.Contains(ToolActions.DisableTrap))
-        {
-            ItemSkills.Add(new ActionSkill("DisableTrap", 2));
-        }
-
-
     }
 
-    public void Select(Transform lEquipedBy)
+    public override void Select(Transform lEquipedBy)
     {
+        base.Select(lEquipedBy);
         mEquipedBy = lEquipedBy;
 
         Player player = mEquipedBy.GetComponent<Player>();
@@ -70,37 +52,76 @@ public class ToolsItem : IInventoryItem {
         //Functionality to display gun on character when selected
     }
 
-    public void Use()
+    public override void Use()
     {
         //Functionality to spawn item
+        GameObject.Find("SoundManager");
     }
 
-    public void UnSelect()
+    public override void UnSelect()
     {
+        base.UnSelect();
         if (mEquipedBy == null)
         {
             return;
         }
 
     }
-    public void AbortUse()
+    public override void AbortUse()
     {
-
+        base.AbortUse();
     }
 
-    public bool Reload(ResourcePool lResourceStorage)
+    public override bool Reload(ResourcePool lResourceStorage)
     {
+        base.Reload(lResourceStorage);
         return false;
     }
 
-    public void AbortReload()
+    public override void AbortReload()
     {
-
+        base.AbortReload();
     }
 
-    public List<ISkill> GetSkillsFromItem()
+    public override List<ISkill> GetSkillsFromItem()
     {
         return ItemSkills;
+    }
+
+    public override void ClickObject(Transform clickedObject)
+    {
+        if (toolAction == ToolActions.FixBroken)
+        {
+            PowerSource ToRepair = clickedObject.GetComponent<PowerSource>();
+            if(ToRepair != null)
+            {
+                ToRepair.Repair();
+            }
+        }
+
+        //clickedTile.isBroken = false;
+        //clickedTile.isWired = false;
+    }
+
+    // Fail the curent reload attempt, Resets the reload timers
+    public override void ClickTile(MapTile clickedTile)
+    {
+
+        if(toolAction == ToolActions.FixBroken)
+        {
+            clickedTile.isBroken = false;
+        }
+
+        if (toolAction == ToolActions.AddRemoveWire)
+        {
+            if(clickedTile.isWired == true)
+                clickedTile.isWired = false;
+            else
+                clickedTile.isWired = true;
+        }
+
+        //clickedTile.isBroken = false;
+        //clickedTile.isWired = false;
     }
 
 }

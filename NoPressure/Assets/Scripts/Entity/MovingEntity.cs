@@ -6,8 +6,11 @@ public class MovingEntity : PersistentEntity
 {
     //TODO add Logic to use pathfinding, currently in enemy
 
-	// Use this for initialization
-	protected override void Start () {
+    // Event to be fired off when PersistentEntity is despawned
+    public event System.Action<Transform> mOnUpdateGetTileInfo;
+
+    // Use this for initialization
+    protected override void Start () {
         base.Start();
 	}
 
@@ -22,11 +25,17 @@ public class MovingEntity : PersistentEntity
         // Because Inventoryitems are not not mono objects and have no update, we need
         // to call a custom update on them to keep track of cooldown timers like
         // fire rate and reload speed.
-        mInventory.updateTime();
+        if (mInventory != null)
+            mInventory.updateTime();
 
-        if (mPressure.IsEmpty())
-            Die();
-        if (mHealth.IsEmpty())
-            Die();
+        if (mPressure != null)
+            if (mPressure.IsEmpty())
+                Die();
+        if (mHealth != null)
+            if (mHealth.IsEmpty())
+                Die();
+
+        if (mOnUpdateGetTileInfo != null)
+            mOnUpdateGetTileInfo(transform); 
     }
 }

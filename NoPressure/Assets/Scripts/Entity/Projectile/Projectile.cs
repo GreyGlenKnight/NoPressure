@@ -2,33 +2,48 @@
 
 public class Projectile : MonoBehaviour {
 
+    public delegate void OnDeath(Projectile theProjectile);
+    public OnDeath mOnDeath;
+
     public LayerMask collisionLayer;
     // This allows us to create projectiles that don't move forward.
     float projectileSpeed = 10f;
     float lifeTime = 3f;
-
+    float age = 0f;
     float skinWidth = .1f;
+    float explosionSize = 0f;
+    float explosionDamage = 2f;
+
+    public Explosion explosion;
 
     // Delegate to handle the effect of a projectile when it detects a collision
     ProjectileManager.OnCollision mOnCollisionHandler;
 
     void Start () {
-        Destroy(gameObject, lifeTime);
-
+        //Destroy(gameObject, lifeTime);
+        
         // Compute collision detection for the first object the Projectile
         // collides with.
+
+    }
+	
+    public void Init()
+    {
         Collider[] initialCollisions = Physics.OverlapSphere(transform.position, .1f, collisionLayer);
         if (initialCollisions.Length > 0)
         {
             OnHitObject(initialCollisions[0], transform.position);
         }
     }
-	
+
 	// Update is called once per frame
 	void Update () {
         float moveDistance = projectileSpeed * Time.deltaTime;
         CheckCollisions(moveDistance);
 
+        age += Time.deltaTime;
+        if (age > lifeTime)
+            die();
         // Propel the projectile
         transform.Translate(Vector3.forward * moveDistance);
 	}
@@ -42,6 +57,7 @@ public class Projectile : MonoBehaviour {
     // or longer periods.
     public void SetLifeTime(float newTime)
     {
+        age = 0f; 
         lifeTime = newTime;
     }
 
@@ -53,6 +69,16 @@ public class Projectile : MonoBehaviour {
     public void SetCollisionLayer(LayerMask lCollisionLayer)
     {
         collisionLayer = lCollisionLayer;
+    }
+
+    public void setExplosionRange(float newRange)
+    {
+        explosionSize = newRange;
+    }
+
+    public void setExplosionDamage(float damage)
+    {
+        explosionDamage = damage;
     }
 
     // Collision detection using colliders
@@ -92,7 +118,29 @@ public class Projectile : MonoBehaviour {
 
         if (mOnCollisionHandler(collider.transform, hitPoint, transform.forward) == true)
         {
-            Destroy(this);
+            die();
+            //else
+            //Destroy(this);
         }
     }
+
+    void die()
+    {
+        if(explosion != null)
+        {
+            if (explosionSize > 0)
+            {
+                Explosion explosionInst = Instantiate(explosion, transform.position, transform.rotation);
+                explosionInst.SetSize(explosionSize);
+                explosionInst.SetDamage(explosionDamage);
+                Destroy(explosionInst.gameObject, 0.4f);
+            }
+        }
+
+        if (mOnDeath != null)
+            mOnDeath(this);
+
+
+    }
+
 }

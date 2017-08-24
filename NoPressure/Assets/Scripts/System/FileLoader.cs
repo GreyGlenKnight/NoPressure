@@ -208,6 +208,7 @@ public class FileLoader
         // Handle any problems that might arise when reading the text
         try
         {
+            
             fileName = lfileName;
 
             var fs = new FileStream(lfileName, FileMode.Open, FileAccess.Read, FileShare.ReadWrite);
@@ -216,6 +217,11 @@ public class FileLoader
         }
 #pragma warning disable CS0168 // Variable is declared but never used
         catch (FileNotFoundException e)
+        {
+            //Debug.LogException(e);
+            return false;
+        }
+        catch (Exception e)
 #pragma warning restore CS0168 // Variable is declared but never used
         {
             //Debug.LogException(e);

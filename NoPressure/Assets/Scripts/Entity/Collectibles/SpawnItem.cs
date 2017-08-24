@@ -5,23 +5,16 @@ using UnityEngine;
 
 public class SpawnItem : IInventoryItem {
 
-    // The display icon of the item
-    public Sprite mDisplaySprite { get; protected set; }
+    public Transform itemToSpawn;
+    //public Transform detectCollisionSpawn;
+    SpawnType RemoveMe;
 
-    // The MonoBehaviour object that is currenly using this item
-    public Transform mEquipedBy { get; protected set; }
-
-    // The amount of uses the item has
-    public ResourcePool mCharges { get; protected set; }
-
-    SpawnType itemToSpawn;
-
-    public IInventoryItem Clone()
+    public override IInventoryItem Clone()
     {
-        return new SpawnItem(mDisplaySprite, itemToSpawn);
+        return new SpawnItem(mDisplaySprite, RemoveMe);
     }
 
-    public void UpdateTime()
+    public override void UpdateTime()
     {
         
     }
@@ -29,40 +22,57 @@ public class SpawnItem : IInventoryItem {
     public SpawnItem(Sprite lDisplaySprite, SpawnType lItemToSpawn )
     {
         mDisplaySprite = lDisplaySprite;
-        itemToSpawn = lItemToSpawn;
+        RemoveMe = lItemToSpawn;
     }
 
-    public void Select(Transform lEquipedBy)
+    public override void Select(Transform lEquipedBy)
     {
+        base.Select(lEquipedBy);
         //Functionality to display gun on character when selected
     }
 
-    public void Use()
+    public override void Use()
     {
+        base.Use();
         //Functionality to spawn item
     }
 
-    public void UnSelect()
+    public override void UnSelect()
     {
-
+        base.UnSelect();
     }
-    public void AbortUse()
+    public override void AbortUse()
     {
-
+        base.AbortUse();
     }
-    public bool Reload(ResourcePool ammoStorage)
+    public override bool Reload(ResourcePool ammoStorage)
     {
+        base.Reload(ammoStorage);
         return false;
     }
 
-    public void AbortReload()
+    public override void AbortReload()
     {
-
+        base.AbortReload();
     }
 
-    public List<ISkill> GetSkillsFromItem()
+    public override List<ISkill> GetSkillsFromItem()
     {
         return null;
+    }
+
+    // Fail the curent reload attempt, Resets the reload timers
+    public override void ClickTile(MapTile clickedTile)
+    {
+        Player player = mEquipedBy.GetComponent<Player>();
+
+        if (player == null)
+        {
+            Debug.Log("only players can use items");
+        }
+
+        Instantiate(itemToSpawn, new Vector3(clickedTile.m_Location.x, 0f, clickedTile.m_Location.y), Quaternion.Euler(0f,0f,0f));
+        player.DestroyCurrentItem();
     }
 
 }

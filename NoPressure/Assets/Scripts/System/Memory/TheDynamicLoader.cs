@@ -40,6 +40,7 @@ public class TheDynamicLoader
     }
     public void ClearQueue()
     {
+        mTimer = new System.Diagnostics.Stopwatch();
         instance = this;
         mLowPriorityActions = new Queue<Action>();
         mMediumPriorityActions = new Queue<Action>();
@@ -68,9 +69,24 @@ public class TheDynamicLoader
         }
 
         // Perform 1 action per frame, performing the higher priority ones first
+
+
         Action nextAction = GetNextAction();
-        if(nextAction != null)
-            nextAction(); 
+        if (nextAction != null)
+        {
+            mTimer.Start();  
+            nextAction();
+            mTimer.Stop();
+
+            if(mTimer.ElapsedMilliseconds > 15)
+                Debug.Log(nextAction.Method.ToString() + ":" + mTimer.ElapsedMilliseconds);
+
+            //if(nextAction.Method.ToString().Equals("Void SpreadPressureUpkeep()"))
+            //    Debug.Log(nextAction.Method.ToString() + "::::" + mTimer.ElapsedMilliseconds);
+
+             
+            mTimer.Reset();
+        }
 
     }
 
@@ -78,6 +94,7 @@ public class TheDynamicLoader
     // it will also remove that item from the queue.
     private Action GetNextAction()
     {
+
         // Perform 1 action per frame, performing the higher priority ones first
         if (mHighPriorityActions.Count != 0)
         {
@@ -98,6 +115,8 @@ public class TheDynamicLoader
 
     public void AddActionToQueue(Action lAction, Priority lPriority)
     {
+       
+
         switch (lPriority)
         {
             case Priority.Low:

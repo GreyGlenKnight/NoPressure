@@ -2,67 +2,85 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class ItemManager {
+public class ItemManager : MonoBehaviour {
 
-    static Dictionary<SpawnType, IInventoryItem> Items;
+    public GameObject Pistol;
+    public GameObject Rifle;
+    public GameObject Carbine;
+    public GameObject PlasmaThrower;
+    public GameObject RocketLauncher;
 
-    public static void LoadItemTypes()
+    public GameObject PortableGenerator;
+    public GameObject PortablePressure;
+
+    public GameObject Shield;
+    public GameObject MecanicalTools;
+    public GameObject ElectricalTools;
+
+    public IInventoryItem SpawnItem(SpawnType typeToSpawn)
     {
-        Items = new Dictionary<SpawnType, IInventoryItem>();
 
+        IInventoryItem ItemToSpawn;
 
-        ResourcePool chargesPistol = new ResourcePool(ResourceType.MassDriver, 12);
-        Items.Add(SpawnType.Pistol, 
-            new GunItem(SpriteManager.GetInventoryItemSprite(SpawnType.Pistol),7, chargesPistol, GunItem.FireMode.Single));
-
-        ResourcePool chargesRifle = new ResourcePool(ResourceType.MassDriver, 24);
-        Items.Add(SpawnType.Rifle,
-            new GunItem(SpriteManager.GetInventoryItemSprite(SpawnType.Rifle), 5, chargesRifle, GunItem.FireMode.Auto));
-
-
-        ResourcePool chargesCarbine = new ResourcePool(ResourceType.EnergyCell, 10);
-        Items.Add(SpawnType.Carbine,
-            new GunItem(SpriteManager.GetInventoryItemSprite(SpawnType.Carbine), 60, chargesCarbine, GunItem.FireMode.Charge));
-
-        Items.Add(SpawnType.Shield,
-            new BoostItem(SpriteManager.GetInventoryItemSprite(SpawnType.Shield),BoostItem.StatBoost.Shield, 100));
-
-        List<ToolsItem.ToolActions> MechanicalToolsActions = new List<ToolsItem.ToolActions>();
-        MechanicalToolsActions.Add(ToolsItem.ToolActions.OpenVent);
-        MechanicalToolsActions.Add(ToolsItem.ToolActions.OpenLock);
-        MechanicalToolsActions.Add(ToolsItem.ToolActions.OpenDoor);
-
-        Items.Add(SpawnType.MecanicalTools,
-            new ToolsItem(SpriteManager.GetInventoryItemSprite(SpawnType.MecanicalTools), MechanicalToolsActions));
-
-
-        List<ToolsItem.ToolActions> ElectricalToolsActions = new List<ToolsItem.ToolActions>();
-        ElectricalToolsActions.Add(ToolsItem.ToolActions.DisableTrap);
-        ElectricalToolsActions.Add(ToolsItem.ToolActions.RepairConsole);
-
-        Items.Add(SpawnType.ElectricalTools,
-            new ToolsItem(SpriteManager.GetInventoryItemSprite(SpawnType.ElectricalTools), ElectricalToolsActions));
-
-        Items.Add(SpawnType.Mine,
-            new SpawnItem(SpriteManager.GetInventoryItemSprite(SpawnType.Mine), SpawnType.Mine));
-    }
-
-    public static IInventoryItem SpawnItem(SpawnType typeToSpawn)
-    {
-        IInventoryItem returnItem = null;
-
-        if (Items == null)
-            LoadItemTypes();
-
-        if (Items.ContainsKey(typeToSpawn))
-            Items.TryGetValue(typeToSpawn, out returnItem);
-        else
+        switch (typeToSpawn)
         {
-            Debug.Log("Missing Value for ItemType: " + typeToSpawn);
-            return null;
+            case SpawnType.Pistol:
+                ItemToSpawn = Instantiate(Pistol).GetComponent<IInventoryItem>();
+                ItemToSpawn.mCharges = Instantiate(Pistol.GetComponent<IInventoryItem>().mCharges);
+                break;
+
+            case SpawnType.Rifle:
+                ItemToSpawn = Instantiate(Rifle).GetComponent<IInventoryItem>();
+                ItemToSpawn.mCharges = Instantiate(Rifle.GetComponent<IInventoryItem>().mCharges);
+                break;
+
+            case SpawnType.Carbine:
+                ItemToSpawn = Instantiate(Carbine).GetComponent<IInventoryItem>();
+                ItemToSpawn.mCharges = Instantiate(Carbine.GetComponent<IInventoryItem>().mCharges);
+                break;
+
+            case SpawnType.PlasmaThrower:
+                ItemToSpawn = Instantiate(PlasmaThrower).GetComponent<IInventoryItem>();
+                ItemToSpawn.mCharges = Instantiate(PlasmaThrower.GetComponent<IInventoryItem>().mCharges);
+                break;
+
+            case SpawnType.RocketLauncher:
+                ItemToSpawn = Instantiate(RocketLauncher).GetComponent<IInventoryItem>();
+                ItemToSpawn.mCharges = Instantiate(RocketLauncher.GetComponent<IInventoryItem>().mCharges);
+                break;
+
+            case SpawnType.PortableGenerator:
+                ItemToSpawn = Instantiate(PortableGenerator).GetComponent<IInventoryItem>();
+                ItemToSpawn.mCharges = Instantiate(PortableGenerator.GetComponent<IInventoryItem>().mCharges);
+                break;
+
+            case SpawnType.PortablePressure:
+                ItemToSpawn = Instantiate(PortablePressure).GetComponent<IInventoryItem>();
+                ItemToSpawn.mCharges = Instantiate(PortablePressure.GetComponent<IInventoryItem>().mCharges);
+                break;
+
+            case SpawnType.Shield:
+                ItemToSpawn = Instantiate(Shield).GetComponent<IInventoryItem>();
+                ItemToSpawn.mCharges = Instantiate(Shield.GetComponent<IInventoryItem>().mCharges);
+                break;
+
+            case SpawnType.MecanicalTools:
+                ItemToSpawn = Instantiate(MecanicalTools).GetComponent<IInventoryItem>();
+                //ItemToSpawn.mCharges = Instantiate(Pistol.GetComponent<IInventoryItem>().mCharges);
+                break;
+
+            case SpawnType.ElectricalTools:
+                ItemToSpawn = Instantiate(ElectricalTools).GetComponent<IInventoryItem>();
+                //ItemToSpawn.mCharges = Instantiate(Pistol.GetComponent<IInventoryItem>().mCharges);
+                break;
+
+            default:
+                ItemToSpawn = null;
+                Debug.Log("Unassigned item type: " + typeToSpawn);
+                break;
         }
 
-        return returnItem.Clone();
+        return ItemToSpawn;
     }
 
 }

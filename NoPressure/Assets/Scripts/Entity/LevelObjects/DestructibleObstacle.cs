@@ -38,4 +38,11 @@ public class DestructibleObstacle : PersistentEntity, IItemCase
     {
         base.TakeDamage(damage);
     }
+
+    // Needs to stay because triggers in children objects will not work without it.
+    //private void OnTriggerStay(Collider other)
+    //{
+    //    Debug.Log("Parent on trigger");
+    //}
+
 }

@@ -7,14 +7,6 @@ using UnityEngine;
 // A boost type item will apply an effect on the user.
 public class BoostItem: IInventoryItem {
 
-    // The display icon of the item
-    public Sprite mDisplaySprite { get; protected set; }
-
-    // The MonoBehaviour object that is currenly using this item
-    public Transform mEquipedBy { get; protected set; }
-
-    // The amount of uses the item has
-    public ResourcePool mCharges { get; protected set; }
 
     public enum StatBoost
     {
@@ -23,15 +15,15 @@ public class BoostItem: IInventoryItem {
         Oxygen,
     }
 
-    int boostAmount;
-    StatBoost boostType;
+    public int boostAmount;
+    public StatBoost boostType;
 
-    public void UpdateTime()
+    public override void UpdateTime()
     {
 
     }
 
-    public IInventoryItem Clone()
+    public override IInventoryItem Clone()
     {
         return new BoostItem(mDisplaySprite, boostType, boostAmount);
 
@@ -45,13 +37,15 @@ public class BoostItem: IInventoryItem {
     }
 
 
-    public void Select(Transform lEquipedBy)
+    public override void Select(Transform lEquipedBy)
     {
+        base.Select(lEquipedBy);
         mEquipedBy = lEquipedBy;
     }
 
-    public void Use()
+    public override void Use()
     {
+        base.Use();
         if (mEquipedBy == null)
         {
             Debug.Log("can not use an item that is not equiped");
@@ -82,17 +76,18 @@ public class BoostItem: IInventoryItem {
         }
     }
 
-    public void UnSelect() {}
-    public void AbortUse() {}
+    public override void UnSelect() { base.UnSelect(); }
+    public override void AbortUse() { base.AbortUse(); }
 
-    public bool Reload(ResourcePool lStorage)
+    public override bool Reload(ResourcePool lStorage)
     {
+        base.Reload(lStorage);
         return false;
     }
 
-    public void AbortReload() {}
+    public override void AbortReload() { base.AbortReload(); }
 
-    public List<ISkill> GetSkillsFromItem()
+    public override List<ISkill> GetSkillsFromItem()
     {
         return null;
     }

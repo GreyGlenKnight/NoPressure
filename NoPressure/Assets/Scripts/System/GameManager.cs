@@ -3,10 +3,13 @@ using UnityEngine.SceneManagement;
 
 public class GameManager : MonoBehaviour
 {
-    public Coord pStartLocation = new Coord(65,115);
+    public Coord pStartLocation = new Coord(55,100);
     public string levelName = "Demo";
 
     private TheDynamicLoader gDynamicLoader;
+
+    public float deathDelay = 3f;
+    private float deathCounter = 0f;
 
     private void Start()
     {
@@ -32,21 +35,29 @@ public class GameManager : MonoBehaviour
 
     private void Update()
     {
+        deathCounter += Time.deltaTime;
         gDynamicLoader.DoNextAction();
     }
 
     void GameOver(Transform player)
     {
-        GameOver();
+        deathCounter = 0f;
+        player.gameObject.SetActive(false);
+        gDynamicLoader.AddActionToQueue(GameOver,Priority.Low);
     }
 
     // What happens if there is a game over event
     void GameOver()
     {
-        // Non-mono objects retain their state, make sure that relevent data is reset
-        GetComponent<MapController>().ResetLevel();
+        if (deathCounter > deathDelay)
+        {
+            // Non-mono objects retain their state, make sure that relevent data is reset
+            GetComponent<MapController>().ResetLevel();
 
-        // Load the loading scene
-        SceneManager.LoadScene(1);
+            // Load the loading scene
+            SceneManager.LoadScene(1);
+        }
+        else
+            gDynamicLoader.AddActionToQueue(GameOver, Priority.Low);
     }
 }

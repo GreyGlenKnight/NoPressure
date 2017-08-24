@@ -2,17 +2,17 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Inventory {
+public class Inventory: MonoBehaviour {
 
-    IInventoryItem[] inventory;
-    Sprite[] spriteList;
+    public IInventoryItem[] inventory;
+    Sprite[] spriteList = new Sprite[4];
 
-    public ResourcePool mMassDriverAmmo { get; set; }
-    public ResourcePool mEnergyCells { get; set; }
-    public ResourcePool mExplosives { get; set; }
-    public ResourcePool mParts { get; set; }
+    public ResourcePool mMassDriverAmmo;
+    public ResourcePool mEnergyCells;
+    public ResourcePool mExplosives;
+    public ResourcePool mParts;
 
-    int inventoryCap;
+    public int inventoryCap; 
 
     int InventoryCount = 0;
     int CurentlySelected = 0;
@@ -57,6 +57,9 @@ public class Inventory {
 
     public void updateTime()
     {
+        if (inventory == null)
+            inventory = new IInventoryItem[4];
+
         if (inventory[0] != null)
             inventory[0].UpdateTime();
         if (inventory[1] != null)
@@ -107,6 +110,15 @@ public class Inventory {
 
         ResourcePool pool = getResource(inventory[index].mCharges.mResourceType);
 
+        if (pool == null)
+            return "";
+
+        if (inventory[index] == null)
+            return "";
+
+        if (inventory[index].mCharges == null)
+            return "";
+
         return inventory[index].mCharges.mValue + " / " + pool.mValue;
     }
 
@@ -135,7 +147,7 @@ public class Inventory {
             case ResourceType.Parts:
                 return mParts;
             default:
-                Debug.Log("Player does not know Resource: " + resourceType);
+                //Debug.Log("Player does not know Resource: " + resourceType);
                 return null;
         }
     }
@@ -174,6 +186,7 @@ public class Inventory {
 
     public void setSelection(int lSelection)
     {
+        //Debug.Log("new Selection: " + lSelection);
         CurentlySelected = lSelection;
     }
 
@@ -192,6 +205,10 @@ public class Inventory {
     //return index of the location added ot -1 if not added at all
     public int AddItemToInventory(IInventoryItem itemToAdd)
     {
+
+        if (itemToAdd == null)
+            Debug.Log("Cant add null item");
+
         if (InventoryCount == inventoryCap)
         {
             return -1;
@@ -199,6 +216,10 @@ public class Inventory {
 
         if (inventory[CurentlySelected] == null)
         {
+            if (spriteList == null)
+                spriteList = new Sprite[4];
+
+
             inventory[CurentlySelected] = itemToAdd;
             spriteList[CurentlySelected] = itemToAdd.mDisplaySprite;
             return CurentlySelected;

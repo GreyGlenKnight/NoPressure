@@ -23,7 +23,8 @@ GameObject:
   - component: {fileID: 23616551067562374}
   - component: {fileID: 65491116734293278}
   - component: {fileID: 114918552645688596}
-  m_Layer: 0
+  - component: {fileID: 54245313365348596}
+  m_Layer: 12
   m_Name: Crate
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -82,6 +83,21 @@ MeshFilter:
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1972801793597996}
   m_Mesh: {fileID: 10202, guid: 0000000000000000e000000000000000, type: 0}
+--- !u!54 &54245313365348596
+Rigidbody:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1972801793597996}
+  serializedVersion: 2
+  m_Mass: 1
+  m_Drag: 0
+  m_AngularDrag: 0.05
+  m_UseGravity: 1
+  m_IsKinematic: 0
+  m_Interpolate: 0
+  m_Constraints: 126
+  m_CollisionDetection: 0
 --- !u!65 &65491116734293278
 BoxCollider:
   m_ObjectHideFlags: 1
@@ -89,7 +105,7 @@ BoxCollider:
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1972801793597996}
   m_Material: {fileID: 0}
-  m_IsTrigger: 1
+  m_IsTrigger: 0
   m_Enabled: 1
   serializedVersion: 2
   m_Size: {x: 1, y: 1, z: 1}
@@ -105,6 +121,18 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f1a3041d0e9fcf34a90f817bb826db5e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  pMaxHealth: 1
+  pIsIndestructable: 0
+  pIsOrganic: 0
+  pIsElectronic: 0
+  pIsFloor: 0
+  mInventory: {fileID: 0}
+  mPressure: {fileID: 0}
+  mArmor: {fileID: 0}
+  mShield: {fileID: 0}
+  mHealth: {fileID: 0}
+  mPressureLeakRate: 0
   GuiHoverButton: {fileID: 224818704085249278, guid: aebe6eb12fda1154c83fe9b664128a05,
     type: 2}
+  contents: {fileID: 0}
   isLocked: 0

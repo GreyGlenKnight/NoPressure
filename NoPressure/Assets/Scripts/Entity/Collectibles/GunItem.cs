@@ -7,29 +7,22 @@ public class GunItem : IInventoryItem {
 
     // TODO: Make sure you cant reload and fire at the same time
     // TODO: Set and make use of the bullet speed attribute
-    // TODO: Be able to set ReloadSpeed, FireRate, and ChargeTimes in constructer
-
-    // The display icon of the item
-    public Sprite mDisplaySprite { get; protected set; }
-
-    // The MonoBehaviour object that is currenly using this item
-    public Transform mEquipedBy { get; protected set; }
-
-    // The amount of uses the item has
-    public ResourcePool mCharges { get; protected set; }
 
     public enum FireMode { Auto, Single, Charge };
     
     // Features of a gun
-    float mBulletSpeed;
-    FireMode mFireMode;
-    int mDamage;
+    public float mBulletSpeed;
+    public FireMode mFireMode;
+    public int mDamage;
 
     // Cooldown time lengths In Seconds
-    float mReloadSpeed = 0.5f;
-    float mFireRate = 0.2f;
-    float mMaxChargeTime = 5f;
-    float mMinChargeTime = 0.2f;
+    public float mReloadSpeed = 0.5f;
+    public float mFireRate = 0.2f;
+    public float mMaxChargeTime = 5f;
+    public float mMinChargeTime = 0.2f;
+
+    public float explosionRange = 0f;
+    public float explosionDamage = 2f;
 
     // Cooldown time state
     float mTimeSinceLastShot = 0f;
@@ -51,14 +44,14 @@ public class GunItem : IInventoryItem {
         mFireMode = lFireMode;
     }
 
-    public IInventoryItem Clone()
+    public override IInventoryItem Clone()
     {
         return new GunItem(mDisplaySprite, mDamage, mCharges, mFireMode);
     }
 
     // Must be called by some MonoBehavior Object every frame to keep track of cooldowns
     // like reload speed and weapon charge time.
-    public void UpdateTime()
+    public override void UpdateTime()
     {
         // Store deltatime in a local var to reduce number of calls
         float timeSinceLastFrame = Time.deltaTime;
@@ -102,8 +95,10 @@ public class GunItem : IInventoryItem {
     // Return True if we successful reloaded. 
     // because this requires time to complete it must be called several times
     // over multiple frames until the reload time has elapsed.
-    public bool Reload(ResourcePool ammoStorage)
+    public override bool Reload(ResourcePool ammoStorage)
     {
+        base.Reload(ammoStorage);
+
         // If we are unable to reload for any reason abort the reload
         if (CanReload(ammoStorage) == false)
         {
@@ -123,8 +118,9 @@ public class GunItem : IInventoryItem {
     }
 
     // Reset the reload timer
-    public void AbortReload()
+    public override void AbortReload()
     {
+        base.AbortReload();
         mTimeSpentReloading = 0f;
         mIsReloading = false;
     }
@@ -132,6 +128,9 @@ public class GunItem : IInventoryItem {
     // Reload helper function, will return false if we are unable to reload 
     private bool CanReload(ResourcePool ammoStorage)
     {
+        if (ammoStorage == null)
+            return false;
+
         // there is not enough ammo to reload 
         if (ammoStorage.IsEmpty() == true)
         {
@@ -150,21 +149,23 @@ public class GunItem : IInventoryItem {
         return true;
     }
 
-    public void UnSelect()
+    public override void UnSelect()
     {
         //mEquipedBy = null;
     }
 
     // Somthing has euiped this item, get a refrence to it so we can spawn
     // bullets at its location, modify the user, or get other information.
-    public void Select(Transform lEquipedBy)
+    public override void Select(Transform lEquipedBy)
     {
+        base.Select(lEquipedBy);
         mEquipedBy = lEquipedBy;
     }
 
     // User released trigger button
-    public void AbortUse()
+    public override void AbortUse()
     {
+        base.AbortUse();
         // Charge weapons fire when button is released
         if (mFireMode == FireMode.Charge)
         {
@@ -180,7 +181,7 @@ public class GunItem : IInventoryItem {
     }
 
     // User presses the trigger button
-    public void Use()
+    public override void Use()
     {
         // Single fire weapons fire once per trigger press
         if (mFireMode == FireMode.Single)
@@ -214,11 +215,11 @@ public class GunItem : IInventoryItem {
             }
             else
             {
-                // Give auto a smoother(less dependant on frame Rate) rate of fire if trigger is held down
+               // Give auto a smoother(less dependant on frame Rate) rate of fire if trigger is held down
                 if (mTimeSinceLastShot > mFireRate)
                 {
                     FireWeapon();
-                    mTimeSinceLastShot -= mFireRate;
+                    mTimeSinceLastShot = 0f;
                 }
             }
         }
@@ -243,9 +244,11 @@ public class GunItem : IInventoryItem {
 
         // Create bullet
         ProjectileManager.getProjectileManager().SpawnProjectile
-            (Color.red, 10, 3, CollisionMask, mEquipedBy, onHitEffect);
+            (Color.red, 10, 3, CollisionMask, mEquipedBy, onHitEffect, explosionRange, explosionDamage);
 
         mCharges -= 1;
+        if (mUseSFX != null)
+            SoundManager.instance.RandomizeSfx(mUseSFX); 
     }
 
     // Function for delegate call, Action to take on the victim of the bullet 
@@ -256,7 +259,7 @@ public class GunItem : IInventoryItem {
 
         if (damageableObject == null)
         {
-            Debug.Log("Colision with a non damagable target, refine the collision mask");
+            //Debug.Log("Colision with a non damagable target, refine the collision mask");
             return false; 
         }
 
@@ -265,7 +268,7 @@ public class GunItem : IInventoryItem {
         return true;
     }
 
-    public List<ISkill> GetSkillsFromItem()
+    public override List<ISkill> GetSkillsFromItem()
     {
         return null;
     }

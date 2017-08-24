@@ -25,7 +25,7 @@ public class PersistentEntity : MonoBehaviour, IDamageable {
     public bool pIsFloor = false;
 
     // Resources, TODO drop when killed
-    protected Inventory mInventory;
+    public Inventory mInventory;
 
     public SpawnType spawnType { get; set; }
 
@@ -39,11 +39,11 @@ public class PersistentEntity : MonoBehaviour, IDamageable {
     }
 
     // Vitals
-    public Pool mPressure { get; set; }
-    public Pool mArmor { get; set; }
-    public Pool mShield { get; set; }
-    public Pool mHealth { get; set; }
-    public float mPressureLeakRate { get; set; } 
+    public Pool mPressure;
+    public Pool mArmor;
+    public Pool mShield;
+    public Pool mHealth;
+    public float mPressureLeakRate;
 
     // Skills
     public bool mHasFixPressureSkill {
@@ -71,10 +71,10 @@ public class PersistentEntity : MonoBehaviour, IDamageable {
         if (pMaxHealth <= 0)
             pMaxHealth = 1;
 
-        mHealth = new Pool(pMaxHealth);
-        mShield = new Pool(10, 0);
-        mPressure = new Pool(30);
-        mInventory = new Inventory(4);
+        //mHealth = new Pool(pMaxHealth);
+        //mShield = new Pool(10, 0);
+        //mPressure = new Pool(30);
+        //mInventory = new Inventory(4);
     }
 
     // TODO add delegate peram to cause a side effect
@@ -90,16 +90,30 @@ public class PersistentEntity : MonoBehaviour, IDamageable {
 
     public virtual void TakeDamage(float damage)
     {
-        if (mShield > damage)
+        if (mShield == null)
         {
-            mShield -= damage;
-            return;
+            Debug.Log("No Shield value set");
         }
-
         else
         {
-            mShield -= damage;
-            damage -= mShield;
+            if (mShield > damage)
+            {
+                mShield -= damage;
+                return;
+            }
+            else
+            {
+                mShield -= damage;
+                damage -= mShield;
+            }
+        }
+
+
+        if(mHealth == null)
+        {
+            Debug.Log("No Health Value is set");
+            Die();
+            return;
         }
 
         mHealth -= damage;

@@ -6,10 +6,15 @@ using System;
 
 public class Player : MovingEntity
 {
-
-
     public delegate PersistentEntity AttemptDropItem(Transform lTransform, IInventoryItem lItem);
     public AttemptDropItem mAttemptDropItem;
+
+    public delegate void ChangeCurser(ControlsManager.TargetingMode setTargetMode);
+    public ChangeCurser mChangeCurser;
+
+    MapTile TileAtCurserLocation;
+    PowerSource ObjectAtCurserLocation;
+    Crate ClickedOnCrate;
 
     Rigidbody rb;
     // Player Condition
@@ -17,7 +22,8 @@ public class Player : MovingEntity
     bool mIsDashing;
 
     // Player Attributes
-    float mMoveSpeed = 5f;
+    public float mMoveSpeed = 5f;
+    public float mRotateSpeed = 5f;
     float mDashSpeed;
 
     // Nearby items the player can see
@@ -33,7 +39,7 @@ public class Player : MovingEntity
     ColorBlock mSelectedColorBlock;
 
     // Cheats
-    bool mGodMode = false;
+    public bool mGodMode = false;
 
     private void Awake()
     {
@@ -53,7 +59,10 @@ public class Player : MovingEntity
         //UpdateStats(GameManager.instance.playerHealth, GameManager.instance.playerXP);
         InitColorBlocks();
         mNearbyCrates = new List<Crate>();
-        mInventory = new Inventory(4);
+        mInventory.mMassDriverAmmo = Instantiate(mInventory.mMassDriverAmmo);
+        mInventory.mEnergyCells = Instantiate(mInventory.mEnergyCells);
+        mInventory.mExplosives = Instantiate(mInventory.mExplosives);
+        mInventory.mParts = Instantiate(mInventory.mParts);
         rb = GetComponent<Rigidbody>();
         SetSelection(0);
         UpdateResourceInGUI();
@@ -62,10 +71,10 @@ public class Player : MovingEntity
         mPressureLeakRate = 1;
 
         // Set Starting inventory
-        mInventory.UpdateResource(new ResourcePool(ResourceType.MassDriver, 240, 24));
-        mInventory.UpdateResource(new ResourcePool(ResourceType.EnergyCell, 20, 1));
-        mInventory.UpdateResource(new ResourcePool(ResourceType.Explosive, 20, 2));
-        mInventory.UpdateResource(new ResourcePool(ResourceType.Parts, 100, 10));
+        //mInventory.UpdateResource(new ResourcePool(ResourceType.MassDriver, 240, 24));
+        //mInventory.UpdateResource(new ResourcePool(ResourceType.EnergyCell, 20, 1));
+        //mInventory.UpdateResource(new ResourcePool(ResourceType.Explosive, 20, 2));
+        //mInventory.UpdateResource(new ResourcePool(ResourceType.Parts, 100, 10));
     }
 
     protected override void Update()
@@ -132,6 +141,7 @@ public class Player : MovingEntity
         HUDstring += mPressure + "\n";
         HUDstring += mShield + "\n";
         HUDstring += mHealth + "\n";
+        HUDstring += transform.position.x +"," + transform.position.y +"," + transform.position.z + "\n";
 
         HUDText.GetComponent<Text>().text = HUDstring;
     }
@@ -186,7 +196,10 @@ public class Player : MovingEntity
         int addIndex = mInventory.AddItemToInventory(itemToAdd);
 
         if (addIndex == -1)
+        {
+            Debug.Log("Failed Adding item to inventory");
             return false;//Not added to inventory
+        }
         else
         {
             if (pInventoryDisplay.Count < addIndex)
@@ -201,10 +214,14 @@ public class Player : MovingEntity
 
             pInventoryDisplay[addIndex].Find("Image").GetComponent<Image>().sprite = itemToAdd.mDisplaySprite;
 
-            if (mInventory.getSelectionIndex() == addIndex)
-                mInventory.GetSelectionItem().Select(transform);
+            Debug.Log(mInventory.getSelectionIndex() + "," + addIndex);
 
-            mNearbyCrates.Remove(CrateToAdd);
+            if (mInventory.getSelectionIndex() == addIndex)
+            {
+                mInventory.GetSelectionItem().Select(transform);
+                SetSelection(addIndex);
+            }
+
 
             UpdateResourceInGUI();
             return true;
@@ -253,6 +270,22 @@ public class Player : MovingEntity
         IInventoryItem currentItem = mInventory.GetSelectionItem();
         if (currentItem != null)
             currentItem.Select(transform);
+
+        if (mChangeCurser != null)
+        {
+
+            if (currentItem == null)
+                mChangeCurser(ControlsManager.TargetingMode.TileSelect);
+
+            else if (currentItem is GunItem)
+            {
+                mChangeCurser(ControlsManager.TargetingMode.Crosshair);
+            }
+            else
+            {
+                mChangeCurser(ControlsManager.TargetingMode.TileSelect);
+            }
+        }
     }
 
     public void updateMassDriverAmmo(int amount)
@@ -382,6 +415,66 @@ public class Player : MovingEntity
             return;
 
         currentItem.AbortReload();
+    }
+
+    public void OnWallClick(DestructibleObstacle wall)
+    {
+        //Do nothing
+    }
+
+    public void OnItemClickDown(Crate pickup)
+    {
+        ClickedOnCrate = pickup;
+    }
+
+    public bool OnItemClickUp(Crate pickup)
+    {
+        if (pickup == null)
+        {
+            ClickedOnCrate = null;
+            return false;
+        }
+        if(pickup != ClickedOnCrate)
+        {
+            ClickedOnCrate = null;
+            return false;
+        }
+        ClickedOnCrate = null;
+        return AddInventoryItem(pickup);
+    }
+
+    public void OnSelectDown(MapTile TileClicked, PowerSource objectClicked)
+    {
+        TileAtCurserLocation = TileClicked;
+        ObjectAtCurserLocation = objectClicked; 
+    }
+
+    public void OnSelectUp(MapTile TileClicked, PowerSource objectClicked)
+    {
+        if (TileClicked != null && TileAtCurserLocation!= null)
+        {
+            if (TileClicked == TileAtCurserLocation)
+            {
+                IInventoryItem currentItem = mInventory.GetSelectionItem();
+                if(currentItem != null)
+                    currentItem.ClickTile(TileClicked);
+            }
+        }
+
+        if (objectClicked != null && ObjectAtCurserLocation != null)
+        {
+            if (objectClicked == ObjectAtCurserLocation)
+            {
+                IInventoryItem currentItem = mInventory.GetSelectionItem();
+                if (currentItem != null)
+                    currentItem.ClickObject(objectClicked.transform);
+                objectClicked.OnClick();
+            }
+        }
+
+        TileAtCurserLocation = null;
+        ObjectAtCurserLocation = null;
+
     }
 
     // Press/Hold the action trigger
