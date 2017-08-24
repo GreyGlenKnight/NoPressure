@@ -1,0 +1,280 @@
+fileFormatVersion: 2
+guid: 8bc2e063044e6c94b8ecc466fa30141f
+timeCreated: 1503141594
+licenseType: Free
+ModelImporter:
+  serializedVersion: 21
+  fileIDToRecycleName:
+    100000: ankle.L
+    100002: ankle.R
+    100004: Armature
+    100006: Camera
+    100008: chest
+    100010: collar.L
+    100012: collar.R
+    100014: Cube
+    100016: Cube.001
+    100018: Cube.002
+    100020: Cube.003
+    100022: Cube.004
+    100024: Cube.005
+    100026: Cube.006
+    100028: Cube.007
+    100030: Cube.008
+    100032: Custom waist control
+    100034: fingerbakwd.L
+    100036: fingerbakwd.L_end
+    100038: fingerbakwd.R
+    100040: fingerbakwd.R_end
+    100042: fingerbakwdcenter.L
+    100044: fingerbakwdcenter.L.001
+    100046: fingerbakwdcenter.R
+    100048: fingerbakwdcenter.R.001
+    100050: fingerfrwdcenter1.L
+    100052: fingerfrwdcenter1.L.001
+    100054: fingerfrwdcenter1.R
+    100056: fingerfrwdcenter1.R.001
+    100058: fingerfrwdcenter2.L
+    100060: fingerfrwdcenter2.L.001
+    100062: fingerfrwdcenter2.R
+    100064: fingerfrwdcenter2.R.001
+    100066: fingerfrwdleft.L
+    100068: fingerfrwdleft.L_end
+    100070: fingerfrwdleft.R
+    100072: fingerfrwdleft.R_end
+    100074: fingerfrwdright.L
+    100076: fingerfrwdright.L_end
+    100078: fingerfrwdright.R
+    100080: fingerfrwdright.R_end
+    100082: foot_ctrl.L
+    100084: foot_ctrl.L_end
+    100086: foot_ctrl.R
+    100088: foot_ctrl.R_end
+    100090: foot_handle.L
+    100092: foot_handle.R
+    100094: forearm.L
+    100096: forearm.L_end
+    100098: forearm.R
+    100100: forearm.R_end
+    100102: gun_target
+    100104: Guntar.L
+    100106: Guntar.L_end
+    100108: Guntar.R
+    100110: Guntar.R_end
+    100112: Lamp
+    100114: main_handle
+    100116: main_root
+    100118: //RootNode
+    100120: MiniGun1.L
+    100122: MiniGun1.L_end
+    100124: MiniGun1.R
+    100126: MiniGun1.R_end
+    100128: pelvic.L
+    100130: pelvic.R
+    100132: Pt.L
+    100134: Pt.L_end
+    100136: Pt.R
+    100138: Pt.R_end
+    100140: shin.L
+    100142: shin.R
+    100144: Shoulder.L
+    100146: Shoulder.R
+    100148: thigh.L
+    100150: thigh.R
+    100152: tricep.L
+    100154: tricep.L.001
+    100156: tricep.L.001_end
+    100158: tricep.R
+    100160: tricep.R.001
+    100162: tricep.R.001_end
+    400000: ankle.L
+    400002: ankle.R
+    400004: Armature
+    400006: Camera
+    400008: chest
+    400010: collar.L
+    400012: collar.R
+    400014: Cube
+    400016: Cube.001
+    400018: Cube.002
+    400020: Cube.003
+    400022: Cube.004
+    400024: Cube.005
+    400026: Cube.006
+    400028: Cube.007
+    400030: Cube.008
+    400032: Custom waist control
+    400034: fingerbakwd.L
+    400036: fingerbakwd.L_end
+    400038: fingerbakwd.R
+    400040: fingerbakwd.R_end
+    400042: fingerbakwdcenter.L
+    400044: fingerbakwdcenter.L.001
+    400046: fingerbakwdcenter.R
+    400048: fingerbakwdcenter.R.001
+    400050: fingerfrwdcenter1.L
+    400052: fingerfrwdcenter1.L.001
+    400054: fingerfrwdcenter1.R
+    400056: fingerfrwdcenter1.R.001
+    400058: fingerfrwdcenter2.L
+    400060: fingerfrwdcenter2.L.001
+    400062: fingerfrwdcenter2.R
+    400064: fingerfrwdcenter2.R.001
+    400066: fingerfrwdleft.L
+    400068: fingerfrwdleft.L_end
+    400070: fingerfrwdleft.R
+    400072: fingerfrwdleft.R_end
+    400074: fingerfrwdright.L
+    400076: fingerfrwdright.L_end
+    400078: fingerfrwdright.R
+    400080: fingerfrwdright.R_end
+    400082: foot_ctrl.L
+    400084: foot_ctrl.L_end
+    400086: foot_ctrl.R
+    400088: foot_ctrl.R_end
+    400090: foot_handle.L
+    400092: foot_handle.R
+    400094: forearm.L
+    400096: forearm.L_end
+    400098: forearm.R
+    400100: forearm.R_end
+    400102: gun_target
+    400104: Guntar.L
+    400106: Guntar.L_end
+    400108: Guntar.R
+    400110: Guntar.R_end
+    400112: Lamp
+    400114: main_handle
+    400116: main_root
+    400118: //RootNode
+    400120: MiniGun1.L
+    400122: MiniGun1.L_end
+    400124: MiniGun1.R
+    400126: MiniGun1.R_end
+    400128: pelvic.L
+    400130: pelvic.R
+    400132: Pt.L
+    400134: Pt.L_end
+    400136: Pt.R
+    400138: Pt.R_end
+    400140: shin.L
+    400142: shin.R
+    400144: Shoulder.L
+    400146: Shoulder.R
+    400148: thigh.L
+    400150: thigh.R
+    400152: tricep.L
+    400154: tricep.L.001
+    400156: tricep.L.001_end
+    400158: tricep.R
+    400160: tricep.R.001
+    400162: tricep.R.001_end
+    2000000: Camera
+    2300000: Cube.001
+    2300002: Cube.002
+    2300004: Cube.003
+    2300006: Cube.004
+    2300008: Cube.005
+    2300010: Cube.006
+    2300012: Cube.007
+    2300014: Cube.008
+    2300016: Custom waist control
+    3300000: Cube.001
+    3300002: Cube.002
+    3300004: Cube.003
+    3300006: Cube.004
+    3300008: Cube.005
+    3300010: Cube.006
+    3300012: Cube.007
+    3300014: Cube.008
+    3300016: Custom waist control
+    4300000: Custom waist control
+    4300002: Cube.002
+    4300004: Cube.001
+    4300006: Cube.004
+    4300008: Cube.006
+    4300010: Cube.005
+    4300012: Cube.007
+    4300014: Cube.003
+    4300016: Cube.008
+    4300018: Cube
+    7400000: Armature|attack
+    7400002: Armature|mech_walk_1
+    9500000: //RootNode
+    10800000: Lamp
+    13700000: Cube
+  materials:
+    importMaterials: 1
+    materialName: 0
+    materialSearch: 1
+  animations:
+    legacyGenerateAnimations: 4
+    bakeSimulation: 0
+    resampleCurves: 1
+    optimizeGameObjects: 0
+    motionNodeName: 
+    rigImportErrors: 
+    rigImportWarnings: 
+    animationImportErrors: 
+    animationImportWarnings: 
+    animationRetargetingWarnings: 
+    animationDoRetargetingWarnings: 0
+    animationCompression: 1
+    animationRotationError: 0.5
+    animationPositionError: 0.5
+    animationScaleError: 0.5
+    animationWrapMode: 0
+    extraExposedTransformPaths: []
+    extraUserProperties: []
+    clipAnimations: []
+    isReadable: 1
+  meshes:
+    lODScreenPercentages: []
+    globalScale: 1
+    meshCompression: 0
+    addColliders: 0
+    importVisibility: 1
+    importBlendShapes: 1
+    importCameras: 1
+    importLights: 1
+    swapUVChannels: 0
+    generateSecondaryUV: 0
+    useFileUnits: 1
+    optimizeMeshForGPU: 1
+    keepQuads: 0
+    weldVertices: 1
+    secondaryUVAngleDistortion: 8
+    secondaryUVAreaDistortion: 15.000001
+    secondaryUVHardAngle: 88
+    secondaryUVPackMargin: 4
+    useFileScale: 1
+  tangentSpace:
+    normalSmoothAngle: 60
+    normalImportMode: 0
+    tangentImportMode: 3
+    normalCalculationMode: 4
+  importAnimation: 1
+  copyAvatar: 0
+  humanDescription:
+    serializedVersion: 2
+    human: []
+    skeleton: []
+    armTwist: 0.5
+    foreArmTwist: 0.5
+    upperLegTwist: 0.5
+    legTwist: 0.5
+    armStretch: 0.05
+    legStretch: 0.05
+    feetSpacing: 0
+    rootMotionBoneName: 
+    rootMotionBoneRotation: {x: 0, y: 0, z: 0, w: 1}
+    hasTranslationDoF: 0
+    hasExtraRoot: 0
+    skeletonHasParents: 1
+  lastHumanDescriptionAvatarSource: {instanceID: 0}
+  animationType: 2
+  humanoidOversampling: 1
+  additionalBone: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
