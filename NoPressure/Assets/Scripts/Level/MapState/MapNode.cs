@@ -80,8 +80,6 @@ public class MapNode
         }
     }
 
-
-
     private bool loadMapDataFromFile(Coord lRoomLocation, string lMapName)
     {
         FileLoader fileLoader = new FileLoader();

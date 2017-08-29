@@ -11,7 +11,7 @@ public class ControlsManager : MonoBehaviour {
     public Transform TileSelectPrefab;
     public Transform CrosshairPrefab;
 
-    Transform activeTileSelect;
+    TileSelector activeTileSelect;
     Transform activeCrosshair;
 
     TargetingMode targetingMode = TargetingMode.TileSelect;
@@ -53,7 +53,7 @@ public class ControlsManager : MonoBehaviour {
 	// Use this for initialization
 	void Start () {
         activeCrosshair = Instantiate(CrosshairPrefab);
-        activeTileSelect = Instantiate(TileSelectPrefab);
+        activeTileSelect = Instantiate(TileSelectPrefab).GetComponent<TileSelector>();
 
         SetTargetingMode(targetingMode);
 
@@ -79,7 +79,6 @@ public class ControlsManager : MonoBehaviour {
         player = temp.GetComponent<Player>();
 
         player.mChangeCurser += ChangeCurserAction;
-
     }
 
     public void ChangeCurserAction(TargetingMode setTargetMode)
@@ -106,19 +105,18 @@ public class ControlsManager : MonoBehaviour {
                 break;
 
             case TargetingMode.TileSelect:
-                activeTileSelect.position = new Vector3(
+                activeTileSelect.transform.position = new Vector3(
                     Mathf.Round(curserPosition.x),
                     1f,
                     Mathf.Round(curserPosition.z));
                 break;
 
             case TargetingMode.PushButtonSelect:
-                activeTileSelect.position = new Vector3(
+                activeTileSelect.transform.position = new Vector3(
                     Mathf.Round(curserPosition.x),
                     1f,
                     Mathf.Round(curserPosition.z));
                 break;
-
         }
 
     }
@@ -153,7 +151,6 @@ public class ControlsManager : MonoBehaviour {
 
                 // Smoothly rotate towards the target point.
                 player.transform.rotation = Quaternion.Slerp(player.transform.rotation, targetRotation, player.mRotateSpeed * Time.deltaTime);
-
             }
         }
     }
@@ -225,7 +222,6 @@ public class ControlsManager : MonoBehaviour {
                 // 5. turn the Player to face that point
                 player.LookAt(point);
             }
-
         }
 
         else if(moveType == MoveType.LookAtCurser)
@@ -237,15 +233,8 @@ public class ControlsManager : MonoBehaviour {
             player.transform.Translate(0, 0, z);
         }
 
-
         if (Input.GetKeyDown(KeyCode.LeftShift))
         {
-            //if (targetingMode == TargetingMode.TileSelect)
-            //    targetingMode = TargetingMode.Crosshair;
-            //else
-            // targetingMode = TargetingMode.TileSelect;
-
-
             SaveStateTarget = targetingMode;
             isSavingState = true;
 
@@ -271,20 +260,23 @@ public class ControlsManager : MonoBehaviour {
                     new Coord((int)activeTileSelect.transform.position.x,
                     (int)activeTileSelect.transform.position.z));
 
-                TileSelector tileSelected = activeTileSelect.GetComponent<TileSelector>();
+                if (!activeTileSelect.IsOutOfRange())
+                {
+                    TileSelector tileSelected = activeTileSelect.GetComponent<TileSelector>();
 
-                PowerSource ClickedObject = tileSelected.getPowerObject();
+                    PowerSource ClickedObject = tileSelected.getPowerObject();
 
-                player.OnSelectDown(clickedTile,ClickedObject);
+                    player.OnSelectDown(clickedTile, ClickedObject);
 
-                Crate ClickedItem = tileSelected.getItemCrate();
+                    Crate ClickedItem = tileSelected.getItemCrate();
 
-                player.OnItemClickDown(ClickedItem);
+                    player.OnItemClickDown(ClickedItem);
 
 
-                DestructibleObstacle WallClicked = tileSelected.getObstacle();
+                    DestructibleObstacle WallClicked = tileSelected.getObstacle();
 
-                player.OnWallClick(WallClicked);
+                    player.OnWallClick(WallClicked);
+                }
             } 
         }
 

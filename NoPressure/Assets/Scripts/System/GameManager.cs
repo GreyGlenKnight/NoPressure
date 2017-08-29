@@ -3,16 +3,18 @@ using UnityEngine.SceneManagement;
 
 public class GameManager : MonoBehaviour
 {
-    public Coord pStartLocation = new Coord(55,100);
+    public Coord pStartLocation = new Coord(26,60);
     public string levelName = "Demo";
 
     private TheDynamicLoader gDynamicLoader;
 
-    public float deathDelay = 3f;
+    public float deathDelay = 1.5f;
     private float deathCounter = 0f;
 
     private void Start()
     {
+        PrefabPooler.instance.Init();
+
         gDynamicLoader = TheDynamicLoader.getDynamicLoader();
         gDynamicLoader.ClearQueue();
 

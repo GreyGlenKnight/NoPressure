@@ -9,6 +9,7 @@ public class MapTile{
 
     public bool isBroken = false;
     public bool isWired = false;
+    public bool isSpace = false;
 
     public Room m_Room { get; set; }
     public MapTile m_NorthTile { get; set; }
@@ -34,6 +35,8 @@ public class MapTile{
     public PowerNetwork network = null;
 
     public Coord m_Location;
+
+    
 
     public float getPower()
     {

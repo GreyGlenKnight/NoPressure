@@ -169,7 +169,7 @@ public class MapSector
                 return;
             }
 
-            if ((9 - location.y) < 9)
+            if (location.y< 9)
             {
                 if (Tiles[location.x + 1, location.y + 1].m_SpawnType == defaultSpawn)
                 {
@@ -178,14 +178,14 @@ public class MapSector
                 }
             }
 
-            if ((9 - location.y) > 0)
+            if (location.y > 0)
             {
                 if (Tiles[location.x + 1, location.y - 1].m_SpawnType == defaultSpawn)
                 {
                     Tiles[location.x + 1, location.y - 1].m_SpawnType = toSpawn;
                     return;
                 }
-            }
+            } 
 
         }
 
@@ -197,7 +197,7 @@ public class MapSector
                 return;
             }
 
-            if ((9 - location.y) < 9)
+            if (location.y < 9)
             {
                 if (Tiles[location.x - 1, location.y + 1].m_SpawnType == defaultSpawn)
                 {
@@ -206,7 +206,7 @@ public class MapSector
                 }
             }
 
-            if ((9 - location.y) > 0)
+            if (location.y > 0)
             {
                 if (Tiles[location.x - 1, location.y - 1].m_SpawnType == defaultSpawn)
                 {
@@ -216,7 +216,7 @@ public class MapSector
             }
         }
 
-        if ((9 - location.y) < 9)
+        if (location.y < 9)
         {
             if (Tiles[location.x, location.y + 1].m_SpawnType == defaultSpawn)
             {
@@ -225,7 +225,7 @@ public class MapSector
             }
         }
 
-        if ((9 - location.y) > 0)
+        if (location.y > 0)
         {
             if (Tiles[location.x, location.y - 1].m_SpawnType == defaultSpawn)
             {

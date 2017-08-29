@@ -21,6 +21,9 @@ public class PrefabSpawner : MonoBehaviour {
     private TileSpawner m_TileSpawner;
     private ItemManager itemManager;
 
+    public PrefabPooler prefabPooler;
+
+
     private void Awake()
     {
         NoSpawnTilesList = new List<Transform>();
@@ -35,6 +38,7 @@ public class PrefabSpawner : MonoBehaviour {
             Debug.LogError("Can not find Floor Tile Spawner");
 
         itemManager = GameObject.Find("ItemManager").GetComponent<ItemManager>();
+        prefabPooler = PrefabPooler.instance;
 
     }
 
@@ -138,8 +142,6 @@ public class PrefabSpawner : MonoBehaviour {
 
                     GeneratePressure generatePressure = entity.GetComponent<GeneratePressure>();
 
-
-
                     if (entity is MovingEntity)
                     {
                         movingEntities.Add(entity.transform);
@@ -169,7 +171,7 @@ public class PrefabSpawner : MonoBehaviour {
 
             }
         }
-
+         
         SpawnSector.pIsLoaded = true;
 
         SectorManager sectorManager = new SectorManager(l_FloorTiles, SpawnSector);
@@ -273,9 +275,9 @@ public class PrefabSpawner : MonoBehaviour {
 
             entity.Despawn();
             movingEntities.Remove(despawn[i]);
-            despawn[i].gameObject.SetActive(false);
+            //despawn[i].gameObject.SetActive(false);
 
-            Destroy(despawn[i].gameObject);
+            //Destroy(despawn[i].gameObject);
         }
     }
 
@@ -325,13 +327,15 @@ public class PrefabSpawner : MonoBehaviour {
         {
             // Destroy all the children... Damn... thats brutal.
             childList[i].Despawn();
-            childList[i].gameObject.SetActive(false);
-            Destroy(childList[i].gameObject);
+            //childList[i].gameObject.SetActive(false);
+            //Destroy(childList[i].gameObject);
         }
 
         SpawnSector.pIsLoaded = false;
         mSectors.RemoveAt(DespawnSectorIndex);
     }
+
+
 
 
     public PersistentEntity SpawnPrefab(SpawnType itemTypeToSpawn, Coord SpawnLocation)
@@ -341,11 +345,11 @@ public class PrefabSpawner : MonoBehaviour {
             case SpawnType.None:
                 return null;
             case SpawnType.Wall:
-                return CreateWall(SpawnLocation);
+                return prefabPooler.spawnWall(SpawnLocation);
             case SpawnType.Enemy:
-                return CreateEnemy(SpawnLocation);
+                return prefabPooler.SpawnDrone(SpawnLocation);
             case SpawnType.Obstacle:
-                return CreateObstacle(SpawnLocation);
+                return prefabPooler.SpawnAmmoWall(SpawnLocation);
             case SpawnType.ForceField:
                 return CreateForceField(SpawnLocation);
             case SpawnType.Pistol:
@@ -367,21 +371,39 @@ public class PrefabSpawner : MonoBehaviour {
 
             case SpawnType.Shield:
                 return CreateCrate(SpawnLocation, SpawnType.Shield);
-            case SpawnType.Mine:
-                return CreateCrate(SpawnLocation, SpawnType.Mine);
+
+            case SpawnType.MineDrone:
+                return prefabPooler.SpawnDrone(SpawnLocation);
+            case SpawnType.Invader:
+                return prefabPooler.SpawnDrone(SpawnLocation);
+            case SpawnType.HeavyInvader:
+                return prefabPooler.SpawnDrone(SpawnLocation);
+            case SpawnType.Drone:
+                return prefabPooler.SpawnDrone(SpawnLocation);
+
+            case SpawnType.Turret:
+                return prefabPooler.SpawnDrone(SpawnLocation);
+
+            case SpawnType.BrokenPowerCube:
+                return CreatePowerCube(SpawnLocation);
+
+            case SpawnType.BrokenPressureStation:
+                return CreatePressureCube(SpawnLocation);
+
             case SpawnType.MecanicalTools:
                 return CreateCrate(SpawnLocation, SpawnType.MecanicalTools);
             case SpawnType.ElectricalTools:
                 return CreateCrate(SpawnLocation, SpawnType.ElectricalTools);
 
-
+            case SpawnType.Space:
+                return null;
 
             case SpawnType.PressureStation:
                 return CreatePressureCube(SpawnLocation);
+
             case SpawnType.PowerCube:
                 return CreatePowerCube(SpawnLocation);
-            case SpawnType.BrokenPressureStation:
-                return null; //CreateBrokenPressureStationTile(SpawnLocation);
+
 
             default:
                 Debug.Log("Invalid item spawn number: " + itemTypeToSpawn);

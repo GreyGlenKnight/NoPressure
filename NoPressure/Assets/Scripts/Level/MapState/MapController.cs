@@ -36,6 +36,9 @@ public class MapController : MonoBehaviour
     // Load the map starting at location
     public void Init(WorldSpaceUnit unit, Coord location, PrefabSpawner lPrefabSpawner)
     {
+        GameObject temp = GameObject.Find("Player");
+        CameraFocus = temp.transform;
+
         gDynamicLoader = TheDynamicLoader.getDynamicLoader();
         SectorsToSpawnQueue = new Queue<MapSector>();
         SectorsToDespawnQueue = new Queue<MapSector>();
@@ -54,7 +57,7 @@ public class MapController : MonoBehaviour
         player.mAttemptDropItem += lPrefabSpawner.CreateCrate;
 
         // Move the player to the starting location
-        player.transform.position = new Vector3(location.x, 1, location.y);
+        player.transform.position = new Vector3(location.x, 0, location.y);
 
         // Store the current MapNode and Sector to detect when to concern ourselves
         // with loading new sectors and despawn thoes that are out of bounds.
@@ -81,6 +84,9 @@ public class MapController : MonoBehaviour
 
         // Schedule upkeep to spread pressure
         gDynamicLoader.AddActionToQueue(SpreadPressureUpkeep, Priority.Low);
+
+        // Schedule upkeep to spawn sectors within bounds
+        gDynamicLoader.AddActionToQueue(FindSectorsToSpawnUpkeep, Priority.Low);
 
         gDynamicLoader.AddActionToQueue(FindPowerNetworksUpkeep, Priority.Low);
 
@@ -137,19 +143,15 @@ public class MapController : MonoBehaviour
 
     private void Update()
     {
-        if (CameraFocus == null)
-        {
-            GameObject temp = GameObject.Find("Player");
 
-            if (temp == null)
-            {
-                Debug.Log("Player Is null");
-                return;
-            }
-            CameraFocus = temp.transform;
 
-            CurrentSector = new Coord((int)CameraFocus.position.x, (int) CameraFocus.position.z);
-        }
+        GameObject temp = GameObject.Find("Player");
+
+        if (temp == null)
+            return;
+
+        CurrentSector = map.ConvertToSectorSpace(WorldSpaceUnit.Tile, new Coord((int)temp.transform.position.x, (int)temp.transform.position.z));
+        CurrentMapNode = map.ConvertToMapNode(WorldSpaceUnit.Tile, new Coord((int)temp.transform.position.x, (int)temp.transform.position.z));
     }
 
     public void PathfinderManagerUpkeep()
@@ -177,24 +179,26 @@ public class MapController : MonoBehaviour
         gDynamicLoader.AddActionToQueue(PathfinderManagerUpkeep, Priority.Low);
     }
 
+
     public void FindSectorsToSpawnUpkeep()
     {
-        if (CameraFocus == null)
-        {
-            Debug.Log("Can not find focus(player)");
-            gDynamicLoader.AddActionToQueue(FindSectorsToSpawnUpkeep, Priority.Low);
-            return;
-        }
-        Coord newSector = map.ConvertToSectorSpace(WorldSpaceUnit.Tile,
-            new Coord((int)CameraFocus.position.x, (int)CameraFocus.position.z));
+        GameObject temp = GameObject.Find("Player");
 
-        if (newSector != CurrentSector)
-        {
+        if (temp == null)
+            return;
+
+        Coord newSector = map.ConvertToSectorSpace(WorldSpaceUnit.Tile, new Coord((int)temp.transform.position.x, (int)temp.transform.position.z));
+
+        //Coord newSector = map.ConvertToSectorSpace(WorldSpaceUnit.Tile,
+        //    new Coord((int)CameraFocus.position.x, (int)CameraFocus.position.z));
+
+        //if (newSector != CurrentSector)
+        //{
             //DespawnSectors(focusSector);
             CurrentSector = newSector;
-
-            ScheduleLoadSectors(WorldSpaceUnit.Sector, CurrentSector);
-        }
+        Debug.Log(newSector);
+            ScheduleLoadSectors(WorldSpaceUnit.Sector, newSector);
+        //}
 
         gDynamicLoader.AddActionToQueue(FindSectorsToSpawnUpkeep, Priority.Low);
     }
@@ -330,9 +334,20 @@ public class MapController : MonoBehaviour
         MapSector sectorToDespawn = SectorsToDespawnQueue.Dequeue();
 
         ScheduledToBeDespawned.Remove(sectorToDespawn);
-        // Remove from loaded sectors list
-        CurrentlySpawnedSectors.Remove(sectorToDespawn);
+
+        // check again 
+        int distance = map.GetDistance(sectorToDespawn, CurrentSector);
+
+        Debug.Log(sectorToDespawn.mSectorLocation + " : " + CurrentSector + " : " + distance);
+
         // Unload sector from memory
-        prefabSpawner.DespawnSector(sectorToDespawn);
+        if (distance > pLoadRadius ) 
+        {
+            prefabSpawner.DespawnSector(sectorToDespawn);
+            // Remove from loaded sectors list
+            CurrentlySpawnedSectors.Remove(sectorToDespawn);
+        }
+        
+
     }
 }

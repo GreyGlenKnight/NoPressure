@@ -76,6 +76,11 @@ public class BoostItem: IInventoryItem {
         }
     }
 
+    public override void ClickTile(MapTile clickedTile)
+    {
+        Use();
+    }
+
     public override void UnSelect() { base.UnSelect(); }
     public override void AbortUse() { base.AbortUse(); }
 

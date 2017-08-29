@@ -23,6 +23,7 @@ public enum FloorTileType
     Broken = 1,
     Wired = 2,
     WiredAndBroken = 3,
+    Space = 5,
 }
 
 public enum SpawnType
@@ -31,6 +32,7 @@ public enum SpawnType
     Wall = 1,
 
     Enemy = 3,
+
     Obstacle = 4,
     ForceField = 5,
 
@@ -40,19 +42,28 @@ public enum SpawnType
     PlasmaThrower = 23,
     RocketLauncher = 24,
 
-    Mine = 30,
+    MineDrone = 30, //TODO
+    Invader = 31, //TODO
+    Drone = 32, //TODO
+    HeavyInvader = 33, //TODO
 
     Shield = 40,
 
     MecanicalTools = 50,
     ElectricalTools = 51,
 
+    Space = 60,//TODO
+
     PortableGenerator = 70,
     PortablePressure = 71,
 
+    Turret = 80, //TODO
+
+    BrokenPowerCube = 95, //TODO
     PowerCube = 96,
     PressureStation = 97,
-    BrokenPressureStation = 98,
+    BrokenPressureStation = 98,//TODO
+
 
 
 };

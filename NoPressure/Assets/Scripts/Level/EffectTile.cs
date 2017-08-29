@@ -12,6 +12,10 @@ public class EffectTile : FloorTile
     public Material pPoweredMateral;
     public Material pNotPoweredMateral;
 
+    public Material ShotMateral;
+    public Material explosionMateral;
+    public Color ShotShine;
+
     public float pMagnitude = 1f;
     public float TimesinceLastTrigger = 0f;
     public float TriggerDelay = 1f;
@@ -19,7 +23,6 @@ public class EffectTile : FloorTile
     //public bool pIsBroken = false;
 
     public bool pWillEmitLight = true;
-
 
     public int mDamage = 1;
 
@@ -31,7 +34,7 @@ public class EffectTile : FloorTile
     public float ChargeRequired = 1f;
     public float amountCharged = 0f;
 
-
+    public bool isSpawned = false;
 
     // Use this for initialization
     protected override void Start()
@@ -39,15 +42,6 @@ public class EffectTile : FloorTile
         amountCharged += Random.Range(0f, 1f) * ChargeRequired;
         base.Start();
     }
-
-    // Update is called once per frame
-    //void Update()
-    //{
-    //    TimesinceLastTrigger += Time.deltaTime;
-
-
-
-    //}
 
     public void OnTriggerExit(Collider other)
     {
@@ -71,9 +65,6 @@ public class EffectTile : FloorTile
             TileData.powerGeneration += generatePressure.power;
             TileData.powerConsumption += generatePressure.consumption;
             return;
-            //Debug.Log("enter");
-            //TileData.PressureRate = 100;
-            //Debug.Log("Adding Pressure");
         }
 
         PowerSource powerSource = null;
@@ -88,13 +79,18 @@ public class EffectTile : FloorTile
             //entity.mOnDeathHandler += powerSource.onDeathDelegate;
         }
 
-
         MovingEntity moving = other.GetComponent<MovingEntity>();
         if (moving != null)
         {
             moving.mOnUpdateGetTileInfo += updatePressure;
         }
 
+        Player player = other.GetComponent<Player>();
+
+        if(player != null)
+        {
+            player.isInSpace = TileData.isSpace;
+        }
     }
 
     public void updatePressure(Transform entity)
@@ -103,14 +99,15 @@ public class EffectTile : FloorTile
 
         if(TileData.getPressure() > 0)
             movingEntity.mPressure += (TileData.getPressure() / 40f) * Time.deltaTime;
-
     }
-
 
     // Update is called once per frame
     void Update()
     {
         if (TileData == null)
+            return;
+
+        if (TileData.isSpace == true)
             return;
 
         if (TileData.isBroken == true)
@@ -139,15 +136,16 @@ public class EffectTile : FloorTile
 
         rotation = Quaternion.Euler(0f, Random.Range(0f, 360f), 0f);
 
-        // Create bullet
-        ProjectileManager.getProjectileManager().SpawnProjectile
-            (Color.red, 5, 1f, CollisionMask, spawnLocation, rotation, onHitEffect);
+
+    // Create bullet
+    ProjectileManager.getProjectileManager().SpawnProjectile
+            (ShotMateral,explosionMateral, ShotShine, 5, 1f, CollisionMask, spawnLocation, rotation, onHitEffect);
 
         Quaternion rotation2 = Quaternion.Euler(0f, Random.Range(0f, 360f), 0f);
 
         // Create bullet
         ProjectileManager.getProjectileManager().SpawnProjectile
-            (Color.red, 5, 1f, CollisionMask, spawnLocation, rotation2, onHitEffect);
+                (ShotMateral, explosionMateral, ShotShine, 5, 1f, CollisionMask, spawnLocation, rotation, onHitEffect);
 
     }
 
@@ -155,92 +153,136 @@ public class EffectTile : FloorTile
     // collision
     private bool onHitEffect(Transform TargetHit, Vector3 hitPoint, Vector3 hitDirection)
     {
+        if (TargetHit == null)
+            return false;
+
+        if (this == null)
+            return false;
+
         IDamageable damageableObject = TargetHit.GetComponent<IDamageable>();
 
         if (damageableObject == null)
         {
             //Debug.Log("Colision with a non damagable target, refine the collision mask");
             return false;
-        }
+        } 
 
         // Cause damage to the target
         damageableObject.TakeHit(mDamage, hitPoint, transform.forward);
         return true;
     }
+
+
+
+
+    public override void Despawn()
+    {
+
+        if (isSpawned == true)
+        {
+            base.Despawn();
+            isSpawned = false;
+        }
+        //if (mOnDespawn != null)
+        //    mOnDespawn(transform);
+    }
+
+    public override void Die()
+    {
+        //mDead = true; 
+
+        //// If there are any on death triggers, call them
+        //if (mOnDeathHandler != null)
+        //    mOnDeathHandler(transform);
+
+        ////If it dies remove it from the Sector
+        //if (SectorSpawn == null)
+        //{
+        //    //Debug.Log("Set the Sector of the spawn");
+        //}
+        //else
+        //{
+
+        //}
+    }
+
+
+
 }
 
 
-    //public void OnTriggerStay(Collider other)
-    //{
-    //    GeneratePressure generatePressure = null;
-    //    generatePressure = other.GetComponent<GeneratePressure>();
-    //    if (generatePressure != null)
-    //    {
-    //        TileData.PressureRate = 1000;
-    //        //Debug.Log("Adding Pressure");
-    //    }
+
+//public void OnTriggerStay(Collider other)
+//{
+//    GeneratePressure generatePressure = null;
+//    generatePressure = other.GetComponent<GeneratePressure>();
+//    if (generatePressure != null)
+//    {
+//        TileData.PressureRate = 1000;
+//        //Debug.Log("Adding Pressure");
+//    }
 
 
-    //    if (pIsPowered == false)
-    //        return;
+//    if (pIsPowered == false)
+//        return;
 
-    //    Player player = other.GetComponent<Player>();
+//    Player player = other.GetComponent<Player>();
 
-    //    if (TimesinceLastTrigger < TriggerDelay)
-    //        return;
+//    if (TimesinceLastTrigger < TriggerDelay)
+//        return;
 
-    //    if (player != null)
-    //    {
-    //        if (pIsBroken)
-    //        {
-    //            switch (pEffectTypePowerAndBroken)
-    //            {
-    //                case EffectType.Damage:
+//    if (player != null)
+//    {
+//        if (pIsBroken)
+//        {
+//            switch (pEffectTypePowerAndBroken)
+//            {
+//                case EffectType.Damage:
 
-    //                    if (player.mHasDisableTrapSkill == false)
-    //                    {
-    //                        player.TakeDamage(pMagnitude);
-    //                        TimesinceLastTrigger = 0f;
-    //                    }
-    //                    //else
-    //                    //{
-    //                    //    GetComponent<Renderer>().material = disabledMateral;
-    //                    //    pEffectType = EffectType.None;
-    //                    //}
-    //                    break;
+//                    if (player.mHasDisableTrapSkill == false)
+//                    {
+//                        player.TakeDamage(pMagnitude);
+//                        TimesinceLastTrigger = 0f;
+//                    }
+//                    //else
+//                    //{
+//                    //    GetComponent<Renderer>().material = disabledMateral;
+//                    //    pEffectType = EffectType.None;
+//                    //}
+//                    break;
 
-    //                case EffectType.GivePressure:
-    //                    player.mPressure += pMagnitude;
-    //                    TimesinceLastTrigger = 0f;
-    //                    break;
-    //            }
-    //        }
+//                case EffectType.GivePressure:
+//                    player.mPressure += pMagnitude;
+//                    TimesinceLastTrigger = 0f;
+//                    break;
+//            }
+//        }
 
-    //        else
-    //        {
-    //            switch (pEffectTypePower)
-    //            {
-    //                case EffectType.Damage:
+//        else
+//        {
+//            switch (pEffectTypePower)
+//            {
+//                case EffectType.Damage:
 
-    //                    if (player.mHasDisableTrapSkill == false)
-    //                    {
-    //                        player.TakeDamage(pMagnitude);
-    //                        TimesinceLastTrigger = 0f;
-    //                    }
-    //                    //else
-    //                    //{
-    //                    //    GetComponent<Renderer>().material = disabledMateral;
-    //                    //    pEffectType = EffectType.None;
-    //                    //}
-    //                    break;
+//                    if (player.mHasDisableTrapSkill == false)
+//                    {
+//                        player.TakeDamage(pMagnitude);
+//                        TimesinceLastTrigger = 0f;
+//                    }
+//                    //else
+//                    //{
+//                    //    GetComponent<Renderer>().material = disabledMateral;
+//                    //    pEffectType = EffectType.None;
+//                    //}
+//                    break;
 
-    //                case EffectType.GivePressure:
-    //                    player.mPressure += pMagnitude;
-    //                    TimesinceLastTrigger = 0f;
-    //                    break;
-    //            }
-    //        }
-    //    }
+//                case EffectType.GivePressure:
+//                    player.mPressure += pMagnitude;
+//                    TimesinceLastTrigger = 0f;
+//                    break;
+//            }
+//        }
+//    }
 
-    //}
+//}
 

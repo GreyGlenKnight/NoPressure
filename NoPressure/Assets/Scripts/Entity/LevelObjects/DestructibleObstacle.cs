@@ -11,7 +11,7 @@ public class DestructibleObstacle : PersistentEntity, IItemCase
 
     public void Explode(ParticleSystem deathEffect, Vector3 hitPoint)
     {
-        Destroy(Instantiate(deathEffect.gameObject, hitPoint, transform.rotation));
+        //Destroy(Instantiate(deathEffect.gameObject, hitPoint, transform.rotation));
     }
 
     public void SpawnItems(List<Pack> items)

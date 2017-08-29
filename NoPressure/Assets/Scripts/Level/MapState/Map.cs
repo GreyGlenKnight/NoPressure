@@ -5,7 +5,7 @@ using System;
 
 public class Map
 {
-    private MapNode[,] sMapNodes = new MapNode[10, 10];
+    private MapNode[,] sMapNodes = new MapNode[4, 4];
 
     public Map()
     {
@@ -161,8 +161,8 @@ public class Map
 
     public void SetAllSectorsToNotLoaded()
     {
-        for (int i = 0; i < 10; i++)
-            for (int j = 0; j < 10; j++)
+        for (int i = 0; i < 4; i++)
+            for (int j = 0; j < 4; j++)
             {
                 if (sMapNodes[i, j] != null)
                 {
@@ -177,6 +177,12 @@ public class Map
         // find the sector
         MapSector Sector = GetSectorAt(WorldSpaceUnit.Tile, location, "Demo");
 
+        if (Sector == null)
+        {
+            Debug.Log("Can not find sector At tile: " + location);
+            return;
+        }
+         
         Sector.SetObjectAt(location, itemToSet);
     }
 
@@ -234,7 +240,7 @@ public class Map
             //Debug.Log("Can not load negative value maps :" + location);
             return false;
         }
-        if (location.x >= 10)
+        if (location.x > 4)
         {
             //Debug.Log("map value out of bounds:" + location);
             return false;
@@ -244,7 +250,7 @@ public class Map
             //Debug.Log("Can not load negative value maps:" + location);
             return false;
         }
-        if (location.y >= 10)
+        if (location.y > 4)
         {
             //Debug.Log("map value out of bounds:" + location);
             return false;

@@ -67,6 +67,8 @@ public class FileLoader
 
     public String[] getLineCommaDelim()
     {
+        if (theReader == null)
+            return null;
         //using (theReader) {
         LineNumber++;
         line = theReader.ReadLine();
@@ -82,6 +84,7 @@ public class FileLoader
         else
         {
             theReader.Close();
+            theReader = null;
             return null;
         }
     }
@@ -167,6 +170,9 @@ public class FileLoader
 
     public int[] getIntLineCommaDelim()
     {
+        if(theReader == null)
+            return null;
+
         line = theReader.ReadLine();
         LineNumber++;
 
@@ -177,13 +183,12 @@ public class FileLoader
 
             for (int i = 0; i < entries.Length; i++)
             {
-                try
+                if(int.TryParse(entries[i], out intEntries[i]))
                 {
-                    intEntries[i] = Convert.ToInt32(entries[i]);
+
+                    //intEntries[i] = Convert.ToInt32(entries[i]);
                 }
-#pragma warning disable CS0168 // Variable is declared but never used
-                catch (Exception e)
-#pragma warning restore CS0168 // Variable is declared but never used
+                else
                 {
                     intEntries[i] = 0;
                 }
@@ -199,6 +204,7 @@ public class FileLoader
         else
         {
             theReader.Close();
+            theReader = null;
             return null;
         }
     }
@@ -218,13 +224,13 @@ public class FileLoader
 #pragma warning disable CS0168 // Variable is declared but never used
         catch (FileNotFoundException e)
         {
-            //Debug.LogException(e);
+            Debug.LogException(e);
             return false;
         }
         catch (Exception e)
 #pragma warning restore CS0168 // Variable is declared but never used
         {
-            //Debug.LogException(e);
+            Debug.LogException(e);
             return false;
         }
     }

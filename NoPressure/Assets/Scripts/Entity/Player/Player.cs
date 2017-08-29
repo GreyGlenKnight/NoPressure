@@ -17,6 +17,7 @@ public class Player : MovingEntity
     Crate ClickedOnCrate;
 
     Rigidbody rb;
+    Animator m_Animator;
     // Player Condition
     Vector3 mVelocity;
     bool mIsDashing;
@@ -37,6 +38,20 @@ public class Player : MovingEntity
     public Color pSelectedColor = new Color(200 / 255f, 133f / 255f, 117f / 255f, 1);
     ColorBlock mUnselectedColorBlock = new ColorBlock();
     ColorBlock mSelectedColorBlock;
+
+    public Transform HealthBar;
+
+    public float HealthBarMax;
+    public float HealthBarMin;
+
+    public Transform PressureBar;
+
+    public float PressureBarMin;
+    public float PressureBarMax;
+
+    public Transform ShieldBar;
+
+    public bool isInSpace = false;
 
     // Cheats
     public bool mGodMode = false;
@@ -64,6 +79,7 @@ public class Player : MovingEntity
         mInventory.mExplosives = Instantiate(mInventory.mExplosives);
         mInventory.mParts = Instantiate(mInventory.mParts);
         rb = GetComponent<Rigidbody>();
+        m_Animator = GetComponent<Animator>();
         SetSelection(0);
         UpdateResourceInGUI();
 
@@ -101,6 +117,10 @@ public class Player : MovingEntity
             mPressure += 10;
         }
 
+        if (isInSpace == true)
+            mPressure -= 2 * Time.deltaTime;
+
+
         UpdateGUIText();
     }
 
@@ -120,6 +140,11 @@ public class Player : MovingEntity
         }
         else
         {
+            if (mVelocity.magnitude > 0)
+                m_Animator.SetBool("isRunning", true);
+            else
+                m_Animator.SetBool("isRunning", false);
+
             // Move the Player to a position specified by the input received
             rb.MovePosition(rb.position + mVelocity * Time.deltaTime);
         }
@@ -135,15 +160,30 @@ public class Player : MovingEntity
 
     public void UpdateGUIText()
     {
-        string HUDstring = "";
+        Vector2 currentAnchor = HealthBar.GetComponent<RectTransform>().anchorMax;
+        float barFillPercent = ((mHealth.mValue / mHealth.mCapacity) * (HealthBarMin - HealthBarMax)) + HealthBarMax;
 
-        HUDstring = "Player HUD \n";
-        HUDstring += mPressure + "\n";
-        HUDstring += mShield + "\n";
-        HUDstring += mHealth + "\n";
-        HUDstring += transform.position.x +"," + transform.position.y +"," + transform.position.z + "\n";
+        HealthBar.GetComponent<RectTransform>().anchorMax = new Vector2(currentAnchor.x, barFillPercent);
 
-        HUDText.GetComponent<Text>().text = HUDstring;
+        barFillPercent = ((mShield.mValue / mShield.mCapacity) * (HealthBarMin - HealthBarMax)) + HealthBarMax;
+        ShieldBar.GetComponent<RectTransform>().anchorMax = new Vector2(currentAnchor.x, barFillPercent);
+
+        currentAnchor = PressureBar.GetComponent<RectTransform>().anchorMax;
+        barFillPercent = ((mPressure.mValue / mPressure.mCapacity) * ( PressureBarMin - PressureBarMax)) + PressureBarMax;
+
+        PressureBar.GetComponent<RectTransform>().anchorMax = new Vector2(currentAnchor.x, barFillPercent);
+
+        //string HUDstring = "";
+
+        //HUDstring = "Player HUD \n";
+        //HUDstring += mPressure + "\n"; 
+        //HUDstring += mShield + "\n";
+        //HUDstring += mHealth + "\n";
+        //HUDstring += transform.position.x +"," + transform.position.y +"," + transform.position.z + "\n";
+
+        HUDText.GetComponent<Text>().text = Math.Round(mPressure.mValue).ToString();
+
+
     }
 
     // Try to drop the currently selected item on the ground.
@@ -214,14 +254,11 @@ public class Player : MovingEntity
 
             pInventoryDisplay[addIndex].Find("Image").GetComponent<Image>().sprite = itemToAdd.mDisplaySprite;
 
-            Debug.Log(mInventory.getSelectionIndex() + "," + addIndex);
-
             if (mInventory.getSelectionIndex() == addIndex)
             {
                 mInventory.GetSelectionItem().Select(transform);
                 SetSelection(addIndex);
             }
-
 
             UpdateResourceInGUI();
             return true;
@@ -325,7 +362,8 @@ public class Player : MovingEntity
     public void Move(Vector3 _velocity)
     {
         //Debug.Log("Move Command");
-        mVelocity = _velocity * mMoveSpeed;
+        if(isInSpace == false)
+            mVelocity = _velocity * mMoveSpeed;
     }
 
     public void LookAt(Vector3 lookPoint)

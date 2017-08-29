@@ -46,19 +46,19 @@ public class PersistentEntity : MonoBehaviour, IDamageable {
     public float mPressureLeakRate;
 
     // Skills
-    public bool mHasFixPressureSkill {
-        get
-        {
-            return mInventory.mHasFixPressureSkill;
-        }
+    //public bool mHasFixPressureSkill {
+    //    get
+    //    {
+    //        return mInventory.mHasFixPressureSkill;
+    //    }
 
-    }
-    public bool mHasDisableTrapSkill {
-        get
-        {
-            return mInventory.mHasDisableTrapSkill;
-        }
-    }
+    //}
+    //public bool mHasDisableTrapSkill {
+    //    get
+    //    {
+    //        return mInventory.mHasDisableTrapSkill;
+    //    }
+    //}
 
     // After something dies it may still have actions it can take
     public bool mDead { get; protected set; } 
@@ -92,7 +92,7 @@ public class PersistentEntity : MonoBehaviour, IDamageable {
     {
         if (mShield == null)
         {
-            Debug.Log("No Shield value set");
+            //Debug.Log("No Shield value set");
         }
         else
         {
@@ -103,8 +103,11 @@ public class PersistentEntity : MonoBehaviour, IDamageable {
             }
             else
             {
-                mShield -= damage;
-                damage -= mShield;
+                if (mShield > 0)
+                {
+                    mShield -= damage;
+                    damage = 0;
+                }
             }
         }
 
@@ -146,13 +149,7 @@ public class PersistentEntity : MonoBehaviour, IDamageable {
         }
         else
         {
-            if (pIsFloor == false) {
-                SectorSpawn.RemoveObjectAt(TileLocationInSector);
-            }
-            else if (pIsFloor == true)
-            {
-                SectorSpawn.RemoveTileAt(TileLocationInSector);
-            }
+
         }
     }
 

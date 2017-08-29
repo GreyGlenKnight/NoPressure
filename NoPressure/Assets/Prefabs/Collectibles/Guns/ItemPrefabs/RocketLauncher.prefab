@@ -70,5 +70,8 @@ MonoBehaviour:
   mFireRate: 1
   mMaxChargeTime: 0
   mMinChargeTime: 0
-  explosionRange: 10
+  explosionRange: 8
   explosionDamage: 50
+  ShotMateral: {fileID: 2100000, guid: d0a04dc822ac21a469bc510e265a1104, type: 2}
+  explosionMateral: {fileID: 2100000, guid: d0a04dc822ac21a469bc510e265a1104, type: 2}
+  ShotShine: {r: 0.9338235, g: 0.60698533, b: 0.11672794, a: 0}

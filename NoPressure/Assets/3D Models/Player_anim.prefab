@@ -3161,6 +3161,7 @@ GameObject:
   - component: {fileID: 114294419297511266}
   - component: {fileID: 114276226736355032}
   - component: {fileID: 23933758504810824}
+  - component: {fileID: 136251781121116786}
   m_Layer: 8
   m_Name: Player_anim
   m_TagString: Player
@@ -10937,13 +10938,13 @@ Transform:
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1814081289206174}
-  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalRotation: {x: -0.08682413, y: -0.0075961305, z: -0.08682413, w: 0.99240386}
   m_LocalPosition: {x: 0, y: 0, z: -10}
   m_LocalScale: {x: 8, y: 10, z: 8}
   m_Children: []
   m_Father: {fileID: 4322030603795302}
   m_RootOrder: 4
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_LocalEulerAnglesHint: {x: -10, y: 0, z: -10}
 --- !u!4 &4136935601155486
 Transform:
   m_ObjectHideFlags: 1
@@ -12769,9 +12770,9 @@ Transform:
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1334216552701842}
-  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 4, y: 0.8, z: 5.25}
-  m_LocalScale: {x: 0.1, y: 0.1, z: 0.1}
+  m_LocalRotation: {x: 0, y: 0.8827427, z: -0, w: -0.4698567}
+  m_LocalPosition: {x: -1.17, y: 4.42, z: 1.64}
+  m_LocalScale: {x: 0.07, y: 0.07, z: 0.07}
   m_Children:
   - {fileID: 4432531245676366}
   - {fileID: 4049840093174858}
@@ -12784,7 +12785,7 @@ Transform:
   - {fileID: 4120205117642584}
   m_Father: {fileID: 0}
   m_RootOrder: 0
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 236.05, z: 0}
 --- !u!4 &4322582588355800
 Transform:
   m_ObjectHideFlags: 1
@@ -13872,7 +13873,7 @@ Transform:
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1399677350723280}
   m_LocalRotation: {x: -0.7071068, y: 0, z: -0, w: 0.7071067}
-  m_LocalPosition: {x: -0, y: 30, z: 0.000000029802322}
+  m_LocalPosition: {x: -50.9, y: 43.3, z: 0.000000029802322}
   m_LocalScale: {x: 100, y: 100, z: 100}
   m_Children:
   - {fileID: 4985393951289642}
@@ -15907,7 +15908,7 @@ Transform:
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1435769508562486}
-  m_LocalRotation: {x: 0.11011986, y: 0.741299, z: -0.16787335, w: 0.6404437}
+  m_LocalRotation: {x: 0.11011974, y: 0.741299, z: -0.16787335, w: 0.6404437}
   m_LocalPosition: {x: -1.2136298e-10, y: -1.466833e-10, z: -0.00000000545504}
   m_LocalScale: {x: 1, y: 1.0000001, z: 0.99999994}
   m_Children:
@@ -18860,7 +18861,7 @@ Transform:
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1177469019072498}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalPosition: {x: 2.29, y: 0, z: -0.107}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 4432531245676366}
@@ -19060,11 +19061,11 @@ Rigidbody:
   m_Mass: 1
   m_Drag: 0
   m_AngularDrag: 0.05
-  m_UseGravity: 1
+  m_UseGravity: 0
   m_IsKinematic: 0
-  m_Interpolate: 0
+  m_Interpolate: 2
   m_Constraints: 116
-  m_CollisionDetection: 0
+  m_CollisionDetection: 2
 --- !u!95 &95770955663357650
 Animator:
   serializedVersion: 3
@@ -19240,13 +19241,13 @@ MonoBehaviour:
   pIsOrganic: 0
   pIsElectronic: 0
   pIsFloor: 0
-  mInventory: {fileID: 0}
+  mInventory: {fileID: 114294419297511266}
   mPressure: {fileID: 114978625112387218}
   mArmor: {fileID: 114003764239990896}
   mShield: {fileID: 114181535406536332}
   mHealth: {fileID: 114207630617304272}
   mPressureLeakRate: 0
-  mMoveSpeed: 10
+  mMoveSpeed: 5
   mRotateSpeed: 10
   HUDText: {fileID: 0}
   pInventoryDisplay:
@@ -19254,9 +19255,18 @@ MonoBehaviour:
   - {fileID: 0}
   - {fileID: 0}
   - {fileID: 0}
-  pEmptyInventorySprite: {fileID: 0}
+  pEmptyInventorySprite: {fileID: 21300000, guid: 7c6d5c178e81cf64ab8e3a264b0b1f0f,
+    type: 3}
   pUnselectedColor: {r: 0.8156863, g: 0.78039217, b: 0.68235296, a: 1}
   pSelectedColor: {r: 0.78431374, g: 0.52156866, b: 0.45882353, a: 1}
+  HealthBar: {fileID: 0}
+  HealthBarMax: 0.315
+  HealthBarMin: 0.785
+  PressureBar: {fileID: 0}
+  PressureBarMin: 0.77
+  PressureBarMax: 0.14
+  ShieldBar: {fileID: 0}
+  isInSpace: 0
   mGodMode: 0
 --- !u!114 &114294419297511266
 MonoBehaviour:
@@ -19296,6 +19306,19 @@ MonoBehaviour:
   mCapacity: 30
   mValue: 30
   mName: Pressure
+--- !u!136 &136251781121116786
+CapsuleCollider:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1334216552701842}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 0
+  m_Enabled: 1
+  m_Radius: 7.5
+  m_Height: 35
+  m_Direction: 1
+  m_Center: {x: 0, y: 14, z: 0}
 --- !u!137 &137329040502431384
 SkinnedMeshRenderer:
   m_ObjectHideFlags: 1

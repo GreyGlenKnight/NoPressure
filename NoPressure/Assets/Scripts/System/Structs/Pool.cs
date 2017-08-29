@@ -54,9 +54,9 @@ public class Pool : MonoBehaviour
     protected void AssignValues(float lSize, float lValue)
     {
         // Pools must have a positive size
-        if (lSize <= 0)
+        if (lSize < 0)
         {
-            Debug.LogError("Resource Pool size must be a positive number!");
+            Debug.LogError("Resource Pool size must be a positive number! " + lSize);
         }
         mCapacity = lSize;
         mValue = lValue;

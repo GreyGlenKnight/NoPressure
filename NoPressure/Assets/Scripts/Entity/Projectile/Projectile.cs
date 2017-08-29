@@ -17,7 +17,7 @@ public class Projectile : MonoBehaviour {
     public Explosion explosion;
 
     // Delegate to handle the effect of a projectile when it detects a collision
-    ProjectileManager.OnCollision mOnCollisionHandler;
+    OnCollision mOnCollisionHandler;
 
     void Start () {
         //Destroy(gameObject, lifeTime);
@@ -61,10 +61,11 @@ public class Projectile : MonoBehaviour {
         lifeTime = newTime;
     }
 
-    public void SetEffect(ProjectileManager.OnCollision lEffect)
+    public void SetEffect(OnCollision lEffect)
     {
         mOnCollisionHandler = lEffect;
     }
+
 
     public void SetCollisionLayer(LayerMask lCollisionLayer)
     {
@@ -112,7 +113,7 @@ public class Projectile : MonoBehaviour {
 
         if (mOnCollisionHandler == null)
         {
-            Debug.Log("collision effect is null");
+            Debug.Log("collision effect is null " + collider + ":" + collider.transform.position);
             return;
         }
 
@@ -124,15 +125,30 @@ public class Projectile : MonoBehaviour {
         }
     }
 
-    void die()
+    Material explosionMat;
+    Color explosionShine;
+    public void ChangeExplosionMat(Material lexplosionMat, Color lShine)
     {
+        explosionMat = lexplosionMat;
+        explosionShine = lShine;
+    }
+
+    void die()
+    { 
         if(explosion != null)
         {
             if (explosionSize > 0)
             {
                 Explosion explosionInst = Instantiate(explosion, transform.position, transform.rotation);
+
+                ChangeMaterial(explosionInst.gameObject, explosionMat);
+
+                explosionInst.GetComponentInChildren<Light>().color = explosionShine;
+                explosionInst.GetComponentInChildren<Light>().range = explosionSize * 2.5f;
+
                 explosionInst.SetSize(explosionSize);
                 explosionInst.SetDamage(explosionDamage);
+                
                 Destroy(explosionInst.gameObject, 0.4f);
             }
         }
@@ -140,7 +156,12 @@ public class Projectile : MonoBehaviour {
         if (mOnDeath != null)
             mOnDeath(this);
 
-
     }
-
+    public void ChangeMaterial(GameObject toChange, Material newMaterial)
+    {
+        Material[] mats;
+        mats = toChange.GetComponent<Renderer>().materials;
+        mats[0] = newMaterial;
+        toChange.GetComponent<Renderer>().materials = mats;
+    }
 }

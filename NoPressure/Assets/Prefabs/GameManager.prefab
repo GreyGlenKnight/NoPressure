@@ -25,6 +25,8 @@ GameObject:
   - component: {fileID: 114713651258395106}
   - component: {fileID: 114276666637687374}
   - component: {fileID: 114944423991327620}
+  - component: {fileID: 114692005986000624}
+  - component: {fileID: 114244684710705626}
   m_Layer: 0
   m_Name: GameManager
   m_TagString: Untagged
@@ -47,34 +49,6 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!1 &1714373973243532
-GameObject:
-  m_ObjectHideFlags: 0
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 100100000}
-  serializedVersion: 5
-  m_Component:
-  - component: {fileID: 4144084624281596}
-  m_Layer: 0
-  m_Name: GameObject
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &4144084624281596
-Transform:
-  m_ObjectHideFlags: 1
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 100100000}
-  m_GameObject: {fileID: 1714373973243532}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_Children: []
-  m_Father: {fileID: 4903048620714974}
-  m_RootOrder: 1
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!4 &4763016216579754
 Transform:
   m_ObjectHideFlags: 1
@@ -99,10 +73,42 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 4763016216579754}
-  - {fileID: 4144084624281596}
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &114244684710705626
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1095717642305304}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: cab7ae022165d8546b4002e5a49bb96f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  warningDelay: -1
+  PoolPrefab: {fileID: 114709465264957414, guid: a9b5cae6f0bd10a43bba8a1e152e4bb6,
+    type: 2}
+  ResourcePoolPrefab: {fileID: 114713386503820778, guid: a7be104f1f803e94d9865d28a9b2e450,
+    type: 2}
+  WallPrefab: {fileID: 114547780389400062, guid: 3e8444c30a20af040a6ec89aa5607c31,
+    type: 2}
+  wallNum: 2000
+  WallMaterial: {fileID: 2100000, guid: 880b228e212069d4b87ef101cb236ece, type: 2}
+  WallHealth: 50
+  AmmoMaterial: {fileID: 2100000, guid: 8b89f4450c848bb458130e380436ee68, type: 2}
+  AmmoWallHealth: 5
+  ammoPack: {fileID: 114381154620549892, guid: a9d7f22a262ce9d48bbbe99216ec389a, type: 2}
+  FloorTilePrefab: {fileID: 0}
+  NumFloors: 6000
+  DroneEnemyPrefab: {fileID: 0}
+  NumDrones: 100
+  InvaderEnemyPrefab: {fileID: 0}
+  NumInvaders: 50
+  ProjectilePrefab: {fileID: 114722131871964668, guid: c16712574f99d79419bc2d571755116e,
+    type: 2}
+  NumberOfProjectiles: 500
 --- !u!114 &114276666637687374
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -114,8 +120,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 64193f58bf5cf224587f5f4f9b82b21d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  ProjectilePrototype: {fileID: 114722131871964668, guid: c16712574f99d79419bc2d571755116e,
-    type: 2}
 --- !u!114 &114396408960279504
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -128,9 +132,25 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   pStartLocation:
-    x: 65
-    y: 115
+    x: 57
+    y: 23
   levelName: Demo
+  deathDelay: 3
+--- !u!114 &114692005986000624
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1095717642305304}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 100a6cf4b08673e45b339a71071ac322, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  EffectTile: {fileID: 0}
+  BoardHolder: {fileID: 4763016216579754}
+  prefabPooler: {fileID: 0}
+  spaceTile: {fileID: 0}
 --- !u!114 &114713651258395106
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -143,14 +163,11 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   MovingUnitsHolder: {fileID: 0}
-  BlankObject: {fileID: 0}
-  BoardHolder: {fileID: 0}
-  ElectricTrapTile: {fileID: 0}
-  PressureTile: {fileID: 0}
-  BrokenPressureStationTile: {fileID: 0}
+  BoardHolder: {fileID: 4763016216579754}
   CratePrefab: {fileID: 0}
   enemies:
   - {fileID: 0}
+  prefabPooler: {fileID: 0}
 --- !u!114 &114760069938107710
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -180,7 +197,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   pLoadRadius: 2
-  pUpdateDelay: 1
 --- !u!114 &114985953790935870
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -192,4 +208,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9bf80a651d21a254dae4d1339ce78f01, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  player: {fileID: 0}
+  TileSelectPrefab: {fileID: 4190587050611594, guid: 78b30ed69f5c3a24986eec25bcde3d92,
+    type: 2}
+  CrosshairPrefab: {fileID: 4845407699491684, guid: e9527f1b55f4246469edaf854ebbc2d5,
+    type: 2}
+  map: {fileID: 0}
+  moveType: 0

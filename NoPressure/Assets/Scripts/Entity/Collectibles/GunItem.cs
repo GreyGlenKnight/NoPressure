@@ -31,7 +31,11 @@ public class GunItem : IInventoryItem {
     bool mIsReloading = false;
     bool mIsTriggerDown = false;
     bool mIsTriggerReleased = true;
-    
+
+    public Material ShotMateral;
+    public Material explosionMateral;
+    public Color ShotShine;
+
     public GunItem(
         Sprite lDisplaySprite, 
         int lDamage, 
@@ -242,9 +246,11 @@ public class GunItem : IInventoryItem {
         }
         LayerMask CollisionMask = LayerMask.GetMask(new string[] {"Entity", "Obstacle" });
 
-        // Create bullet
-        ProjectileManager.getProjectileManager().SpawnProjectile
-            (Color.red, 10, 3, CollisionMask, mEquipedBy, onHitEffect, explosionRange, explosionDamage);
+
+
+    // Create bullet
+    ProjectileManager.getProjectileManager().SpawnProjectile
+            (ShotMateral,explosionMateral,ShotShine, 10, 3, CollisionMask, mEquipedBy, onHitEffect, explosionRange, explosionDamage);
 
         mCharges -= 1;
         if (mUseSFX != null)

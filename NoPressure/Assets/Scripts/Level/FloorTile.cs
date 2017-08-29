@@ -50,10 +50,18 @@ public class FloorTile : PersistentEntity {
     public Material BrokenWire1;
     public Material BrokenWire2;
     public Material BrokenWire3;
-    public Material BrokenWire4; 
+    public Material BrokenWire4;
+
+    public Material emptySpace; 
 
     public void updateMat()
     {
+        if(TileData.isSpace == true)
+        {
+            ChangeMateral(emptySpace);
+            return;
+        }
+
         if (TileData.isBroken == false)
         {
             if (TileData.isWired == true)
@@ -300,6 +308,7 @@ public class FloorTile : PersistentEntity {
 
     // Use this for initialization
     protected override void Start () {
+
         base.Start();
 	}
 	

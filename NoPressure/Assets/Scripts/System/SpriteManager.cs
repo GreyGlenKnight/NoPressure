@@ -22,7 +22,7 @@ public class SpriteManager  {
         InventoryItemSprites.Add(SpawnType.MecanicalTools, itemSprites[1]);
         InventoryItemSprites.Add(SpawnType.Pistol, itemSprites[2]);
         InventoryItemSprites.Add(SpawnType.Shield, itemSprites[3]);
-        InventoryItemSprites.Add(SpawnType.Mine, itemSprites[4]);
+        InventoryItemSprites.Add(SpawnType.MineDrone, itemSprites[4]);
         InventoryItemSprites.Add(SpawnType.Rifle, itemSprites[5]);
         InventoryItemSprites.Add(SpawnType.Carbine, itemSprites[6]);
 
