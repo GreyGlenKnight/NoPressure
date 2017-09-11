@@ -74,10 +74,10 @@ public class Player : MovingEntity
         //UpdateStats(GameManager.instance.playerHealth, GameManager.instance.playerXP);
         InitColorBlocks();
         mNearbyCrates = new List<Crate>();
-        mInventory.mMassDriverAmmo = Instantiate(mInventory.mMassDriverAmmo);
-        mInventory.mEnergyCells = Instantiate(mInventory.mEnergyCells);
-        mInventory.mExplosives = Instantiate(mInventory.mExplosives);
-        mInventory.mParts = Instantiate(mInventory.mParts);
+        //mInventory.mMassDriverAmmo = Instantiate(mInventory.mMassDriverAmmo);
+        //mInventory.mEnergyCells = Instantiate(mInventory.mEnergyCells);
+        //mInventory.mExplosives = Instantiate(mInventory.mExplosives);
+        //mInventory.mParts = Instantiate(mInventory.mParts);
         rb = GetComponent<Rigidbody>();
         m_Animator = GetComponent<Animator>();
         SetSelection(0);
@@ -412,7 +412,7 @@ public class Player : MovingEntity
                 return mInventory.mParts;
             default:
                 Debug.Log("Player does not know Resource: " + resourceType);
-                return null;
+                return new ResourcePool();
         }
     }
 

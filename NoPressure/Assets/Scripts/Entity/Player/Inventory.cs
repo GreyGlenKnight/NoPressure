@@ -72,7 +72,7 @@ public class Inventory: MonoBehaviour {
 
     public void UpdateResource(ResourcePool lResource)
     {
-        switch (lResource.mResourceType)
+        switch (lResource.GetResourceType())
         {
             case ResourceType.MassDriver:
                 mMassDriverAmmo = lResource;
@@ -91,7 +91,7 @@ public class Inventory: MonoBehaviour {
                 break;
 
             default:
-                Debug.Log("Warning, Inventory does not hold " + lResource.mResourceType);
+                Debug.Log("Warning, Inventory does not hold " + lResource.GetResourceType());
                 break;
         }
     }
@@ -108,7 +108,7 @@ public class Inventory: MonoBehaviour {
             return "";
         }
 
-        ResourcePool pool = getResource(inventory[index].mCharges.mResourceType);
+        ResourcePool pool = getResource(inventory[index].mCharges.GetResourceType());
 
         if (pool == null)
             return "";
@@ -119,7 +119,7 @@ public class Inventory: MonoBehaviour {
         if (inventory[index].mCharges == null)
             return "";
 
-        return inventory[index].mCharges.mValue + " / " + pool.mValue;
+        return inventory[index].mCharges + " / " + pool;
     }
 
     public void ReloadEquipedWeapon()
@@ -128,7 +128,7 @@ public class Inventory: MonoBehaviour {
         if (currentItem == null)
             return;
 
-        ResourceType reloadWithResource = currentItem.mCharges.mResourceType;
+        ResourceType reloadWithResource = currentItem.mCharges.GetResourceType();
         ResourcePool resource = getResource(reloadWithResource);
 
         currentItem.Reload(resource);
@@ -148,7 +148,7 @@ public class Inventory: MonoBehaviour {
                 return mParts;
             default:
                 //Debug.Log("Player does not know Resource: " + resourceType);
-                return null;
+                return new ResourcePool();
         }
     }
 
@@ -171,7 +171,6 @@ public class Inventory: MonoBehaviour {
             return null;
 
         return inventory[index];
-
     }
 
     public IInventoryItem GetSelectionItem()
@@ -205,7 +204,6 @@ public class Inventory: MonoBehaviour {
     //return index of the location added ot -1 if not added at all
     public int AddItemToInventory(IInventoryItem itemToAdd)
     {
-
         if (itemToAdd == null)
             Debug.Log("Cant add null item");
 
@@ -218,7 +216,6 @@ public class Inventory: MonoBehaviour {
         {
             if (spriteList == null)
                 spriteList = new Sprite[4];
-
 
             inventory[CurentlySelected] = itemToAdd;
             spriteList[CurentlySelected] = itemToAdd.mDisplaySprite;
@@ -238,7 +235,6 @@ public class Inventory: MonoBehaviour {
             Debug.Log("InventoryCount<Max but cant find non null inventory space");
             return -1;
         }
-
     }
-
 }
+

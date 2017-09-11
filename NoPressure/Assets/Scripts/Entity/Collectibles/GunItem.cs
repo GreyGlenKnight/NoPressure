@@ -116,7 +116,7 @@ public class GunItem : IInventoryItem {
             return false;
 
         // Reload the weapon and then stop and reset the reload timer
-        mCharges.Transfer(ammoStorage);
+        ResourcePool.Transfer(ref ammoStorage,ref mCharges);
         AbortReload();
         return true;
     }

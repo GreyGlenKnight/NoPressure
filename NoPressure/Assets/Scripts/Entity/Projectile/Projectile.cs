@@ -119,6 +119,7 @@ public class Projectile : MonoBehaviour {
 
         if (mOnCollisionHandler(collider.transform, hitPoint, transform.forward) == true)
         {
+            // Destroy this projectile
             die();
             //else
             //Destroy(this);

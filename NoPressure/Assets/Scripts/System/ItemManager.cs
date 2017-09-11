@@ -19,49 +19,48 @@ public class ItemManager : MonoBehaviour {
 
     public IInventoryItem SpawnItem(SpawnType typeToSpawn)
     {
-
         IInventoryItem ItemToSpawn;
 
         switch (typeToSpawn)
         {
             case SpawnType.Pistol:
                 ItemToSpawn = Instantiate(Pistol).GetComponent<IInventoryItem>();
-                ItemToSpawn.mCharges = Instantiate(Pistol.GetComponent<IInventoryItem>().mCharges);
+                ItemToSpawn.mCharges = new ResourcePool(ResourceType.MassDriver, 12);// Instantiate(Pistol.GetComponent<IInventoryItem>().mCharges);
                 break;
 
             case SpawnType.Rifle:
                 ItemToSpawn = Instantiate(Rifle).GetComponent<IInventoryItem>();
-                ItemToSpawn.mCharges = Instantiate(Rifle.GetComponent<IInventoryItem>().mCharges);
+                ItemToSpawn.mCharges = new ResourcePool(ResourceType.MassDriver, 12);
                 break;
 
             case SpawnType.Carbine:
                 ItemToSpawn = Instantiate(Carbine).GetComponent<IInventoryItem>();
-                ItemToSpawn.mCharges = Instantiate(Carbine.GetComponent<IInventoryItem>().mCharges);
+                ItemToSpawn.mCharges = new ResourcePool(ResourceType.MassDriver, 12);
                 break;
 
             case SpawnType.PlasmaThrower:
                 ItemToSpawn = Instantiate(PlasmaThrower).GetComponent<IInventoryItem>();
-                ItemToSpawn.mCharges = Instantiate(PlasmaThrower.GetComponent<IInventoryItem>().mCharges);
+                ItemToSpawn.mCharges = new ResourcePool(ResourceType.MassDriver, 12);
                 break;
 
             case SpawnType.RocketLauncher:
                 ItemToSpawn = Instantiate(RocketLauncher).GetComponent<IInventoryItem>();
-                ItemToSpawn.mCharges = Instantiate(RocketLauncher.GetComponent<IInventoryItem>().mCharges);
+                ItemToSpawn.mCharges = new ResourcePool(ResourceType.MassDriver, 12);
                 break;
 
             case SpawnType.PortableGenerator:
                 ItemToSpawn = Instantiate(PortableGenerator).GetComponent<IInventoryItem>();
-                ItemToSpawn.mCharges = Instantiate(PortableGenerator.GetComponent<IInventoryItem>().mCharges);
+                ItemToSpawn.mCharges = new ResourcePool(ResourceType.MassDriver, 12);
                 break;
 
             case SpawnType.PortablePressure:
                 ItemToSpawn = Instantiate(PortablePressure).GetComponent<IInventoryItem>();
-                ItemToSpawn.mCharges = Instantiate(PortablePressure.GetComponent<IInventoryItem>().mCharges);
+                ItemToSpawn.mCharges = new ResourcePool(ResourceType.MassDriver, 12);
                 break;
 
             case SpawnType.Shield:
                 ItemToSpawn = Instantiate(Shield).GetComponent<IInventoryItem>();
-                ItemToSpawn.mCharges = Instantiate(Shield.GetComponent<IInventoryItem>().mCharges);
+                ItemToSpawn.mCharges = new ResourcePool(ResourceType.Charges, 1);
                 break;
 
             case SpawnType.MecanicalTools:

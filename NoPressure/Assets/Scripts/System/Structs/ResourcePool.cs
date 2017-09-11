@@ -1,172 +1,223 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
-using UnityEngine;
 using System;
 
-public class ResourcePool : Pool
+// Consumeable resource types that can refill the charges of items
+public enum ResourceType
 {
-    public ResourceType mResourceType;
+    None,
+    MassDriver,
+    EnergyCell,
+    Explosive,
+    Parts,
+    Charges,
+}
 
-    public ResourcePool(ResourceType lResourceType, float lCapacity) : base(lCapacity)
+// Immutable
+[Serializable]
+public struct ResourcePool
+{
+    private const string INCOMPATABLE_RESOURCE_ERROR_STRING = 
+        "Unable to transfer resources of different types";
+
+    private ResourceType mResourceType;
+    private Pool mPool;
+
+    public ResourcePool(
+        ResourceType lResourceType, 
+        float lCapacity) 
     {
         mResourceType = lResourceType;
+        mPool = new Pool(lCapacity);
     }
 
     public ResourcePool(
         ResourceType lResourceType,
         float lCapacity,
-        float lValue) : base(lCapacity, lValue)
+        float lValue)
     {
         mResourceType = lResourceType;
+        mPool = new Pool(lCapacity,lValue);
     }
 
-    // Transfer as many resources as possible from lTransferFrom to lTransferTo
-    public void Transfer(ResourcePool lTransferFrom)
+    public ResourcePool(
+        ResourceType lResourceType,
+        Pool lPool)
     {
-        if (mResourceType != lTransferFrom.mResourceType)
-        {
-            Debug.Log("Warning, Trying to transfer incompatable resources types");
-            return;
-        }
+        mResourceType = lResourceType;
+        mPool = lPool;
+    }
 
-        float transferAmount = 0;
+    public ResourceType GetResourceType()
+    {
+        return mResourceType;
+    }
 
-        if (VacantCapacity() > lTransferFrom.mValue)
-            transferAmount = lTransferFrom.mValue;
+    public bool IsEmpty()
+    {
+        return mPool.IsEmpty();
+    }
+
+    public bool IsFull()
+    {
+        return mPool.IsFull();
+    }
+
+    public static bool IsSameResourceType(ResourcePool lPool1, ResourcePool lPool2)
+    {
+        if (lPool1.mResourceType == lPool2.mResourceType)
+            return true;
         else
-            transferAmount = VacantCapacity();
-
-        mValue += transferAmount;
-        lTransferFrom -= transferAmount;
+            return false;
     }
 
-    public static ResourcePool operator +(ResourcePool lResourcePool, ResourcePool lResourcePool2)
+    public static bool Transfer(ref ResourcePool rTransferFrom, ref ResourcePool rTransferTo)
+    {
+        // Check to only allow exchange of resource of compatable types
+        if (!IsSameResourceType(rTransferFrom,rTransferTo))
+        {
+            return false;
+        }
+
+        Pool.Transfer(ref rTransferFrom.mPool, ref rTransferTo.mPool);
+        return true;
+    }
+
+    public static bool Transfer(ref ResourcePool rTransferFrom, ref ResourcePool rTransferTo, float lAmount)
+    {
+        // Check to only allow exchange of resource of compatable types
+        if (!IsSameResourceType(rTransferFrom, rTransferTo))
+        {
+            return false;
+        }
+
+        Pool.Transfer(ref rTransferFrom.mPool, ref rTransferTo.mPool,lAmount);
+        return true;
+    }
+
+    public static ResourcePool Add(ResourcePool lResourcePool1, ResourcePool lResourcePool2)
     {
         // Resources of different types cannot be added together
-        if (lResourcePool.mResourceType != lResourcePool2.mResourceType)
+        if (!IsSameResourceType(lResourcePool1, lResourcePool2))
         {
-            Debug.Log("Warning, Trying to add resource of different types");
-            return lResourcePool;
+            throw new InvalidOperationException(
+                INCOMPATABLE_RESOURCE_ERROR_STRING);
         }
-        lResourcePool.Add(lResourcePool2.mValue);
-        return lResourcePool;
+
+        return new ResourcePool(lResourcePool1.mResourceType, new Pool(lResourcePool1.mPool.GetCapacity(), lResourcePool1.mPool + lResourcePool2.mPool));
     }
 
-    public static ResourcePool operator -(ResourcePool lResourcePool, ResourcePool lResourcePool2)
+
+    public static ResourcePool Subtract(ResourcePool lResourcePool1, ResourcePool lResourcePool2)
     {
         // Resources of different types cannot be added together
-        if (lResourcePool.mResourceType != lResourcePool2.mResourceType)
+        if (!IsSameResourceType(lResourcePool1, lResourcePool2))
         {
-            Debug.Log("Warning, Trying to add resource of different types");
-            return lResourcePool;
+            throw new InvalidOperationException(
+                INCOMPATABLE_RESOURCE_ERROR_STRING);
         }
-        lResourcePool.Add(-lResourcePool2.mValue);
-        return lResourcePool;
+
+        return new ResourcePool(lResourcePool1.mResourceType, new Pool(lResourcePool1.mPool.GetCapacity(), lResourcePool1.mPool - lResourcePool2.mPool));
     }
 
-    public static ResourcePool operator +(ResourcePool lResourcePool, float lAmount)
+    public static ResourcePool Add (ResourcePool lResourcePool1, float lAmount)
     {
-        lResourcePool.Add(lAmount);
-        return lResourcePool;
+        return new ResourcePool(lResourcePool1.mResourceType, new Pool(lResourcePool1.Capacity(), lResourcePool1 + lAmount));
     }
 
-    public static ResourcePool operator -(ResourcePool lResourcePool, float lAmount)
+    public static ResourcePool Subtract(ResourcePool lResourcePool1, float lAmount)
     {
-        //Debug.Log("" + lResourcePool.mValue + " - " + lAmount);  
-        lResourcePool.Add(-lAmount);
-        return lResourcePool;
+        return new ResourcePool(lResourcePool1.mResourceType, new Pool(lResourcePool1.Capacity(), lResourcePool1 - lAmount));
     }
 
-    public static bool operator >(ResourcePool lResourcePool, ResourcePool lResourcePool2)
+    public ResourcePool SetValue(float lAmount)
     {
-        if (lResourcePool.mResourceType != lResourcePool2.mResourceType)
+        return new ResourcePool(mResourceType, new Pool(Capacity(), lAmount));
+    }
+
+    public static ResourcePool operator + (ResourcePool lResourcePool1, ResourcePool lResourcePool2)
+    {
+        return Add(lResourcePool1,lResourcePool2);
+    }
+
+    public static ResourcePool operator - (ResourcePool lResourcePool1, ResourcePool lResourcePool2)
+    {
+        return Subtract(lResourcePool1, lResourcePool2);
+    }
+
+    public static ResourcePool operator + (ResourcePool lResourcePool1, float lAmount)
+    {
+        return new ResourcePool(lResourcePool1.mResourceType, new Pool(lResourcePool1.Capacity(), lResourcePool1 + lAmount));
+    }
+
+    public static ResourcePool operator - (ResourcePool lResourcePool1, float lAmount)
+    {
+        return new ResourcePool(lResourcePool1.mResourceType, new Pool(lResourcePool1.Capacity(), lResourcePool1 - lAmount));
+    }
+
+    public float Capacity()
+    {
+        return mPool.mCapacity;
+    }
+
+    public static bool operator > (ResourcePool lResourcePool1, ResourcePool lResourcePool2)
+    {
+        //if (!lResourcePool1.IsSameResource(lResourcePool2))
+        //{
+        //    throw new InvalidOperationException(
+        //        INCOMPATABLE_RESOURCE_ERROR_STRING);
+        //}
+        return lResourcePool1.mPool > lResourcePool2.mPool;
+    }
+
+    public static bool operator < (ResourcePool lResourcePool1, ResourcePool lResourcePool2)
+    {
+        return lResourcePool2 > lResourcePool1;
+    }
+
+    public static bool operator > (ResourcePool lResourcePool, float lAmount)
+    {
+        return lResourcePool.mPool > lAmount;
+    }
+
+    public static bool operator < (ResourcePool lResourcePool, float lAmount)
+    {
+        return lResourcePool.mPool < lAmount;
+    }
+
+    public static bool operator >= (ResourcePool lResourcePool, float lAmount)
+    {
+        return lResourcePool.mPool >= lAmount;
+    }
+
+    public static bool operator <= (ResourcePool lResourcePool, float lAmount)
+    {
+        return lResourcePool.mPool <= lAmount;
+    }
+
+    public static bool operator == (ResourcePool lResourcePool1, ResourcePool lResourcePool2)
+    {
+        if (!IsSameResourceType(lResourcePool1, lResourcePool2))
         {
-            Debug.Log("Warning, Trying to compare two different resource types");
             return false;
         }
-        return lResourcePool.mValue > lResourcePool2.mValue;
+
+        return lResourcePool1.mPool == lResourcePool2.mPool;
     }
 
-    public static bool operator <(ResourcePool lResourcePool, ResourcePool lResourcePool2)
+    public static bool operator != (ResourcePool lResourcePool1, ResourcePool lResourcePool2)
     {
-        if (lResourcePool.mResourceType != lResourcePool2.mResourceType)
-        {
-            Debug.Log("Warning, Trying to compare two different resource types");
-            return false;
-        }
-        return lResourcePool.mValue < lResourcePool2.mValue;
+        return !(lResourcePool1 == lResourcePool2);
     }
 
-    public static bool operator >(ResourcePool lResourcePool, float lAmount)
+    public static bool operator == (ResourcePool lResourcePool, float lAmount)
     {
-        return lResourcePool.mValue > lAmount;
+        return lResourcePool.mPool == lAmount;
     }
 
-    public static bool operator <(ResourcePool lResourcePool, float lAmount)
+    public static bool operator != (ResourcePool lResourcePool, float lAmount)
     {
-        return lResourcePool.mValue < lAmount;
-    }
-
-    public static bool operator >=(ResourcePool lResourcePool, float lAmount)
-    {
-        return lResourcePool.mValue >= lAmount;
-    }
-
-    public static bool operator <=(ResourcePool lResourcePool, float lAmount)
-    {
-        return lResourcePool.mValue <= lAmount;
-    }
-
-    public static bool operator ==(ResourcePool lResourcePool, ResourcePool lResourcePool2)
-    {
-        if (object.ReferenceEquals(lResourcePool, null))
-        {
-            if (object.ReferenceEquals(lResourcePool2, null))
-                return true;
-            else
-                return false;
-        }
-
-        if (lResourcePool2 == null)
-            return false;
-
-        if (lResourcePool.mResourceType != lResourcePool2.mResourceType)
-        {
-            Debug.Log("Warning, Trying to compare two different resource types");
-            return false;
-        }
-        return lResourcePool.mValue == lResourcePool2.mValue;
-    }
-
-    public static bool operator !=(ResourcePool lResourcePool, ResourcePool lResourcePool2)
-    {
-        if (object.ReferenceEquals(lResourcePool, null))
-        {
-            if (object.ReferenceEquals(lResourcePool2, null))
-                return false;
-            else
-                return true;
-        }
-
-        if (lResourcePool2 == null)
-            return true;
-
-        if (lResourcePool.mResourceType != lResourcePool2.mResourceType)
-        {
-            Debug.Log("Warning, Trying to compare two different resource types");
-            return true;
-        }
-        return lResourcePool.mValue != lResourcePool2.mValue;
-    }
-
-    public static bool operator ==(ResourcePool lResourcePool, float lAmount)
-    {
-        return lResourcePool.mValue == lAmount;
-    }
-
-    public static bool operator !=(ResourcePool lResourcePool, float lAmount)
-    {
-        return lResourcePool.mValue != lAmount;
+        return lResourcePool.mPool != lAmount;
     }
 
     public override bool Equals(object obj)
@@ -176,28 +227,37 @@ public class ResourcePool : Pool
 
     public bool Equals(ResourcePool lResourcePool2)
     {
-        return (this.Equals(lResourcePool2));
+        return this == lResourcePool2;
     }
 
     public override int GetHashCode()
     {
-        return base.GetHashCode();
+        unchecked
+        {
+            // Choose large primes to avoid hashing collisions
+            const int HashingBase = (int)2166136261;
+            const int HashingMultiplier = 16777619;
+
+            int hash = HashingBase;
+            hash = (hash * HashingMultiplier) ^ mPool.GetHashCode();
+            hash = (hash * HashingMultiplier) ^ (int)(mResourceType) * 10000;
+            return hash;
+        }
     }
 
     public override string ToString()
     {
-        return Math.Round(mValue, 2) + " / " + Math.Round(mCapacity, 2);
+        return mResourceType + " : " + mPool.ToString();
     }
 
     public static implicit operator float(ResourcePool d)
     {
-        return d.mValue;
+        return d.mPool;
     }
 
     public static explicit operator int(ResourcePool d)
     {
-        return (int)d.mValue;
+        return (int)d.mPool;
     }
-
 
 }

@@ -1,43 +1,39 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
-using System;
+﻿using System;
 
-// Consumeable resource types that can refill the charges of items
-public enum ResourceType
+//Immutable
+[Serializable]
+public struct Pool
 {
-    MassDriver,
-    EnergyCell,
-    Explosive,
-    Parts,
-    Charges,
-}
+    public readonly float mCapacity;
+    public readonly float mValue;
 
-public class Pool : MonoBehaviour
-{
-    public float mCapacity;
-    public float mValue;
-    public string mName;
-
-    // Default to pools being full
     public Pool(float lCapacity)
     {
-        AssignValues(lCapacity, lCapacity);
+        // Pools must have a positive size
+        if (lCapacity < 0)
+        {
+            throw new ArgumentOutOfRangeException(
+                "lCapacity",
+                lCapacity,
+                "Pool size must be a positive number");
+        }
+
+        mCapacity = lCapacity;
+        mValue = lCapacity;
     }
 
     public Pool(float lCapacity, float lValue)
     {
-        AssignValues(lCapacity, lValue);
-    }
-
-    public virtual void Add(float lAmount)
-    {
-        mValue += lAmount;
-        CheckValue();
-    }
-
-    protected virtual void CheckValue()
-    {
+        // Pools must have a positive size
+        if (lCapacity < 0)
+        {
+            throw new ArgumentOutOfRangeException(
+                "lCapacity",
+                lCapacity,
+                "Pool size must be a positive number");
+        }
+        mCapacity = lCapacity;
+        mValue = lValue;
         // Pools must have a non negative value
         if (mValue < 0)
         {
@@ -51,16 +47,31 @@ public class Pool : MonoBehaviour
         }
     }
 
-    protected void AssignValues(float lSize, float lValue)
+    public float GetCapacity()
     {
-        // Pools must have a positive size
-        if (lSize < 0)
+        return mCapacity;
+    }
+
+    public Pool IncreaseCapacity(float lAmount)
+    {
+        try
         {
-            Debug.LogError("Resource Pool size must be a positive number! " + lSize);
+            return new Pool(mCapacity + lAmount, mValue);
         }
-        mCapacity = lSize;
-        mValue = lValue;
-        CheckValue();
+        catch (ArgumentOutOfRangeException e)
+        {
+            return new Pool(0);
+        }
+    }
+
+    public Pool DecreaseCapacity(float lAmount)
+    {
+        return IncreaseCapacity(lAmount * -1);
+    }
+
+    public Pool Add(float lAmount)
+    {
+        return new Pool(mCapacity, mValue + lAmount);
     }
 
     public bool IsFull()
@@ -82,22 +93,69 @@ public class Pool : MonoBehaviour
         return mCapacity - mValue;
     }
 
+    public Pool SetValue(float lValue)
+    {
+        return new Pool(mCapacity, lValue);
+    }
+
+
+    public static void Transfer(ref Pool rTransferFrom, ref Pool rTransferTo)
+    {
+        float transferAmount = 0;
+
+        if (rTransferTo.VacantCapacity() > rTransferFrom.mValue)
+            transferAmount = rTransferFrom.mValue;
+        else
+            transferAmount = rTransferTo.VacantCapacity();
+
+        rTransferFrom = new Pool(rTransferFrom.mCapacity, rTransferFrom - transferAmount);
+        rTransferTo = new Pool(rTransferTo.mCapacity, rTransferTo + transferAmount);
+    }
+
+    public static void Transfer(ref Pool rTransferFrom, ref Pool rTransferTo, float lAmount)
+    {
+        float transferAmount = 0;
+
+        if (rTransferTo.VacantCapacity() > rTransferFrom.mValue)
+            transferAmount = rTransferFrom.mValue;
+        else
+            transferAmount = rTransferTo.VacantCapacity();
+
+        if (transferAmount > lAmount)
+            transferAmount = lAmount;
+
+        rTransferFrom = new Pool(rTransferFrom.mCapacity, rTransferFrom - transferAmount);
+        rTransferTo = new Pool(rTransferTo.mCapacity, rTransferTo + transferAmount);
+    }
+
+    public static Pool operator ++(Pool lPool)
+    {
+        return new Pool(lPool.mCapacity, lPool.mValue + 1);
+    }
+
+    public static Pool operator --(Pool lPool)
+    {
+        return new Pool(lPool.mCapacity, lPool.mValue - 1);
+    }
+
     public static Pool operator +(Pool lPool, float lAmount)
     {
-        if (lPool == null)
-            return null;
-
-        lPool.Add(lAmount);
-        return lPool;
+        return new Pool(lPool.mCapacity, lPool.mValue + lAmount);
     }
 
     public static Pool operator -(Pool lPool, float lAmount)
     {
-        if (lPool == null)
-            return null;
+        return new Pool(lPool.mCapacity, lPool.mValue - lAmount);
+    }
 
-        lPool.Add(-lAmount);
-        return lPool;
+    public static Pool operator *(Pool lPool, float lAmount)
+    {
+        return new Pool(lPool.mCapacity, lPool.mValue * lAmount);
+    }
+
+    public static Pool operator /(Pool lPool, float lAmount)
+    {
+        return new Pool(lPool.mCapacity, lPool.mValue / lAmount);
     }
 
     public static float operator +(float lAmount, Pool lPool)
@@ -110,6 +168,36 @@ public class Pool : MonoBehaviour
         return lAmount - lPool.mValue;
     }
 
+    public static float operator *(float lAmount, Pool lPool)
+    {
+        return lAmount * lPool.mValue;
+    }
+
+    public static float operator /(float lAmount, Pool lPool)
+    {
+        return lAmount / lPool.mValue;
+    }
+
+    public static Pool operator +(Pool lPool1, Pool lPool2)
+    {
+        return new Pool(lPool1.mCapacity, lPool1.mValue + lPool2.mValue);
+    }
+
+    public static Pool operator -(Pool lPool1, Pool lPool2)
+    {
+        return new Pool(lPool1.mCapacity, lPool1.mValue - lPool2.mValue);
+    }
+
+    public static Pool operator *(Pool lPool1, Pool lPool2)
+    {
+        return new Pool(lPool1.mCapacity, lPool1.mValue * lPool2.mValue);
+    }
+
+    public static Pool operator /(Pool lPool1, Pool lPool2)
+    {
+        return new Pool(lPool1.mCapacity, lPool1.mValue / lPool2.mValue);
+    }
+
     public static bool operator >(Pool lPool, float lAmount)
     {
         return lPool.mValue > lAmount;
@@ -120,56 +208,83 @@ public class Pool : MonoBehaviour
         return lPool.mValue < lAmount;
     }
 
+    public static bool operator >(float lAmount, Pool lPool)
+    {
+        return lAmount > lPool.mValue;
+    }
+
+    public static bool operator <(float lAmount, Pool lPool)
+    {
+        return lAmount < lPool.mValue;
+    }
+
+    public static bool operator >(Pool lPool1, Pool lPool2)
+    {
+        return lPool1.mValue > lPool2.mValue;
+    }
+
+    public static bool operator <(Pool lPool1, Pool lPool2)
+    {
+        return lPool1.mValue < lPool2.mValue;
+    }
+
+    public static bool operator >=(Pool lPool, float lAmount)
+    {
+        return lPool.mValue >= lAmount;
+    }
+
+    public static bool operator <=(Pool lPool, float lAmount)
+    {
+        return lPool.mValue <= lAmount;
+    }
+
+    public static bool operator >=(float lAmount, Pool lPool)
+    {
+        return lAmount >= lPool.mValue;
+    }
+
+    public static bool operator <=(float lAmount, Pool lPool)
+    {
+        return lAmount <= lPool.mValue;
+    }
+
+    public static bool operator >=(Pool lPool1, Pool lPool2)
+    {
+        return lPool1.mValue >= lPool2.mValue;
+    }
+
+    public static bool operator <=(Pool lPool1, Pool lPool2)
+    {
+        return lPool1.mValue <= lPool2.mValue;
+    }
+
     public static bool operator ==(Pool lPool, float lAmount)
     {
-        if (object.ReferenceEquals(lPool, null))
-        {
-
-            return false;
-
-        }
-
         return lPool.mValue == lAmount;
     }
+
     public static bool operator !=(Pool lPool, float lAmount)
     {
-        if (object.ReferenceEquals(lPool, null))
-        {
-            return true;
-        }
-
         return lPool.mValue != lAmount;
+    }
+
+    public static bool operator ==(float lAmount, Pool lPool2)
+    {
+        return lAmount == lPool2.mValue;
+    }
+
+    public static bool operator !=(float lAmount, Pool lPool2)
+    {
+        return lAmount == lPool2.mValue;
     }
 
     public static bool operator ==(Pool lPool, Pool lPool2)
     {
-        if (object.ReferenceEquals(lPool, null))
-        {
-            if (object.ReferenceEquals(lPool2, null))
-                return true;
-            else
-                return false;
-        }
-
-        if (object.ReferenceEquals(lPool2, null))
-            return false;
-
         return lPool.mValue == lPool2.mValue;
     }
+
     public static bool operator !=(Pool lPool, Pool lPool2)
     {
-
-        if (object.ReferenceEquals(lPool, null))
-        {
-            if (object.ReferenceEquals(lPool2, null))
-                return false;
-            else
-                return true;
-        }
-
-        if (object.ReferenceEquals(lPool2, null))
-            return true;
-
         return lPool.mValue != lPool2.mValue;
     }
 
@@ -178,19 +293,29 @@ public class Pool : MonoBehaviour
         return base.Equals(obj);
     }
 
-    public virtual bool Equals(Pool lPool)
+    public bool Equals(Pool lPool)
     {
-        return  mValue == lPool.mValue;
+        return mValue == lPool.mValue;
     }
 
-    public virtual bool Equals(float lValue)
+    public bool Equals(float lValue)
     {
-        return mValue == lValue ;
+        return mValue == lValue;
     }
 
     public override int GetHashCode()
     {
-        return base.GetHashCode();
+        unchecked
+        {
+            // Choose large primes to avoid hashing collisions
+            const int HashingBase = (int)2166136261;
+            const int HashingMultiplier = 16777619;
+
+            int hash = HashingBase;
+            hash = (hash * HashingMultiplier) ^ (int)(mCapacity * 10000);
+            hash = (hash * HashingMultiplier) ^ (int)(mValue * 10000);
+            return hash;
+        }
     }
 
     public override string ToString()
@@ -198,20 +323,14 @@ public class Pool : MonoBehaviour
         return Math.Round(mValue, 2) + " / " + Math.Round(mCapacity, 2);
     }
 
-    public static implicit operator float(Pool lPool)  
+    public static implicit operator float(Pool lPool)
     {
-        return lPool.mValue;  
+        return lPool.mValue;
     }
 
-    public static explicit operator int(Pool d)
+    public static explicit operator int(Pool lPool)
     {
-        return (int)d.mValue;
-    }
-
-    public void SetValue(float lValue)
-    {
-        mValue = lValue;
-        CheckValue();
+        return (int)lPool.mValue;
     }
 
 }

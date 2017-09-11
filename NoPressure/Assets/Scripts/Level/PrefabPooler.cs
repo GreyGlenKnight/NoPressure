@@ -138,8 +138,7 @@ public class PrefabPooler : MonoBehaviour {
         }
 
         ChangeMaterial(wall.gameObject, WallMaterial);
-        wall.mHealth.mCapacity = WallHealth;
-        wall.mHealth.mValue = WallHealth;
+        wall.mHealth = new Pool(WallHealth);
 
         return wall;
     }
@@ -172,8 +171,8 @@ public class PrefabPooler : MonoBehaviour {
         ChangeMaterial(wall.gameObject, AmmoMaterial);
 
         wall.deathItems.Add(Instantiate(ammoPack));
-        wall.mHealth.mCapacity = AmmoWallHealth;
-        wall.mHealth.mValue = AmmoWallHealth;
+
+        wall.mHealth = new Pool(WallHealth);
 
         return wall;
     }
@@ -188,7 +187,7 @@ public class PrefabPooler : MonoBehaviour {
         {
             DestructibleObstacle newWall = Instantiate(WallPrefab);
             newWall.gameObject.SetActive(false);
-            Pool HealthPool = Instantiate(PoolPrefab);
+            Pool HealthPool = new Pool(10);
 
             newWall.mHealth = HealthPool;
             //newWall.mArmor = ArmorPool;
@@ -359,9 +358,7 @@ public class PrefabPooler : MonoBehaviour {
             Transform newDrone = Instantiate(DroneEnemyPrefab);
             newDrone.gameObject.SetActive(false);
 
-            newDrone.GetComponent<Enemy>().mHealth = Instantiate(PoolPrefab);
-            newDrone.GetComponent<Enemy>().mHealth.mCapacity = 20;
-            newDrone.GetComponent<Enemy>().mHealth.mValue = 20;
+            newDrone.GetComponent<Enemy>().mHealth = new Pool(10);// Instantiate(PoolPrefab);
             newDrone.GetComponent<Enemy>().mOnDeathHandler += DroneOnDeath;
             newDrone.GetComponent<Enemy>().mOnDespawn += DroneOnDeath;
             DroneQueue.Enqueue(newDrone);
